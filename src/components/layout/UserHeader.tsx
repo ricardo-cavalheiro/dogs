@@ -11,7 +11,7 @@ type CustomReactElementType = ReactElement & { children: ReactNode }
 
 function UserHeader(page: CustomReactElementType) {
   return (
-    <Box as='main' p={5}>
+    <Box as='main' sx={{ h: 'calc(100% - 164px)' }} p={5}>
       <Header />
       {page?.children}
     </Box>
