@@ -32,6 +32,11 @@ const global = {
       width: 'min-content',
       flexBasis: 'min-content',
     },
+    '#__next': {
+      d: 'grid',
+      gridTemplateRows:
+        '64px minmax(calc(100vh - 164px), calc(100% - 164px)) 100px',
+    },
   }),
 }
 
