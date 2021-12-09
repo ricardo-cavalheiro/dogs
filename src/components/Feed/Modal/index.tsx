@@ -10,35 +10,31 @@ import {
   Heading,
   Button,
   Divider,
+  Collapse,
   useToast,
 } from '@chakra-ui/react'
 import { MdOutlineVisibility, MdSend } from 'react-icons/md'
-import {
-  push,
-  update,
-  ref,
-  onValue,
-  off,
-  increment,
-} from 'firebase/database'
+import { push, update, ref, onValue, off, increment } from 'firebase/database'
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import NextImage from 'next/image'
 import NextLink from 'next/link'
 
 // components
-import { Input } from '../../../form/inputs/RegularInput'
+import { Input } from '../../form/inputs/RegularInput'
 import { CommentsSection } from './CommentsSection'
+import { FooterMenu } from './FooterMenu'
 
 // hooks
-import { useUser } from '../../../../hooks/useUser'
+import { useUser } from '../../../hooks/useUser'
 
 // firebase
-import { db } from '../../../../services/firebase/database'
+import { db } from '../../../services/firebase/database'
 
 // types
 import type { SubmitHandler } from 'react-hook-form'
-import type { ImageInfo, Comment } from '../../../../typings/userInfo'
+import type { DatabaseReference } from 'firebase/database'
+import type { ImageInfo, Comment } from '../../../typings/userInfo'
 
 type FormInputs = {
   comment: string
@@ -54,6 +50,7 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
   // states
   const [imageComments, setImageComments] = useState<Comment[]>([])
   const [imageViews, setImageViews] = useState(imageInfo.views)
+  const [isCommentInputShown, setIsCommentInputShown] = useState(false)
 
   // hooks
   const toast = useToast()
@@ -100,15 +97,23 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
 
   // listens for new comments
   useEffect(() => {
-    const imageCommentsRef = ref(db, `image_comments/${imageInfo.id}`)
+    let imageCommentsRef: DatabaseReference
 
-    onValue(imageCommentsRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setImageComments(Object.values(snapshot.val()))
-      } else {
-        setImageComments([])
-      }
-    })
+    try {
+      imageCommentsRef = ref(db, `image_comments/${imageInfo.id}`)
+
+      onValue(imageCommentsRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setImageComments(Object.values(snapshot.val()))
+        } else {
+          setImageComments([])
+        }
+      })
+    } catch (err) {
+      console.log('erro ao atualizar a lista de comentarios', { err })
+
+      setImageComments([])
+    }
 
     return () => {
       off(imageCommentsRef)
@@ -117,18 +122,26 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
 
   // increments image views when modal is open
   useEffect(() => {
-    const imageRef = ref(db, `images/${userInfo.username}/${imageInfo.id}`)
+    let imageRef: DatabaseReference
 
-    if (isOpen) {
-      update(imageRef, {
-        views: increment(1),
-      })
+    try {
+      imageRef = ref(db, `images/${imageInfo.author_username}/${imageInfo.id}`)
 
-      onValue(imageRef, (snapshot) => {
-        if (snapshot.exists()) {
-          setImageViews(snapshot.val().views)
-        }
-      })
+      if (isOpen) {
+        update(imageRef, {
+          views: increment(1),
+        })
+
+        onValue(imageRef, (snapshot) => {
+          if (snapshot.exists()) {
+            setImageViews(snapshot.val().views)
+          }
+        })
+      }
+    } catch (err) {
+      console.log('erro incrementando total de views da imagem', { err })
+
+      setImageViews(0)
     }
 
     return () => {
@@ -153,7 +166,7 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
           </Box>
 
           <Box px={3} py={2}>
-            <Flex justify='space-between' mt={5} mb={2} opacity={0.5}>
+            <Flex justify='space-between' mt={2} mb={2} opacity={0.5}>
               <Box>
                 <NextLink
                   href={`/account/${imageInfo.author_username}`}
@@ -170,9 +183,9 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
               </Flex>
             </Flex>
 
-            <Divider borderColor='#a8a8a8' />
+            <Divider borderColor='#a8a8a8' my={3} />
 
-            <Box mt={5} mb={2}>
+            <Box>
               <Heading fontSize={40}>{imageInfo.title}</Heading>
 
               <Text as='p' mt={5}>
@@ -180,30 +193,45 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
               </Text>
             </Box>
 
-            <Divider borderColor='#a8a8a8' />
+            <Divider borderColor='#a8a8a8' my={3} />
 
-            <Flex
-              as='form'
-              align='flex-end'
-              gridGap={2}
-              justify='space-between'
-              onSubmit={handleSubmit(onCommentSubmit)}
-            >
-              <Input
-                label='Comentar'
-                as='textarea'
-                w='100%'
-                h='60px'
-                minH='40px'
-                pt={1.5}
-                error={errors.comment?.message}
-                {...register('comment', { required: true })}
-              />
+            <FooterMenu
+              imageInfo={imageInfo}
+              isCommentInputShown={isCommentInputShown}
+              setIsCommentInputShown={setIsCommentInputShown}
+            />
 
-              <Button type='submit' isLoading={isSubmitting} w='70px' mb='7px'>
-                <MdSend size={30} cursor='pointer' />
-              </Button>
-            </Flex>
+            <Collapse in={isCommentInputShown}>
+              <Flex
+                as='form'
+                gridGap={2}
+                align='flex-end'
+                justify='space-between'
+                onSubmit={handleSubmit(onCommentSubmit)}
+              >
+                <Input
+                  label='Comentar'
+                  as='textarea'
+                  w='100%'
+                  h='60px'
+                  minH='40px'
+                  pt={1.5}
+                  error={errors.comment?.message}
+                  {...register('comment', { required: true })}
+                />
+
+                <Button
+                  type='submit'
+                  isLoading={isSubmitting}
+                  w='70px'
+                  mb='7px'
+                >
+                  <MdSend size={30} cursor='pointer' />
+                </Button>
+              </Flex>
+            </Collapse>
+
+            <Divider borderColor='#a8a8a8' my={3} />
 
             <CommentsSection comments={imageComments} imageId={imageInfo.id} />
           </Box>

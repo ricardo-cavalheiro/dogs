@@ -51,7 +51,6 @@ function Post() {
 
   const onFormSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      console.log(`images/${userInfo.username}/${data.image[0].name}`)
       const uploadedImageLocationRef = ref(
         storage,
         `images/${userInfo.username}/${data.image[0].name}`
@@ -65,9 +64,10 @@ function Post() {
       const imageURL = await getDownloadURL(uploadedImageLocationRef)
 
       // save image metadata to database
+      // const imageListRef = collection(db, 'users')
       const imagesListRef = databaseRef(db, `images/${userInfo.username}`)
       const newImageRef = push(imagesListRef)
-      await set(newImageRef, {
+      const imageInfo = {
         id: newImageRef.key,
         author_username: userInfo.username,
         path: imageURL,
@@ -76,7 +76,14 @@ function Post() {
         created_at: timeCreated,
         views: 0,
         likes: 0,
-      })
+      }
+      await set(newImageRef, imageInfo)
+
+      const latestImagesRef = databaseRef(
+        db,
+        `latest_images/${newImageRef.key}`
+      )
+      await set(latestImagesRef, imageInfo)
 
       reset()
       setImageFileURL('')

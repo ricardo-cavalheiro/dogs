@@ -23,6 +23,9 @@ const Heading = {
       fontSize: '48px',
       lineHeight: 'none',
     },
+    md: {
+      fontSize: '32px'
+    }
   },
   variants: {
     outline: (props: StyleFunctionProps) => ({

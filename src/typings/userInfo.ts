@@ -1,6 +1,7 @@
 type UserInfo = {
   username: string
   email: string
+  isLoggedIn: boolean
 }
 
 type ImageInfo = {

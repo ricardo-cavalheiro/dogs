@@ -31,6 +31,7 @@ type Props = {
 
 function UserContextProvider({ children }: Props) {
   const [userInfo, setUserInfo] = useState({} as UserInfo)
+  // used to display the loading state/Spinner component at the Header
   const [fetchingUserInfoFirebase, setFetchingUserInfoFirebase] = useState(true)
 
   // hooks
@@ -41,16 +42,15 @@ function UserContextProvider({ children }: Props) {
       if (user?.email && user?.displayName) {
         const { email, displayName: username } = user
 
-        setUserInfo({ email, username })
+        setUserInfo({ email, username, isLoggedIn: true })
         setFetchingUserInfoFirebase(false)
 
         return
       }
 
-      setUserInfo({ email: '', username: '' })
+      setUserInfo({ email: '', username: '', isLoggedIn: false })
       setFetchingUserInfoFirebase(false)
       router.push('/login')
-      return
     }
 
     const onError = () => {}
@@ -61,7 +61,7 @@ function UserContextProvider({ children }: Props) {
 
   async function signUserOut() {
     try {
-      setUserInfo({ email: '', username: '' })
+      setUserInfo({ email: '', username: '', isLoggedIn: false })
 
       await signOut(auth)
     } catch (err) {

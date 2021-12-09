@@ -7,9 +7,9 @@ import {
   InputRightElement,
   IconButton as CIconButton,
 } from '@chakra-ui/react'
+import { MdOutlineVisibility, MdOutlineVisibilityOff } from 'react-icons/md'
 
 // components
-import { ViewPasswordIcon, ViewPasswordOffIcon } from '../../icons'
 import { ErrorMessage } from '../ErrorMessage'
 
 // types
@@ -63,11 +63,11 @@ const PasswordInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
         <InputRightElement>
           {showPassword ? (
             <IconButton onClick={handleClick}>
-              <ViewPasswordOffIcon />
+              <MdOutlineVisibilityOff size={30} color='#333' />
             </IconButton>
           ) : (
             <IconButton onClick={handleClick}>
-              <ViewPasswordIcon />
+              <MdOutlineVisibility size={30} color='#333' />
             </IconButton>
           )}
         </InputRightElement>

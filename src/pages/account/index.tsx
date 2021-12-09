@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useToast } from '@chakra-ui/react'
 import { ref, onValue, off } from 'firebase/database'
 
 // hooks
@@ -9,9 +10,10 @@ import { db } from '../../services/firebase/database'
 
 // layout
 import { UserHeader } from '../../components/layout/UserHeader'
-import { FeedGrid } from '../../components/layout/Feed/Grid'
+import { Feed } from '../../components/Feed'
 
 // types
+import type { DatabaseReference } from 'firebase/database'
 import type { ImageInfo } from '../../typings/userInfo'
 
 function Account() {
@@ -20,22 +22,37 @@ function Account() {
 
   // hooks
   const { userInfo } = useUser()
+  const toast = useToast()
 
   useEffect(() => {
-    const imageListRef = ref(db, `images/${userInfo.username}`)
+    let imageListRef: DatabaseReference
 
-    onValue(imageListRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setImages(Object.values(snapshot.val()))
-      }
-    })
+    try {
+      imageListRef = ref(db, `images/${userInfo.username}`)
+
+      onValue(imageListRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setImages(Object.values(snapshot.val()))
+        }
+      })
+    } catch (err) {
+      console.log('fetching images', { err })
+
+      toast({
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        title: 'Houve um erro ao buscar suas fotos.',
+        description: 'Mas já estamos trabalhando para resolver.',
+      })
+    }
 
     return () => {
       off(imageListRef)
     }
   }, [])
 
-  return <FeedGrid images={images} />
+  return <Feed images={images} />
 }
 
 Account.UserHeader = UserHeader

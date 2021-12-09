@@ -6,16 +6,18 @@
     }
   },
   "images": {
-    "admsmith24": [
-      {
+    "admsmith24": {
+      "image_id": {
         "path": "",
         "title": "",
         "description": "",
+        "author_username": "",
+        "id": "",
         "created_at": "",
         "views": 0,
         "likes": 0
       }
-    ]
+    }
   },
   "image_comments": {
     "image_id": {
@@ -32,6 +34,23 @@
       "username": {
         "key": "comment_id"
       }
+    }
+  },
+  "liked_images": {
+    "username": {
+      "liked_image_id": ""
+    }
+  },
+  "latest_images": {
+    "image_id": {
+      "path": "",
+      "title": "",
+      "description": "",
+      "author_username": "",
+      "id": "",
+      "created_at": "",
+      "views": 0,
+      "likes": 0
     }
   }
 }

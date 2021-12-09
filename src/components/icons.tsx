@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion'
 
-const DogsIcon = () => {
+type DogsIconProps = {
+  color?: string
+}
+
+const DogsIcon = ({ color }: DogsIconProps) => {
   return (
     <svg
       width='28'
@@ -13,10 +17,10 @@ const DogsIcon = () => {
         fillRule='evenodd'
         clipRule='evenodd'
         d='M14 10h1.652c1.708 0 2.63 2.004 1.518 3.302l-1.618 1.887A4.501 4.501 0 0024.5 14.5a1.5 1.5 0 013 0A7.5 7.5 0 0114 19 7.5 7.5 0 01.5 14.5a1.5 1.5 0 013 0 4.5 4.5 0 008.948.689l-1.618-1.887C9.718 12.004 10.64 10 12.35 10H14z'
-        fill='#333'
+        fill={color || '#333'}
       />
-      <circle cx='21' cy='3' r='3' fill='#333' />
-      <circle cx='7' cy='3' r='3' fill='#333' />
+      <circle cx='21' cy='3' r='3' fill={color || '#333'} />
+      <circle cx='7' cy='3' r='3' fill={color || '#333'} />
     </svg>
   )
 }
@@ -41,46 +45,6 @@ const UserIcon = () => {
         clipRule='evenodd'
         d='M7 11C4.23858 11 2 13.2386 2 16C2 16.5523 1.55228 17 1 17C0.447715 17 0 16.5523 0 16C0 12.134 3.13401 9 7 9C10.866 9 14 12.134 14 16C14 16.5523 13.5523 17 13 17C12.4477 17 12 16.5523 12 16C12 13.2386 9.76142 11 7 11Z'
         fill='#333'
-      />
-    </svg>
-  )
-}
-
-const ViewPasswordIcon = () => {
-  return (
-    <svg
-      width='32px'
-      height='32px'
-      viewBox='0 0 32 32'
-      id='icon'
-      xmlns='http://www.w3.org/2000/svg'
-    >
-      <path d='M30.94 15.66A16.69 16.69 0 0016 5 16.69 16.69 0 001.06 15.66a1 1 0 000 .68A16.69 16.69 0 0016 27a16.69 16.69 0 0014.94-10.66 1 1 0 000-.68zM16 25c-5.3 0-10.9-3.93-12.93-9C5.1 10.93 10.7 7 16 7s10.9 3.93 12.93 9C26.9 21.07 21.3 25 16 25z' />
-      <path d='M16 10a6 6 0 106 6 6 6 0 00-6-6zm0 10a4 4 0 114-4 4 4 0 01-4 4z' />
-      <path
-        data-name='&lt;Transparent Rectangle&gt;'
-        fill='none'
-        d='M0 0h32v32H0z'
-      />
-    </svg>
-  )
-}
-
-const ViewPasswordOffIcon = () => {
-  return (
-    <svg
-      width='32px'
-      height='32px'
-      viewBox='0 0 32 32'
-      id='icon'
-      xmlns='http://www.w3.org/2000/svg'
-    >
-      <path d='M5.24 22.51l1.43-1.42A14.06 14.06 0 013.07 16C5.1 10.93 10.7 7 16 7a12.38 12.38 0 014 .72l1.55-1.56A14.72 14.72 0 0016 5 16.69 16.69 0 001.06 15.66a1 1 0 000 .68 16 16 0 004.18 6.17z' />
-      <path d='M12 15.73a4 4 0 013.7-3.7l1.81-1.82a6 6 0 00-7.33 7.33zM30.94 15.66a16.4 16.4 0 00-5.74-7.44L30 3.41 28.59 2 2 28.59 3.41 30l5.1-5.1A15.29 15.29 0 0016 27a16.69 16.69 0 0014.94-10.66 1 1 0 000-.68zM20 16a4 4 0 01-6 3.44L19.44 14a4 4 0 01.56 2zm-4 9a13.05 13.05 0 01-6-1.58l2.54-2.54a6 6 0 008.35-8.35l2.87-2.87A14.54 14.54 0 0128.93 16C26.9 21.07 21.3 25 16 25z' />
-      <path
-        data-name='&lt;Transparent Rectangle&gt;'
-        fill='none'
-        d='M0 0h32v32H0z'
       />
     </svg>
   )
@@ -160,8 +124,6 @@ const LogOutIcon = () => {
 export {
   DogsIcon,
   UserIcon,
-  ViewPasswordIcon,
-  ViewPasswordOffIcon,
   HamburgerMenuIcon,
   NewItemIcon,
   FeedIcon,

@@ -1,14 +1,14 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Box, Heading, Button, Link, useToast } from '@chakra-ui/react'
+import { Box, Heading, Button, useToast } from '@chakra-ui/react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { useRouter } from 'next/router'
-import NextLink from 'next/link'
 
 // components
 import { Input } from '../../form/inputs/RegularInput'
 import { PasswordInput } from '../../form/inputs/PasswordInput'
+import { PasswordRecovery } from './PasswordRecovery'
 
 // hooks
 import { useUser } from '../../../hooks/useUser'
@@ -89,6 +89,7 @@ function LoginForm() {
     }
   }
 
+  // this closes the toast if the user is coming from signup page
   useEffect(() => {
     const isSignUpToastActive = toast.isActive('signup-toast')
 
@@ -118,27 +119,7 @@ function LoginForm() {
         </Button>
       </Box>
 
-      <NextLink href='/account/recovery' passHref>
-        <Link
-          mt={5}
-          d='inline-block'
-          color='light.900'
-          position='relative'
-          _hover={{ textDecoration: 'none' }}
-          _after={{
-            content: '""',
-            display: 'inline-block',
-            height: '2px',
-            width: '100%',
-            backgroundColor: 'currentColor',
-            position: 'absolute',
-            bottom: '0px',
-            left: '0px',
-          }}
-        >
-          Perdeu a senha?
-        </Link>
-      </NextLink>
+      <PasswordRecovery />
     </Box>
   )
 }

@@ -1,7 +1,8 @@
 // components
 import { Header } from '../components/layout/Header'
-// hooks
+import { Footer } from '../components/layout/Footer'
 
+// hooks
 import { UserContextProvider } from '../hooks/useUser'
 
 // chakra
@@ -29,6 +30,8 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
         ) : (
           <Component {...pageProps} />
         )}
+
+        <Footer />
       </UserContextProvider>
     </ChakraProvider>
   )

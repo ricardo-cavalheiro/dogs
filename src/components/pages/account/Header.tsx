@@ -56,7 +56,7 @@ function Header() {
     get header() {
       switch (asPath as RoutePaths) {
         case '/account':
-          return 'Minha Conta'
+          return 'Minhas Fotos'
         case '/account/stats':
           return 'Estatísticas'
         case '/account/post':

@@ -10,7 +10,7 @@ const postPhotoValidation = yup.object({
   description: yup
     .string()
     .trim()
-    .max(8000, 'Máximo de 8000 caracteres.')
+    .max(2000, 'Máximo de 2000 caracteres.')
     .optional(),
   image: yup
     .mixed()

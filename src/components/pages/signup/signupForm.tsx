@@ -144,7 +144,7 @@ function SignUpForm() {
           Acessar conta
         </Heading>
 
-        <Text my={5}>Já possui uma conta? Faça login.</Text>
+        <Text my={5}>Já possui conta? Faça login.</Text>
 
         <Link href='/login' passHref>
           <Button as='a'>Entrar</Button>
