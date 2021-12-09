@@ -1,7 +1,6 @@
-import { Flex, Box, Heading, Text, Button } from '@chakra-ui/react'
-import Link from 'next/link'
+import { Flex } from '@chakra-ui/react'
 
-// compoenents
+// components
 import { LoginForm } from '../components/pages/login/LoginForm'
 import { SignUpCallToAction } from '../components/pages/login/SignUpCallToAction'
 

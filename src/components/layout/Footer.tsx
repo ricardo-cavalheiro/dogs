@@ -6,7 +6,9 @@ import { DogsIcon } from '../icons'
 function Footer() {
   return (
     <Flex
+      as='footer'
       h='100px'
+      w='100%'
       bgColor='light.300'
       direction='column'
       align='center'

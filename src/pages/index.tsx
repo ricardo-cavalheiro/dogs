@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Box, useToast } from '@chakra-ui/react'
-import { ref, onValue, off } from 'firebase/database'
+import { ref, query, limitToLast, onValue, off } from 'firebase/database'
 
 // components
 import { Feed } from '../components/Feed'
@@ -9,7 +9,7 @@ import { Feed } from '../components/Feed'
 import { db } from '../services/firebase/database'
 
 // type
-import type { DatabaseReference } from 'firebase/database'
+import type { Query } from 'firebase/database'
 import type { ImageInfo } from '../typings/userInfo'
 
 function Home() {
@@ -19,10 +19,10 @@ function Home() {
   const toast = useToast()
 
   useEffect(() => {
-    let latestImagesRef: DatabaseReference
+    let latestImagesRef: Query
 
     try {
-      latestImagesRef = ref(db, 'latest_images')
+      latestImagesRef = query(ref(db, 'latest_images'), limitToLast(6))
 
       onValue(latestImagesRef, (snapshot) => {
         if (snapshot.exists()) {

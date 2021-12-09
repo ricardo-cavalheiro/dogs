@@ -66,7 +66,7 @@ function Header() {
   }
 
   return (
-    <Flex as='header' align='center' justify='space-between'>
+    <Flex as='header' align='center' justify='space-between' mb={5}>
       <Heading>{mapPageTitleToRoutePath.header}</Heading>
 
       <Flex as='nav' zIndex={3}>
