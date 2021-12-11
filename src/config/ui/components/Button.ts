@@ -7,7 +7,7 @@ const Button = {
       color: 'light.500',
       fontWeight: 'thin',
       p: '3 3',
-      width: 32,
+      w: 32,
       _hover: {
         bg: 'light.300',
         boxShadow: `0 0 0 3px ${props.theme.colors.light['200']}, 0 0 0 4px ${props.theme.colors.light['300']}`,

@@ -61,7 +61,7 @@ function SignUpForm() {
         status: 'success',
         duration: 5000,
         isClosable: true,
-        onCloseComplete: () => push('/account'),
+        onCloseComplete: () => push(`/account/${username}`),
       })
     } catch (err) {
       const error = err as AuthError

@@ -61,9 +61,9 @@ function UserContextProvider({ children }: Props) {
 
   async function signUserOut() {
     try {
-      setUserInfo({ email: '', username: '', isLoggedIn: false })
-
       await signOut(auth)
+
+      setUserInfo({ email: '', username: '', isLoggedIn: false })
     } catch (err) {
       console.log({ err })
     }

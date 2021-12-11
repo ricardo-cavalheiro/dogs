@@ -55,12 +55,12 @@ function Header() {
   const mapPageTitleToRoutePath = {
     get header() {
       switch (asPath as RoutePaths) {
-        case '/account':
-          return 'Minhas Fotos'
         case '/account/stats':
           return 'Estatísticas'
         case '/account/post':
           return 'Postar Foto'
+        default:
+          return 'Minhas Fotos'
       }
     },
   }

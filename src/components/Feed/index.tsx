@@ -74,6 +74,8 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
           width='200px'
           height='200px'
           layout='responsive'
+          objectFit='cover'
+          placeholder='empty'
           quality={30}
           priority={isAboveTheFold}
         />

@@ -1,33 +1,40 @@
 import { useEffect, useState } from 'react'
-import { Box, useToast } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 import {
   ref,
   query,
   limitToLast,
-  endBefore,
-  orderByKey,
-  onValue,
   get,
+  orderByKey,
+  endBefore,
+  onValue,
   off,
 } from 'firebase/database'
 
-// components
-import { Feed } from '../components/Feed'
+// hooks
+import { useUser } from '../../hooks/useUser'
+import { useInfiniteScroll } from '../../hooks/useInfiniteScroll'
 
 // firebase
-import { db } from '../services/firebase/database'
+import { db } from '../../services/firebase/database'
 
-// hooks
-import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
+// layout
+import { UserHeader } from '../../components/layout/UserHeader'
+import { Feed } from '../../components/Feed'
 
-// type
-import type { GetStaticProps } from 'next'
+// types
+import type { GetServerSideProps } from 'next'
 import type { Query } from 'firebase/database'
-import type { ImageInfo } from '../typings/userInfo'
+import type { ImageInfo } from '../../typings/userInfo'
 
-const getStaticProps: GetStaticProps = async () => {
+const getServerSideProps: GetServerSideProps = async (context) => {
+  const params = context.params
+
   try {
-    const latestImagesRef = query(ref(db, 'latest_images'), limitToLast(4))
+    const latestImagesRef = query(
+      ref(db, `images/${params?.username}`),
+      limitToLast(4)
+    )
 
     const firebaseImages = await get(latestImagesRef)
     off(latestImagesRef)
@@ -54,7 +61,7 @@ const getStaticProps: GetStaticProps = async () => {
 
     return {
       props: {
-        error: error.message,
+        firebaseImages: [],
       },
     }
   }
@@ -64,16 +71,19 @@ type Props = {
   firebaseImages: ImageInfo[]
 }
 
-function Home({ firebaseImages }: Props) {
-  // orders the displayed images by the most recent ones
+function Account({ firebaseImages }: Props) {
+  // states
   const [images, setImages] = useState<ImageInfo[]>(firebaseImages)
   const [isLastPage, setIsLastPage] = useState(false)
 
   // hooks
-  const toast = useToast()
+  const { userInfo } = useUser()
   const { shouldLoadMoreItems } = useInfiniteScroll()
+  const toast = useToast()
 
   useEffect(() => {
+    if (!images.length) return
+    
     if (!shouldLoadMoreItems || isLastPage) return
 
     let moreImagesRef: Query
@@ -82,7 +92,7 @@ function Home({ firebaseImages }: Props) {
       const lastImageID = images.at(-1)?.id as string
 
       moreImagesRef = query(
-        ref(db, 'latest_images'),
+        ref(db, `images/${userInfo.username}`),
         orderByKey(),
         endBefore(lastImageID),
         limitToLast(4)
@@ -100,16 +110,14 @@ function Home({ firebaseImages }: Props) {
         }
       })
     } catch (err) {
-      console.log('houve um erro ao buscar mais imagens no scroll infinito', {
-        err,
-      })
+      console.log('fetching images', { err })
 
       toast({
-        title: 'Não conseguimos carregar mais imagens.',
-        description: 'Por favor, tente novamente em alguns instantes.',
+        status: 'error',
         duration: 5000,
         isClosable: true,
-        status: 'error',
+        title: 'Houve um erro ao buscar suas fotos.',
+        description: 'Mas já estamos trabalhando para resolver.',
       })
     }
 
@@ -118,13 +126,11 @@ function Home({ firebaseImages }: Props) {
     }
   }, [shouldLoadMoreItems])
 
-  return (
-    <Box as='main' sx={{ h: 'calc(100% - 164px)' }} p={5}>
-      <Feed images={images} />
-    </Box>
-  )
+  return <Feed images={images} />
 }
 
-export { getStaticProps }
+Account.UserHeader = UserHeader
 
-export default Home
+export { getServerSideProps }
+
+export default Account

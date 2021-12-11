@@ -54,7 +54,7 @@ function LoginForm() {
         username: user.displayName as string,
       }))
 
-      router.push('/account')
+      router.push(`/account/${user.displayName}`)
     } catch (err) {
       const error = err as AuthError
 

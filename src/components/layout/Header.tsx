@@ -57,7 +57,10 @@ function Header() {
             <Spinner />
           </Center>
         ) : userInfo.username ? (
-          <UserAccount href='/account' label={userInfo.username} />
+          <UserAccount
+            href={`/account/${userInfo.username}`}
+            label={userInfo.username}
+          />
         ) : (
           <UserAccount href='/login' label='Entrar / Criar conta' />
         )}
