@@ -1,8 +1,10 @@
 import { Flex, Box, Link, Text, Spinner, Center } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 
 // components
 import { DogsIcon, UserIcon } from '../icons'
+import { EmailConfirmationMessage } from '../EmailConfirmationMessage'
 
 // hooks
 import { useUser } from '../../hooks/useUser'
@@ -30,42 +32,57 @@ function UserAccount({ href, label }: UserAccount) {
 
 function Header() {
   // hooks
-  const { userInfo } = useUser()
-  const { fetchingUserInfoFirebase } = useUser()
+  const { userInfo, fetchingUserInfoFirebase } = useUser()
+  const router = useRouter()
+
+  // basically, the email confirmation message will only show
+  // in the public feed and user account pages
+  // it avoids showing the message when the user has just created an account
+  const showEmailConfirmationMessage =
+    (router.asPath.startsWith('/account') || router.asPath.endsWith('/')) &&
+    userInfo.isLoggedIn &&
+    userInfo.isAccountVerified === false
 
   return (
-    <Flex
-      p={5}
-      gridGap={5}
-      align='center'
-      justify='space-between'
-      boxShadow='0 1px 1px rgb(0 0 0 / 10%)'
-      top='0'
-      position='sticky'
-      backdropFilter='blur(6px)'
-      as='header'
-      zIndex={4}
-    >
-      <NextLink href='/' passHref>
-        <Link>
-          <DogsIcon />
-        </Link>
-      </NextLink>
-      <Box>
-        {fetchingUserInfoFirebase ? (
-          <Center>
-            <Spinner />
-          </Center>
-        ) : userInfo.username ? (
-          <UserAccount
-            href={`/account/${userInfo.username}`}
-            label={userInfo.username}
-          />
-        ) : (
-          <UserAccount href='/login' label='Entrar / Criar conta' />
-        )}
-      </Box>
-    </Flex>
+    <>
+      <Flex
+        as='header'
+        h='min-content'
+        align='center'
+        justify='space-between'
+        direction='column'
+        top='0'
+        zIndex={4}
+        position='sticky'
+        backdropFilter='blur(6px)'
+        boxShadow='0 1px 1px rgb(0 0 0 / 10%)'
+      >
+        {showEmailConfirmationMessage && <EmailConfirmationMessage />}
+
+        <Flex align='center' justify='space-between' w='100%' p={5}>
+          <NextLink href='/' passHref>
+            <Link>
+              <DogsIcon />
+            </Link>
+          </NextLink>
+
+          <Box>
+            {fetchingUserInfoFirebase ? (
+              <Center>
+                <Spinner />
+              </Center>
+            ) : userInfo.isLoggedIn ? (
+              <UserAccount
+                href={`/account/${userInfo.username}`}
+                label={userInfo.username}
+              />
+            ) : (
+              <UserAccount href='/login' label='Entrar / Criar conta' />
+            )}
+          </Box>
+        </Flex>
+      </Flex>
+    </>
   )
 }
 

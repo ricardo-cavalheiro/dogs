@@ -30,47 +30,62 @@ type Props = {
 }
 
 function UserContextProvider({ children }: Props) {
-  const [userInfo, setUserInfo] = useState({} as UserInfo)
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    email: '',
+    username: '',
+    isLoggedIn: false,
+    isAccountVerified: false,
+  })
   // used to display the loading state/Spinner component at the Header
   const [fetchingUserInfoFirebase, setFetchingUserInfoFirebase] = useState(true)
 
   // hooks
   const router = useRouter()
 
-  const autoLogin = useCallback(() => {
-    const onChange = (user: User | null) => {
-      if (user?.email && user?.displayName) {
-        const { email, displayName: username } = user
-
-        setUserInfo({ email, username, isLoggedIn: true })
-        setFetchingUserInfoFirebase(false)
-
-        return
-      }
-
-      setUserInfo({ email: '', username: '', isLoggedIn: false })
-      setFetchingUserInfoFirebase(false)
-      router.push('/login')
-    }
-
-    const onError = () => {}
-    const onCompleted = () => {}
-
-    onAuthStateChanged(auth, onChange, onError, onCompleted)
-  }, [])
-
   async function signUserOut() {
     try {
       await signOut(auth)
 
-      setUserInfo({ email: '', username: '', isLoggedIn: false })
+      setUserInfo({
+        email: '',
+        username: '',
+        isLoggedIn: false,
+        isAccountVerified: false,
+      })
     } catch (err) {
       console.log({ err })
     }
   }
 
   useEffect(() => {
-    autoLogin()
+    const onChange = (user: User | null) => {
+      if (user?.email && user?.displayName) {
+        const { email, displayName: username } = user
+
+        setUserInfo({
+          email,
+          username,
+          isLoggedIn: true,
+          isAccountVerified: user.emailVerified,
+        })
+        setFetchingUserInfoFirebase(false)
+
+        return
+      }
+
+      setUserInfo({
+        email: '',
+        username: '',
+        isLoggedIn: false,
+        isAccountVerified: false,
+      })
+      setFetchingUserInfoFirebase(false)
+      router.push('/login')
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, onChange)
+
+    return () => unsubscribe()
   }, [])
 
   return (

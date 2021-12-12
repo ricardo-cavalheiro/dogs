@@ -74,6 +74,8 @@ function Home({ firebaseImages }: Props) {
   const { shouldLoadMoreItems } = useInfiniteScroll()
 
   useEffect(() => {
+    if (images.length === 0) return
+
     if (!shouldLoadMoreItems || isLastPage) return
 
     let moreImagesRef: Query
@@ -119,7 +121,7 @@ function Home({ firebaseImages }: Props) {
   }, [shouldLoadMoreItems])
 
   return (
-    <Box as='main' sx={{ h: 'calc(100% - 164px)' }} p={5}>
+    <Box as='main' p={5}>
       <Feed images={images} />
     </Box>
   )

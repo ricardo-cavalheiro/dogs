@@ -48,7 +48,7 @@ function HeaderMenuItem({ href, label, icon, onClick }: HeaderMenuItemProps) {
 function Header() {
   // hooks
   const { asPath } = useRouter()
-  const { signUserOut } = useUser()
+  const { userInfo, signUserOut } = useUser()
 
   type RoutePaths = '/account' | '/account/stats' | '/account/post'
 
@@ -83,7 +83,7 @@ function Header() {
 
             <MenuList>
               <HeaderMenuItem
-                href='/account'
+                href={`/account/${userInfo.username}`}
                 label='Minhas Fotos'
                 icon={<FeedIcon />}
               />

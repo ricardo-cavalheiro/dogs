@@ -17,6 +17,7 @@ type ComponentWithPageLayout = AppProps & {
     UserHeader?: ComponentType
   }
 }
+
 function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
   return (
     <ChakraProvider cookies={pageProps.cookies}>

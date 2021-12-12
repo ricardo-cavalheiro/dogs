@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, useToast } from '@chakra-ui/react'
+import { Box, Button, Text, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
@@ -64,7 +64,6 @@ function Post() {
       const imageURL = await getDownloadURL(uploadedImageLocationRef)
 
       // save image metadata to database
-      // const imageListRef = collection(db, 'users')
       const imagesListRef = databaseRef(db, `images/${userInfo.username}`)
       const newImageRef = push(imagesListRef)
       const imageInfo = {
@@ -91,23 +90,31 @@ function Post() {
 
       toast({
         title: 'Foto enviada!',
-        description: 'Recebemos sua foto com sucesso!',
+        description: 'Sua foto foi postada com sucesso!',
         duration: 5000,
         isClosable: true,
         status: 'success',
-        onCloseComplete: () => router.push('/account'),
+        onCloseComplete: () => router.push(`/account/${userInfo.username}`),
       })
     } catch (err) {
       console.log({ err })
 
       toast({
-        title: 'Houve um erro ao enviar sua foto!',
-        description: 'Mas já estamos trabalhando para resolver!',
+        title: 'Não conseguimos postar sua foto.',
+        description: 'Por favor, tente novamente em alguns instantes.',
         duration: 5000,
         isClosable: true,
         status: 'error',
       })
     }
+  }
+
+  if (userInfo.isAccountVerified === false) {
+    return (
+      <Text>
+        Você precisa verificar sua conta antes de começar a postar suas fotos.
+      </Text>
+    )
   }
 
   return (

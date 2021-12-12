@@ -1,8 +1,11 @@
 import { Heading, Box, Button, Text, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import { useRouter } from 'next/router'
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  sendEmailVerification,
+} from 'firebase/auth'
 import Link from 'next/link'
 
 // components
@@ -12,7 +15,7 @@ import { PasswordInput } from '../../form/inputs/PasswordInput'
 // hooks
 import { useUser } from '../../../hooks/useUser'
 
-// firebase config
+// firebase services
 import { auth } from '../../../services/firebase/auth'
 
 // yup validation
@@ -32,36 +35,44 @@ type FormInputs = {
 function SignUpForm() {
   // hooks
   const toast = useToast()
-  const { push } = useRouter()
   const { setUserInfo } = useUser()
   const {
+    reset,
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormInputs>({ resolver: yupResolver(signupValidation) })
 
-  const onFormSubmit: SubmitHandler<FormInputs> = async (
-    { email, password, username },
-    event
-  ) => {
-    event?.preventDefault()
-
+  const onFormSubmit: SubmitHandler<FormInputs> = async ({
+    email,
+    password,
+    username,
+  }) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password)
 
       if (auth.currentUser) {
         await updateProfile(auth.currentUser, { displayName: username })
+        await sendEmailVerification(auth.currentUser, {
+          url: 'http://localhost:3000/',
+        })
       }
 
-      setUserInfo((prevUserInfo) => ({ ...prevUserInfo, email, username }))
+      setUserInfo({
+        email,
+        username,
+        isAccountVerified: false,
+        isLoggedIn: true,
+      })
+      
+      reset()
 
       toast({
         title: 'Sua conta foi criada!',
-        description: `${username}, seja bem vindo(a)! Você será redirecionado para sua conta em alguns instantes.`,
+        description:
+          'Agora você precisa acessar sua caixa de e-mail e confirmar sua conta.',
         status: 'success',
         duration: 5000,
-        isClosable: true,
-        onCloseComplete: () => push(`/account/${username}`),
       })
     } catch (err) {
       const error = err as AuthError
@@ -70,7 +81,7 @@ function SignUpForm() {
         'auth/email-already-in-use':
           'E-mail já cadastrado. Caso acredite ser um erro, entre em contato conosco.',
         default:
-          'Esse erro foi inesperado. Já estamos trabalhando para resolvê-lo.',
+          'Estamos com alguns problemas. Mas já estamos trabalhando para resolvê-los.',
       }
 
       type IndexSignature = keyof typeof mapErrorCodeToMessageError
