@@ -7,7 +7,7 @@ import { auth } from '../services/firebase/auth'
 // types
 import type { AuthError } from 'firebase/auth'
 
-function EmailConfirmationMessage() {
+function VerifyEmailMessage() {
   // hooks
   const toast = useToast()
 
@@ -78,4 +78,4 @@ function EmailConfirmationMessage() {
   )
 }
 
-export { EmailConfirmationMessage }
+export { VerifyEmailMessage }

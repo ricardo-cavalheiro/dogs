@@ -24,7 +24,7 @@ import { SignUpCallToAction } from '../pages/login/SignUpCallToAction'
 import { auth } from '../../services/firebase/auth'
 
 // yup validation
-import { loginValidation } from '../pages/login/yupSchema'
+import { loginValidation } from '../form/yupSchemaValidations/login'
 
 // types
 import type { SubmitHandler } from 'react-hook-form'

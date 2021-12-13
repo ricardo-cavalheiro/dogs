@@ -9,7 +9,6 @@ const signupValidation = yup.object({
     .required('Usuário é obrigatório.'),
   email: yup
     .string()
-    .trim()
     .email('Preencha um e-amil válido.')
     .required('E-mail é obrigatório.'),
   password: yup

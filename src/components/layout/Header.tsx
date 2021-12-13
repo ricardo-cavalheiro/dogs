@@ -4,7 +4,7 @@ import NextLink from 'next/link'
 
 // components
 import { DogsIcon, UserIcon } from '../icons'
-import { EmailConfirmationMessage } from '../EmailConfirmationMessage'
+import { VerifyEmailMessage } from '../VerifyEmailMessage'
 
 // hooks
 import { useUser } from '../../hooks/useUser'
@@ -44,45 +44,42 @@ function Header() {
     userInfo.isAccountVerified === false
 
   return (
-    <>
-      <Flex
-        as='header'
-        h='min-content'
-        align='center'
-        justify='space-between'
-        direction='column'
-        top='0'
-        zIndex={4}
-        position='sticky'
-        backdropFilter='blur(6px)'
-        boxShadow='0 1px 1px rgb(0 0 0 / 10%)'
-      >
-        {showEmailConfirmationMessage && <EmailConfirmationMessage />}
+    <Flex
+      as='header'
+      align='center'
+      justify='space-between'
+      direction='column'
+      top='0'
+      zIndex={4}
+      position='sticky'
+      backdropFilter='blur(6px)'
+      boxShadow='0 1px 1px rgb(0 0 0 / 10%)'
+    >
+      {showEmailConfirmationMessage && <VerifyEmailMessage />}
 
-        <Flex align='center' justify='space-between' w='100%' p={5}>
-          <NextLink href='/' passHref>
-            <Link>
-              <DogsIcon />
-            </Link>
-          </NextLink>
+      <Flex align='center' justify='space-between' w='100%' p={5}>
+        <NextLink href='/' passHref>
+          <Link>
+            <DogsIcon />
+          </Link>
+        </NextLink>
 
-          <Box>
-            {fetchingUserInfoFirebase ? (
-              <Center>
-                <Spinner />
-              </Center>
-            ) : userInfo.isLoggedIn ? (
-              <UserAccount
-                href={`/account/${userInfo.username}`}
-                label={userInfo.username}
-              />
-            ) : (
-              <UserAccount href='/login' label='Entrar / Criar conta' />
-            )}
-          </Box>
-        </Flex>
+        <Box>
+          {fetchingUserInfoFirebase ? (
+            <Center>
+              <Spinner />
+            </Center>
+          ) : userInfo.isLoggedIn ? (
+            <UserAccount
+              href={`/account/${userInfo.username}`}
+              label={userInfo.username}
+            />
+          ) : (
+            <UserAccount href='/login' label='Entrar / Criar conta' />
+          )}
+        </Box>
       </Flex>
-    </>
+    </Flex>
   )
 }
 

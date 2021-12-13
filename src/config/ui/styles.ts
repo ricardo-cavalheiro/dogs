@@ -28,10 +28,6 @@ const global = {
     'a, h1, h2, label, input, p, span': {
       color: mode('light.800', 'red.200')(props),
     },
-    svg: {
-      width: 'min-content',
-      flexBasis: 'min-content',
-    },
     '#__next': {
       h: '100vh',
       d: 'grid',

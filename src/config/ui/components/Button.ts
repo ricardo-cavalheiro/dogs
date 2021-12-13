@@ -6,12 +6,11 @@ const Button = {
       bg: 'light.300',
       color: 'light.500',
       fontWeight: 'thin',
-      transition: 'width 1s',
       p: '3 3',
       w: 'auto',
       _active: {
         bgColor: 'light.300',
-        boxShadow: `0 0 0 3px ${props.theme.colors.light['200']}`
+        boxShadow: `0 0 0 3px ${props.theme.colors.light['200']}`,
       },
       _hover: {
         bg: 'light.300',
@@ -28,7 +27,7 @@ const Button = {
     fileUpload: (props: StyleFunctionProps) => ({
       bg: 'light.100',
       w: '100%',
-      h: '200px'
+      h: '200px',
     }),
   },
 }

@@ -19,7 +19,7 @@ import { useUser } from '../../../hooks/useUser'
 import { auth } from '../../../services/firebase/auth'
 
 // yup validation
-import { signupValidation } from './yupSchema'
+import { signupValidation } from '../../form/yupSchemaValidations/signup'
 
 // types
 import type { SubmitHandler } from 'react-hook-form'
@@ -64,7 +64,7 @@ function SignUpForm() {
         isAccountVerified: false,
         isLoggedIn: true,
       })
-      
+
       reset()
 
       toast({
@@ -110,7 +110,7 @@ function SignUpForm() {
   }
 
   return (
-    <Box as='form'>
+    <Box as='form' onSubmit={handleSubmit(onFormSubmit)}>
       <Box as='fieldset'>
         <Heading as='legend' color='light.800'>
           Criar conta
@@ -144,7 +144,6 @@ function SignUpForm() {
           type='submit'
           isLoading={isSubmitting}
           loadingText='Cadastrando...'
-          onClick={handleSubmit(onFormSubmit)}
         >
           Cadastrar
         </Button>

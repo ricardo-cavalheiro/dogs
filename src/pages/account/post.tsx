@@ -21,7 +21,7 @@ import { useUser } from '../../hooks/useUser'
 import { UserHeader } from '../../components/layout/UserHeader'
 
 // form validation
-import { postPhotoValidation } from '../../components/pages/account/post/yupSchema'
+import { postPhotoValidation } from '../../components/form/yupSchemaValidations/postImage'
 
 // types
 import type { SubmitHandler } from 'react-hook-form'

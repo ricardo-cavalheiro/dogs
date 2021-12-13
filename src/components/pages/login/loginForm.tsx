@@ -17,7 +17,7 @@ import { useUser } from '../../../hooks/useUser'
 import { auth } from '../../../services/firebase/auth'
 
 // yup validation
-import { loginValidation } from './yupSchema'
+import { loginValidation } from '../../form/yupSchemaValidations/login'
 
 // types
 import type { SubmitHandler } from 'react-hook-form'
@@ -34,17 +34,15 @@ function LoginForm() {
   const router = useRouter()
   const { setUserInfo } = useUser()
   const {
-    handleSubmit,
     register,
-    formState: { errors },
+    handleSubmit,
+    formState: { errors, isSubmitting },
   } = useForm<FormInputs>({ resolver: yupResolver(loginValidation) })
 
-  const onFormSubmit: SubmitHandler<FormInputs> = async (
-    { email, password },
-    event
-  ) => {
-    event?.preventDefault()
-
+  const onFormSubmit: SubmitHandler<FormInputs> = async ({
+    email,
+    password,
+  }) => {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password)
 
@@ -97,7 +95,7 @@ function LoginForm() {
   }, [toast])
 
   return (
-    <Box as='form'>
+    <Box as='form' onSubmit={handleSubmit(onFormSubmit)}>
       <Box as='fieldset'>
         <Heading as='legend' color='light.800'>
           Entrar
@@ -114,7 +112,12 @@ function LoginForm() {
           {...register('password')}
         />
 
-        <Button mt={5} type='submit' onClick={handleSubmit(onFormSubmit)}>
+        <Button
+          mt={5}
+          type='submit'
+          isLoading={isSubmitting}
+          loadingText='Entrando...'
+        >
           Entrar
         </Button>
       </Box>

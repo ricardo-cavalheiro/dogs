@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  createContext,
-  useContext,
-  useCallback,
-} from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { useRouter } from 'next/router'
 
@@ -14,7 +8,7 @@ import { auth } from '../services/firebase/auth'
 // types
 import type { ReactNode, Dispatch, SetStateAction } from 'react'
 import type { UserInfo } from '../typings/userInfo'
-import type { User } from 'firebase/auth'
+import type { NextOrObserver, User } from 'firebase/auth'
 
 type UserContextType = {
   userInfo: UserInfo
@@ -52,13 +46,16 @@ function UserContextProvider({ children }: Props) {
         isLoggedIn: false,
         isAccountVerified: false,
       })
+
+      router.push('/login')
     } catch (err) {
       console.log({ err })
     }
   }
 
+  // auto login
   useEffect(() => {
-    const onChange = (user: User | null) => {
+    const onChange: NextOrObserver<User> = (user) => {
       if (user?.email && user?.displayName) {
         const { email, displayName: username } = user
 
@@ -80,7 +77,6 @@ function UserContextProvider({ children }: Props) {
         isAccountVerified: false,
       })
       setFetchingUserInfoFirebase(false)
-      router.push('/login')
     }
 
     const unsubscribe = onAuthStateChanged(auth, onChange)

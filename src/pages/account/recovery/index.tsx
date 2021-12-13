@@ -1,0 +1,91 @@
+import { Box, Button, Text, Heading, useToast } from '@chakra-ui/react'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
+import { sendPasswordResetEmail } from 'firebase/auth'
+
+// components
+import { Input } from '../../../components/form/inputs/RegularInput'
+
+// firebase services
+import { auth } from '../../../services/firebase/auth'
+
+// form validation
+import { emailValidation } from '../../../components/form/yupSchemaValidations/recovery'
+
+// types
+import type { SubmitHandler } from 'react-hook-form'
+
+type FormInputProps = {
+  email: string
+}
+
+function Recovery() {
+  // hooks
+  const toast = useToast()
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormInputProps>({ resolver: yupResolver(emailValidation) })
+
+  const onFormSubmit: SubmitHandler<FormInputProps> = async (data) => {
+    try {
+      await sendPasswordResetEmail(auth, data.email, {
+        url: 'http://localhost:3000/login',
+      })
+
+      toast({
+        title: 'E-mail enviado!',
+        description: 'Verifique sua caixa de e-email e siga as intruções.',
+        status: 'success',
+        isClosable: true,
+      })
+
+      reset()
+    } catch (err) {
+      console.log('houve um erro ao tentar enviar o email de confirmação', {
+        err,
+      })
+
+      toast({
+        title: 'Não conseguimos enviar o e-mail.',
+        description: 'Por favor, tente novamente em alguns instantes.',
+        status: 'error',
+        isClosable: true,
+      })
+    }
+  }
+
+  return (
+    <Box as='main' p={5}>
+      <Heading>Alterar senha</Heading>
+
+      <Text mt={5}>
+        Para mudar de senha, digite o e-mail associado à sua conta e clique em
+        enviar. Você receberá um e-mail contendo as intruções para mudar sua
+        senha.
+      </Text>
+
+      <Box as='form' onSubmit={handleSubmit(onFormSubmit)}>
+        <Input
+          label='E-mail'
+          error={errors.email?.message}
+          {...register('email')}
+        />
+
+        <Button
+          type='submit'
+          isLoading={isSubmitting}
+          loadingText='Enviando...'
+          mt={4}
+          w='100%'
+        >
+          Enviar
+        </Button>
+      </Box>
+    </Box>
+  )
+}
+
+export default Recovery
