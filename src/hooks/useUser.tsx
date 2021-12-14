@@ -1,8 +1,9 @@
 import { useState, useEffect, createContext, useContext } from 'react'
-import { onAuthStateChanged, signOut } from 'firebase/auth'
+import { onAuthStateChanged, signOut, onIdTokenChanged } from 'firebase/auth'
 import { useRouter } from 'next/router'
+import { setCookie } from 'nookies'
 
-// firebase
+// firebase services
 import { auth } from '../services/firebase/auth'
 
 // types
@@ -24,6 +25,7 @@ type Props = {
 }
 
 function UserContextProvider({ children }: Props) {
+  // states
   const [userInfo, setUserInfo] = useState<UserInfo>({
     email: '',
     username: '',
@@ -80,6 +82,28 @@ function UserContextProvider({ children }: Props) {
     }
 
     const unsubscribe = onAuthStateChanged(auth, onChange)
+
+    return () => unsubscribe()
+  }, [])
+
+  // set the user token to a cookie
+  // it is used to prevent (via server-side) the user accessing the login/signup page
+  // when they're already logged in
+  useEffect(() => {
+    const onChange: NextOrObserver<User> = async (user) => {
+      if (!user) {
+        setCookie(null, '@dogs:token', '', { path: '/' })
+      } else {
+        try {
+          const token = await user.getIdToken()
+          setCookie(null, '@dogs:token', token, { path: '/', maxAge: 60 * 60 })
+        } catch (err) {
+          console.log('houve um erro ao setar os cookies', { err })
+        }
+      }
+    }
+
+    const unsubscribe = onIdTokenChanged(auth, onChange)
 
     return () => unsubscribe()
   }, [])
