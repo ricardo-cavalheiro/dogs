@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { ref as databaseRef, set, push } from 'firebase/database'
 import { useRouter } from 'next/router'
+import { v4 as uuidv4 } from 'uuid'
 
 // components
 import { Input } from '../../components/form/inputs/RegularInput'
@@ -15,7 +16,7 @@ import { storage } from '../../services/firebase/storage'
 import { db } from '../../services/firebase/database'
 
 // hooks
-import { useUser } from '../../hooks/useUser'
+import { useUser } from '../../hooks/contexts/useUser'
 
 // layout
 import { UserHeader } from '../../components/layout/UserHeader'
@@ -51,9 +52,11 @@ function Post() {
 
   const onFormSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
+      const imageID = uuidv4()
+
       const uploadedImageLocationRef = ref(
         storage,
-        `images/${userInfo.username}/${data.image[0].name}`
+        `images/${userInfo.username}/${imageID}`
       )
 
       // save image to storage
@@ -64,10 +67,9 @@ function Post() {
       const imageURL = await getDownloadURL(uploadedImageLocationRef)
 
       // save image metadata to database
-      const imagesListRef = databaseRef(db, `images/${userInfo.username}`)
-      const newImageRef = push(imagesListRef)
+      const imageRef = databaseRef(db, `images/${userInfo.username}/${imageID}`)
       const imageInfo = {
-        id: newImageRef.key,
+        id: imageID,
         author_username: userInfo.username,
         path: imageURL,
         title: data.title,
@@ -76,12 +78,9 @@ function Post() {
         views: 0,
         likes: 0,
       }
-      await set(newImageRef, imageInfo)
+      await set(imageRef, imageInfo)
 
-      const latestImagesRef = databaseRef(
-        db,
-        `latest_images/${newImageRef.key}`
-      )
+      const latestImagesRef = databaseRef(db, `latest_images/${imageID}`)
       await set(latestImagesRef, imageInfo)
 
       reset()

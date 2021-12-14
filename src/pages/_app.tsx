@@ -3,7 +3,7 @@ import { Header } from '../components/layout/Header'
 import { Footer } from '../components/layout/Footer'
 
 // hooks
-import { UserContextProvider } from '../hooks/useUser'
+import { UserContextProvider } from '../hooks/contexts/useUser'
 
 // chakra
 import { ChakraProvider } from '../config/ui'

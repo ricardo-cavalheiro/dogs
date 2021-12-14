@@ -22,11 +22,11 @@ import NextLink from 'next/link'
 
 // components
 import { Input } from '../../form/inputs/RegularInput'
-import { CommentsSection } from './CommentsSection'
-import { FooterMenu } from './FooterMenu'
+import { Comments } from './Comments'
+import { FooterMenu } from './ActionNavBar'
 
 // hooks
-import { useUser } from '../../../hooks/useUser'
+import { useUser } from '../../../hooks/contexts/useUser'
 
 // firebase
 import { db } from '../../../services/firebase/database'
@@ -67,7 +67,7 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
       const imageCommentsRef = ref(db, `image_comments/${imageInfo.id}`)
       const newCommentRef = push(imageCommentsRef)
 
-      update(newCommentRef, {
+      await update(newCommentRef, {
         id: newCommentRef.key,
         comment: data.comment,
         author_username: userInfo.username,
@@ -115,38 +115,38 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
       setImageComments([])
     }
 
-    return () => {
-      off(imageCommentsRef)
-    }
+    return () => off(imageCommentsRef)
   }, [])
 
   // increments image views when modal is open
   useEffect(() => {
     let imageRef: DatabaseReference
+    ;(async () => {
+      try {
+        imageRef = ref(
+          db,
+          `images/${imageInfo.author_username}/${imageInfo.id}`
+        )
 
-    try {
-      imageRef = ref(db, `images/${imageInfo.author_username}/${imageInfo.id}`)
+        if (isOpen) {
+          await update(imageRef, {
+            views: increment(1),
+          })
 
-      if (isOpen) {
-        update(imageRef, {
-          views: increment(1),
-        })
+          onValue(imageRef, (snapshot) => {
+            if (snapshot.exists()) {
+              setImageViews(snapshot.val().views)
+            }
+          })
+        }
+      } catch (err) {
+        console.log('erro incrementando total de views da imagem', { err })
 
-        onValue(imageRef, (snapshot) => {
-          if (snapshot.exists()) {
-            setImageViews(snapshot.val().views)
-          }
-        })
+        setImageViews(0)
       }
-    } catch (err) {
-      console.log('erro incrementando total de views da imagem', { err })
+    })()
 
-      setImageViews(0)
-    }
-
-    return () => {
-      off(imageRef)
-    }
+    return () => off(imageRef)
   }, [isOpen])
 
   return (
@@ -233,7 +233,7 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
 
             <Divider borderColor='#a8a8a8' my={3} />
 
-            <CommentsSection comments={imageComments} imageId={imageInfo.id} />
+            <Comments comments={imageComments} imageId={imageInfo.id} />
           </Box>
         </ModalBody>
       </ModalContent>

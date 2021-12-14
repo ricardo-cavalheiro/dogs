@@ -13,7 +13,7 @@ import { Input } from '../../form/inputs/RegularInput'
 import { PasswordInput } from '../../form/inputs/PasswordInput'
 
 // hooks
-import { useUser } from '../../../hooks/useUser'
+import { useUser } from '../../../hooks/contexts/useUser'
 
 // firebase services
 import { auth } from '../../../services/firebase/auth'

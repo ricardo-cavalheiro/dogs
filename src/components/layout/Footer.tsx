@@ -1,7 +1,7 @@
 import { Flex, Text } from '@chakra-ui/react'
 
 // components
-import { DogsIcon } from '../icons'
+import { DogsIcon } from '../Icons'
 
 function Footer() {
   return (

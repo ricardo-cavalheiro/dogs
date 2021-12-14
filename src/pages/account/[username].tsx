@@ -12,7 +12,7 @@ import {
 } from 'firebase/database'
 
 // hooks
-import { useUser } from '../../hooks/useUser'
+import { useUser } from '../../hooks/contexts/useUser'
 import { useInfiniteScroll } from '../../hooks/useInfiniteScroll'
 
 // firebase

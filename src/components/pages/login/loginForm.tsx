@@ -11,7 +11,7 @@ import { PasswordInput } from '../../form/inputs/PasswordInput'
 import { PasswordRecovery } from './PasswordRecovery'
 
 // hooks
-import { useUser } from '../../../hooks/useUser'
+import { useUser } from '../../../hooks/contexts/useUser'
 
 // firebase
 import { auth } from '../../../services/firebase/auth'

@@ -9,7 +9,7 @@ import { Modal } from './Modal'
 import { UserNotLoggedInModal } from './UserNotLoggedInModal'
 
 // hooks
-import { useUser } from '../../hooks/useUser'
+import { useUser } from '../../hooks/contexts/useUser'
 
 // firebase
 import { db } from '../../services/firebase/database'
@@ -48,9 +48,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
       console.log('erro ao buscar as views da foto no feed', { err })
     }
 
-    return () => {
-      off(imageRef)
-    }
+    return () => off(imageRef)
   }, [isOpen])
 
   return (

@@ -6,7 +6,6 @@ const Button = {
       bg: 'light.300',
       color: 'light.500',
       fontWeight: 'thin',
-      p: '3 3',
       w: 'auto',
       _active: {
         bgColor: 'light.300',
@@ -28,6 +27,15 @@ const Button = {
       bg: 'light.100',
       w: '100%',
       h: '200px',
+    }),
+    cancel: (props: StyleFunctionProps) => ({
+      bg: 'gray.100',
+      color: 'light.800',
+      _hover: {
+        bg: 'gray.300',
+        color: 'gray.800',
+        boxShadow: `0 0 0 3px ${props.theme.colors.gray['50']}, 0 0 0 4px ${props.theme.colors.gray['400']}`,
+      },
     }),
   },
 }

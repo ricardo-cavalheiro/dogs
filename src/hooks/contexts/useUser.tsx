@@ -1,14 +1,14 @@
 import { useState, useEffect, createContext, useContext } from 'react'
 import { onAuthStateChanged, signOut, onIdTokenChanged } from 'firebase/auth'
 import { useRouter } from 'next/router'
-import { setCookie } from 'nookies'
+import { setCookie, destroyCookie } from 'nookies'
 
 // firebase services
-import { auth } from '../services/firebase/auth'
+import { auth } from '../../services/firebase/auth'
 
 // types
 import type { ReactNode, Dispatch, SetStateAction } from 'react'
-import type { UserInfo } from '../typings/userInfo'
+import type { UserInfo } from '../../typings/userInfo'
 import type { NextOrObserver, User } from 'firebase/auth'
 
 type UserContextType = {
@@ -48,6 +48,8 @@ function UserContextProvider({ children }: Props) {
         isLoggedIn: false,
         isAccountVerified: false,
       })
+
+      destroyCookie(null, '@dogs:token')
 
       router.push('/login')
     } catch (err) {

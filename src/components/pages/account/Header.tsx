@@ -18,10 +18,10 @@ import {
   FeedIcon,
   LogOutIcon,
   StatisticsIcon,
-} from '../../icons'
+} from '../../Icons'
 
 // hooks
-import { useUser } from '../../../hooks/useUser'
+import { useUser } from '../../../hooks/contexts/useUser'
 
 // types
 import type { ReactElement } from 'react'

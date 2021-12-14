@@ -3,11 +3,11 @@ import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 
 // components
-import { DogsIcon, UserIcon } from '../icons'
+import { DogsIcon, UserIcon } from '../Icons'
 import { VerifyEmailMessage } from '../VerifyEmailMessage'
 
 // hooks
-import { useUser } from '../../hooks/useUser'
+import { useUser } from '../../hooks/contexts/useUser'
 
 type UserAccount = {
   href: string
