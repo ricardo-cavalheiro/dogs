@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { useEffect, forwardRef, useRef } from 'react'
 import { FormLabel, Box, Text, Image, Center } from '@chakra-ui/react'
 import { MdOutlineFileUpload } from 'react-icons/md'
 
@@ -49,7 +49,12 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
   }
 
   return (
-    <Box>
+    <Box
+      onKeyDown={({ key }) =>
+        key === 'Enter' &&
+        document.querySelector<HTMLInputElement>('#image')?.click()
+      }
+    >
       <FormLabel htmlFor={name} d='flex' flexDirection='column'>
         <Text as='span'>{label}</Text>
 
@@ -110,7 +115,15 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
           name={name}
           ref={ref}
           type='file'
-          style={{ display: 'none' }}
+          style={{
+            position: 'absolute',
+            height: '1px',
+            width: '1px',
+            overflow: 'hidden',
+            clip: 'rect(1px, 1px, 1px, 1px)',
+          }}
+          aria-hidden='true'
+          tabIndex={-1} // prevent input from receiving focus on tabbing
           accept='image/png, image/jpeg'
           onChange={handleImageUpload}
           {...rest}
