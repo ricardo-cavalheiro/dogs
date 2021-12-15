@@ -15,8 +15,8 @@ import { useUser } from '../../hooks/contexts/useUser'
 import { db } from '../../services/firebase/database'
 
 // types
-import type { DatabaseReference } from 'firebase/database'
 import type { ImageInfo } from '../../typings/userInfo'
+import type { DatabaseReference } from 'firebase/database'
 
 type CardProps = {
   imageInfo: ImageInfo

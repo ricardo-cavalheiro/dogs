@@ -35,8 +35,8 @@ const getStaticProps: GetStaticProps = async () => {
     if (firebaseImages.exists()) {
       return {
         props: {
-          firebaseImages: Object.values(
-            firebaseImages.val() as ImageInfo[]
+          firebaseImages: Object.values<ImageInfo>(
+            firebaseImages.val()
           ).reverse(),
         },
       }
@@ -65,14 +65,14 @@ type Props = {
 }
 
 function Home({ firebaseImages }: Props) {
-  // orders the displayed images by the most recent ones
-  const [images, setImages] = useState<ImageInfo[]>(firebaseImages)
+  const [images, setImages] = useState(firebaseImages)
   const [isLastPage, setIsLastPage] = useState(false)
 
   // hooks
   const toast = useToast()
   const { shouldLoadMoreItems } = useInfiniteScroll()
 
+  // infinite scroll
   useEffect(() => {
     if (images.length === 0) return
 
@@ -92,11 +92,9 @@ function Home({ firebaseImages }: Props) {
 
       onValue(moreImagesRef, (snapshot) => {
         if (snapshot.exists()) {
-          const images = Object.values(snapshot.val() as ImageInfo[]).reverse()
+          const images = Object.values<ImageInfo>(snapshot.val()).reverse()
 
-          if (images.length < 4) {
-            setIsLastPage(true)
-          }
+          if (images.length < 4) setIsLastPage(true)
 
           setImages((prevImages) => [...prevImages, ...images])
         }
@@ -115,9 +113,7 @@ function Home({ firebaseImages }: Props) {
       })
     }
 
-    return () => {
-      off(moreImagesRef)
-    }
+    return () => off(moreImagesRef)
   }, [shouldLoadMoreItems])
 
   return (

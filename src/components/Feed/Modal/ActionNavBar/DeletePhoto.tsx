@@ -8,13 +8,12 @@ import {
   AlertDialogFooter,
   AlertDialogCloseButton,
   Button,
-  Box,
   Text,
   useToast,
   useDisclosure,
 } from '@chakra-ui/react'
 import { MdDeleteOutline } from 'react-icons/md'
-import { ref as databaseRef, remove, off } from 'firebase/database'
+import { ref as databaseRef, update } from 'firebase/database'
 import { ref as storageRef, deleteObject } from 'firebase/storage'
 
 // hooks
@@ -52,25 +51,21 @@ function ConfirmationAlert({
     setIsDeleting(true)
 
     try {
-      const userAccountImageRef = databaseRef(
-        db,
-        `images/${imageInfo.author_username}/${imageInfo.id}`
-      )
-      const publicFeedImageRef = databaseRef(
-        db,
-        `latest_images/${imageInfo.id}`
-      )
       const storageImageRef = storageRef(
         storage,
         `images/${userInfo.username}/${imageInfo.id}`
       )
 
-      await remove(userAccountImageRef)
-      await remove(publicFeedImageRef)
-      await deleteObject(storageImageRef)
+      const updates = {
+        [`images/${imageInfo.author_username}/${imageInfo.id}`]: null,
+        [`image_comments/${imageInfo.id}`]: null,
+        [`liked_comments/${imageInfo.id}`]: null,
+        [`liked_images/${imageInfo.id}`]: null,
+        [`latest_images/${imageInfo.id}`]: null,
+      }
 
-      off(userAccountImageRef)
-      off(publicFeedImageRef)
+      await update(databaseRef(db), updates)
+      await deleteObject(storageImageRef)
 
       toast({
         title: 'Foto apagada!',

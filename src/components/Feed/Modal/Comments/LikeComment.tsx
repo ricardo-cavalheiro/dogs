@@ -1,14 +1,6 @@
 import { Box, useToast } from '@chakra-ui/react'
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
-import {
-  ref,
-  update,
-  increment,
-  onValue,
-  push,
-  set,
-  remove,
-} from 'firebase/database'
+import { ref, update, increment } from 'firebase/database'
 
 // hooks
 import { useUser } from '../../../../hooks/contexts/useUser'
@@ -19,16 +11,11 @@ import { db } from '../../../../services/firebase/database'
 // types
 import type { Dispatch, SetStateAction } from 'react'
 
-type LikedComments = { [key: string]: string }
-
 type Props = {
   imageId: string
   commentId: string
-  commentTotalLikes: number
   isLiked: boolean | null
   setIsLiked: Dispatch<SetStateAction<boolean | null>>
-  setCommentTotalLikes: Dispatch<SetStateAction<number>>
-  likedComments: LikedComments
 }
 
 function LikeComment({
@@ -36,9 +23,6 @@ function LikeComment({
   commentId,
   isLiked,
   setIsLiked,
-  likedComments,
-  commentTotalLikes,
-  setCommentTotalLikes,
 }: Props) {
   // hooks
   const toast = useToast()
@@ -46,46 +30,27 @@ function LikeComment({
 
   async function handleCommentLike(isLiked: boolean) {
     try {
-      const authorCommentRef = ref(
-        db,
-        `/image_comments/${imageId}/${commentId}`
-      )
-      const userLikedCommentsRef = ref(
-        db,
-        `/liked_comments/${imageId}/${userInfo.username}/${commentId}`
-      )
-
       if (isLiked === true) {
-        await update(authorCommentRef, {
-          likes: increment(1),
-        })
+        const updates = {
+          [`/image_comments/${imageId}/${commentId}/likes`]: increment(1),
+          [`/liked_comments/${imageId}/${userInfo.username}/${commentId}`]:
+            true,
+        }
 
-        await set(userLikedCommentsRef, commentId)
+        await update(ref(db), updates)
 
         setIsLiked(true)
       } else {
-        if (commentTotalLikes < 1) return
+        const updates = {
+          [`/image_comments/${imageId}/${commentId}/likes`]: increment(-1),
+          [`/liked_comments/${imageId}/${userInfo.username}/${commentId}`]:
+            null,
+        }
 
-        await update(authorCommentRef, {
-          likes: increment(-1),
-        })
-
-        await remove(
-          ref(
-            db,
-            `/liked_comments/${imageId}/${userInfo.username}/${likedComments[commentId]}`
-          )
-        )
+        await update(ref(db), updates)
 
         setIsLiked(false)
       }
-
-      // updates the total of likes
-      onValue(authorCommentRef, (snapshot) => {
-        if (snapshot.exists()) {
-          setCommentTotalLikes(snapshot.val().likes)
-        }
-      })
     } catch (err) {
       console.log('erro ao atualizar o comentario curtido', { err })
 

@@ -1,14 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Box, Flex, Link, Text, useToast } from '@chakra-ui/react'
-import {
-  ref,
-  increment,
-  update,
-  push,
-  remove,
-  onValue,
-  off,
-} from 'firebase/database'
+import { Box, Flex, Link, Text } from '@chakra-ui/react'
+import { ref, onValue, off } from 'firebase/database'
 import NextLink from 'next/link'
 
 // components
@@ -29,13 +21,11 @@ type CommentProps = {
   imageId: string
 }
 
-type LikedComments = { [key: string]: string }
-
 function Comment({ comment, imageId }: CommentProps) {
   // states
   const [isLiked, setIsLiked] = useState<boolean | null>(null)
   const [commentTotalLikes, setCommentTotalLikes] = useState(comment.likes)
-  const [likedComments, setLikedComments] = useState<LikedComments>({})
+
   // hooks
   const { userInfo } = useUser()
 
@@ -46,36 +36,33 @@ function Comment({ comment, imageId }: CommentProps) {
     try {
       likedCommentRef = ref(
         db,
-        `/image_comments/${imageId}/${userInfo.username}/${
-          likedComments[comment.id]
-        }`
+        `/liked_comments/${imageId}/${userInfo.username}/${comment.id}`
       )
 
-      if (likedCommentRef.key !== 'undefined') {
-        setIsLiked(true)
-      }
+      onValue(likedCommentRef, (snapshot) => {
+        if (snapshot.exists()) setIsLiked(true)
+      })
     } catch (err) {
       console.log('erro ao ao atualizar os comentarios já curtidos', { err })
     }
 
     return () => off(likedCommentRef)
-  }, [likedComments])
+  }, [])
 
-  // fetches the comments liked by the user so that
-  // we can display the already liked comments
+  // updates the total of likes
   useEffect(() => {
-    const userLikedCommentsRef = ref(
+    const authorCommentRef = ref(
       db,
-      `/liked_comments/${imageId}/${userInfo.username}`
+      `/image_comments/${imageId}/${comment.id}/likes`
     )
 
-    onValue(userLikedCommentsRef, (snapshot) => {
+    onValue(authorCommentRef, (snapshot) => {
       if (snapshot.exists()) {
-        setLikedComments(snapshot.val())
+        setCommentTotalLikes(snapshot.val())
       }
     })
 
-    return () => off(userLikedCommentsRef)
+    return () => off(authorCommentRef)
   }, [])
 
   return (
@@ -98,9 +85,6 @@ function Comment({ comment, imageId }: CommentProps) {
         <LikeComment
           imageId={imageId}
           commentId={comment.id}
-          commentTotalLikes={commentTotalLikes}
-          setCommentTotalLikes={setCommentTotalLikes}
-          likedComments={likedComments}
           isLiked={isLiked}
           setIsLiked={setIsLiked}
         />

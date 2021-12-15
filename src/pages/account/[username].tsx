@@ -10,13 +10,16 @@ import {
   onValue,
   off,
 } from 'firebase/database'
+import { parseCookies } from 'nookies'
+import { getAuth } from 'firebase-admin/auth'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
 import { useInfiniteScroll } from '../../hooks/useInfiniteScroll'
 
-// firebase
+// firebase services
 import { db } from '../../services/firebase/database'
+import { adminApp } from '../../services/firebase/admin'
 
 // layout
 import { UserHeader } from '../../components/layout/UserHeader'
@@ -28,40 +31,74 @@ import type { Query } from 'firebase/database'
 import type { ImageInfo } from '../../typings/userInfo'
 
 const getServerSideProps: GetServerSideProps = async (context) => {
-  const params = context.params
+  const userIDToken = parseCookies(context)['@dogs:token']
+
+  if (!userIDToken)
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
 
   try {
-    const latestImagesRef = query(
-      ref(db, `images/${params?.username}`),
-      limitToLast(4)
-    )
+    const auth = getAuth(adminApp)
 
-    const firebaseImages = await get(latestImagesRef)
-    off(latestImagesRef)
+    const validToken = await auth.verifyIdToken(userIDToken)
 
-    if (firebaseImages.exists()) {
-      return {
-        props: {
-          firebaseImages: Object.values(
-            firebaseImages.val() as ImageInfo[]
-          ).reverse(),
-        },
-      }
-    } else {
-      return {
-        props: {
-          firebaseImages: [],
-        },
+    if (validToken) {
+      const params = context.params
+
+      try {
+        const latestImagesRef = query(
+          ref(db, `images/${params?.username}`),
+          limitToLast(4)
+        )
+
+        const firebaseImages = await get(latestImagesRef)
+        off(latestImagesRef)
+
+        if (firebaseImages.exists()) {
+          return {
+            props: {
+              firebaseImages: Object.values<ImageInfo>(
+                firebaseImages.val()
+              ).reverse(),
+            },
+          }
+        } else {
+          return {
+            props: {
+              firebaseImages: [],
+            },
+          }
+        }
+      } catch (err) {
+        const error = err as Error
+
+        console.log('erro ao buscar as imagens mais recentes', { error })
+
+        return {
+          props: {
+            firebaseImages: [],
+          },
+        }
       }
     }
-  } catch (err) {
-    const error = err as Error
-
-    console.log('erro ao buscar as imagens mais recentes', { error })
 
     return {
-      props: {
-        firebaseImages: [],
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  } catch (err) {
+    console.log({ err })
+
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
       },
     }
   }
@@ -83,7 +120,7 @@ function Account({ firebaseImages }: Props) {
 
   useEffect(() => {
     if (!images.length) return
-    
+
     if (!shouldLoadMoreItems || isLastPage) return
 
     let moreImagesRef: Query

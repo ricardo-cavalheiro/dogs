@@ -2,8 +2,12 @@ import { useState } from 'react'
 import { Box, Button, Text, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { ref as databaseRef, set, push } from 'firebase/database'
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from 'firebase/storage'
+import { ref as databaseRef, update } from 'firebase/database'
 import { useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -54,7 +58,7 @@ function Post() {
     try {
       const imageID = uuidv4()
 
-      const uploadedImageLocationRef = ref(
+      const uploadedImageLocationRef = storageRef(
         storage,
         `images/${userInfo.username}/${imageID}`
       )
@@ -67,7 +71,6 @@ function Post() {
       const imageURL = await getDownloadURL(uploadedImageLocationRef)
 
       // save image metadata to database
-      const imageRef = databaseRef(db, `images/${userInfo.username}/${imageID}`)
       const imageInfo = {
         id: imageID,
         author_username: userInfo.username,
@@ -78,10 +81,11 @@ function Post() {
         views: 0,
         likes: 0,
       }
-      await set(imageRef, imageInfo)
-
-      const latestImagesRef = databaseRef(db, `latest_images/${imageID}`)
-      await set(latestImagesRef, imageInfo)
+      const updates = {
+        [`images/${userInfo.username}/${imageID}`]: imageInfo,
+        [`latest_images/${imageID}`]: imageInfo,
+      }
+      await update(databaseRef(db), updates)
 
       reset()
       setImageFileURL('')

@@ -1,15 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useToast } from '@chakra-ui/react'
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
-import {
-  ref,
-  update,
-  increment,
-  set,
-  onValue,
-  remove,
-  off,
-} from 'firebase/database'
+import { ref, update, increment, onValue, off } from 'firebase/database'
 
 // hooks
 import { useUser } from '../../../../hooks/contexts/useUser'
@@ -43,7 +35,7 @@ function LikePhoto({ imageInfo }: Props) {
     try {
       likedImageRef = ref(
         db,
-        `liked_images/${userInfo.username}/${imageInfo.id}`
+        `liked_images/${imageInfo.id}/${userInfo.username}`
       )
 
       onValue(likedImageRef, (snapshot) => {
@@ -58,40 +50,32 @@ function LikePhoto({ imageInfo }: Props) {
       )
     }
 
-    return () => {
-      off(likedImageRef)
-    }
+    return () => off(likedImageRef)
   }, [])
 
   async function handlePhotoLike(isLiked: boolean) {
     try {
-      const imageRef = ref(
-        db,
-        `images/${imageInfo.author_username}/${imageInfo.id}`
-      )
-      const likedImageRef = ref(
-        db,
-        `liked_images/${userInfo.username}/${imageInfo.id}`
-      )
-
       if (isLiked === true) {
-        await update(imageRef, {
-          likes: increment(1),
-        })
-        await set(likedImageRef, imageInfo.id)
+        const updates = {
+          [`images/${imageInfo.author_username}/${imageInfo.id}/likes`]:
+            increment(1),
+          [`liked_images/${imageInfo.id}/${userInfo.username}`]: true,
+        }
+
+        await update(ref(db), updates)
 
         setIsLiked(true)
       } else {
-        await update(imageRef, {
-          likes: increment(-1),
-        })
-        await remove(likedImageRef)
+        const updates = {
+          [`images/${imageInfo.author_username}/${imageInfo.id}/likes`]:
+            increment(-1),
+          [`liked_images/${imageInfo.id}/${userInfo.username}`]: null,
+        }
+
+        await update(ref(db), updates)
 
         setIsLiked(false)
       }
-
-      off(imageRef)
-      off(likedImageRef)
     } catch (err) {
       console.log('houve um erro ao tentar curtir a foto', { err })
 

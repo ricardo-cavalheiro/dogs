@@ -188,9 +188,12 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
             <Box>
               <Heading fontSize={40}>{imageInfo.title}</Heading>
 
-              <Text as='p' mt={5}>
-                {imageInfo.description}
-              </Text>
+              {/* this avoids react rendering an empty `p` tag */}
+              {imageInfo.description && (
+                <Text as='p' mt={5}>
+                  {imageInfo.description}
+                </Text>
+              )}
             </Box>
 
             <Divider borderColor='#a8a8a8' my={3} />
