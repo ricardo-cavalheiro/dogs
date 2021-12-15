@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 
 type DogsIconProps = {
   color?: string
@@ -50,83 +49,4 @@ const UserIcon = () => {
   )
 }
 
-const HamburgerMenuIcon = () => {
-  return (
-    <svg
-      width='40'
-      height='23'
-      viewBox='0 0 40 23'
-      fill='none'
-      xmlns='http://www.w3.org/2000/svg'
-    >
-      <rect width='40' height='3' rx='2' fill='#333333' />
-      <rect y='9.09091' width='40' height='3' rx='2' fill='#333333' />
-      <rect y='18.1818' width='40' height='3' rx='2' fill='#333333' />
-    </svg>
-  )
-}
-
-const NewItemIcon = () => {
-  return (
-    <svg width={28} height={28} fill='none' xmlns='http://www.w3.org/2000/svg'>
-      <path
-        fillRule='evenodd'
-        clipRule='evenodd'
-        d='M14 5a1 1 0 0 1 1 1v7h7a1 1 0 1 1 0 2h-7v7a1 1 0 1 1-2 0v-7H6a1 1 0 1 1 0-2h7V6a1 1 0 0 1 1-1z'
-        fill='#333'
-      />
-    </svg>
-  )
-}
-
-const FeedIcon = () => {
-  return (
-    <svg width={28} height={28} fill='none' xmlns='http://www.w3.org/2000/svg'>
-      <path
-        fillRule='evenodd'
-        clipRule='evenodd'
-        d='M7 4h3a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zm0 2a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H7zm0 9h3a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-3a3 3 0 0 1 3-3zm0 2a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H7zM18 4h3a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3h-3a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zm0 2a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-3zm0 9h3a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3h-3a3 3 0 0 1-3-3v-3a3 3 0 0 1 3-3zm0 2a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-3z'
-        fill='#333'
-      />
-    </svg>
-  )
-}
-
-const StatisticsIcon = () => {
-  return (
-    <svg width={28} height={28} fill='none' xmlns='http://www.w3.org/2000/svg'>
-      <rect x={6} y={14} width={2} height={8} rx={1} fill='#333' />
-      <rect x={13} y={10} width={2} height={12} rx={1} fill='#333' />
-      <rect x={20} y={6} width={2} height={16} rx={1} fill='#333' />
-    </svg>
-  )
-}
-
-const LogOutIcon = () => {
-  return (
-    <svg width={28} height={28} fill='none' xmlns='http://www.w3.org/2000/svg'>
-      <path
-        fillRule='evenodd'
-        clipRule='evenodd'
-        d='M19.293 9.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414-1.414L21.586 15H12a1 1 0 1 1 0-2h9.586l-2.293-2.293a1 1 0 0 1 0-1.414Z'
-        fill='#333'
-      />
-      <path
-        fillRule='evenodd'
-        clipRule='evenodd'
-        d='M5 6a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v4a1 1 0 1 1-2 0V7H7v14h7v-3a1 1 0 1 1 2 0v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6Z'
-        fill='#333'
-      />
-    </svg>
-  )
-}
-
-export {
-  DogsIcon,
-  UserIcon,
-  HamburgerMenuIcon,
-  NewItemIcon,
-  FeedIcon,
-  StatisticsIcon,
-  LogOutIcon,
-}
+export { DogsIcon, UserIcon }

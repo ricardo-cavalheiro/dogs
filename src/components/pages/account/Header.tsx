@@ -9,16 +9,14 @@ import {
   Link,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import NextLink from 'next/link'
-
-// components
 import {
-  HamburgerMenuIcon,
-  NewItemIcon,
-  FeedIcon,
-  LogOutIcon,
-  StatisticsIcon,
-} from '../../Icons'
+  MdOutlineMenu,
+  MdOutlineSpaceDashboard,
+  MdOutlineTrendingUp,
+  MdOutlineAdd,
+  MdOutlineLogout,
+} from 'react-icons/md'
+import NextLink from 'next/link'
 
 // hooks
 import { useUser } from '../../../hooks/contexts/useUser'
@@ -76,7 +74,7 @@ function Header() {
               as={IconButton}
               variant='iconButton'
               aria-label='Abrir menu'
-              icon={<HamburgerMenuIcon />}
+              icon={<MdOutlineMenu size={60} color='#333' />}
             >
               Button
             </MenuButton>
@@ -85,23 +83,23 @@ function Header() {
               <HeaderMenuItem
                 href={`/account/${userInfo.username}`}
                 label='Minhas Fotos'
-                icon={<FeedIcon />}
+                icon={<MdOutlineSpaceDashboard size={30} color='#333' />}
               />
 
               <HeaderMenuItem
                 href='/account/stats'
                 label='Estatísticas'
-                icon={<StatisticsIcon />}
+                icon={<MdOutlineTrendingUp size={30} color='#333' />}
               />
 
               <HeaderMenuItem
                 href='/account/post'
-                label='Postar foto'
-                icon={<NewItemIcon />}
+                label='Postar Foto'
+                icon={<MdOutlineAdd size={30} color='#333' />}
               />
 
               <MenuItem
-                icon={<LogOutIcon />}
+                icon={<MdOutlineLogout size={30} color='#333' />}
                 _hover={{ bg: 'none' }}
                 onClick={async () => await signUserOut()}
               >
