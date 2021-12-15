@@ -1,5 +1,3 @@
-import { mode } from '@chakra-ui/theme-tools'
-
 // types
 import type { StyleFunctionProps } from '@chakra-ui/theme-tools'
 

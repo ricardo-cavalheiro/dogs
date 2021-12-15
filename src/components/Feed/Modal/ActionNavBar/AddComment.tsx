@@ -14,16 +14,24 @@ function AddComment({ isCommentInputShown, setIsCommentInputShown }: Props) {
       {isCommentInputShown ? (
         <MdModeComment
           size={30}
+          tabIndex={0}
           color='#fb1'
           cursor='pointer'
           onClick={() => setIsCommentInputShown(!isCommentInputShown)}
+          onKeyDown={({ key }) =>
+            key === 'Enter' && setIsCommentInputShown(!isCommentInputShown)
+          }
         />
       ) : (
         <MdOutlineModeComment
           size={30}
+          tabIndex={0}
           color='#333'
           cursor='pointer'
           onClick={() => setIsCommentInputShown(!isCommentInputShown)}
+          onKeyDown={({ key }) =>
+            key === 'Enter' && setIsCommentInputShown(!isCommentInputShown)
+          }
         />
       )}
     </>

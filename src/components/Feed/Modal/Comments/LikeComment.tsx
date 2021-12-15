@@ -18,12 +18,7 @@ type Props = {
   setIsLiked: Dispatch<SetStateAction<boolean | null>>
 }
 
-function LikeComment({
-  imageId,
-  commentId,
-  isLiked,
-  setIsLiked,
-}: Props) {
+function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
   // hooks
   const toast = useToast()
   const { userInfo } = useUser()
@@ -68,14 +63,18 @@ function LikeComment({
     <Box>
       {isLiked ? (
         <MdOutlineFavorite
-          onClick={() => handleCommentLike(false)}
-          cursor='pointer'
+          tabIndex={0}
           color='#fb1'
+          cursor='pointer'
+          onClick={() => handleCommentLike(false)}
+          onKeyDown={({ key }) => key === 'Enter' && handleCommentLike(false)}
         />
       ) : (
         <MdOutlineFavoriteBorder
-          onClick={() => handleCommentLike(true)}
+          tabIndex={0}
           cursor='pointer'
+          onClick={() => handleCommentLike(true)}
+          onKeyDown={({ key }) => key === 'Enter' && handleCommentLike(true)}
         />
       )}
     </Box>

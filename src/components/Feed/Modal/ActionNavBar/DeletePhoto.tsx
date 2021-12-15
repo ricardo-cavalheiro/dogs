@@ -154,9 +154,11 @@ function DeletePhoto({ imageInfo }: Props) {
     <>
       <MdDeleteOutline
         size={30}
+        tabIndex={0}
         color='#333'
         cursor='pointer'
         onClick={onToggle}
+        onKeyDown={({ key }) => key === 'Enter' && onToggle}
       />
 
       <ConfirmationAlert

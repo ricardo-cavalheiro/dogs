@@ -13,10 +13,6 @@ import { db } from '../../../../services/firebase/database'
 import type { DatabaseReference } from 'firebase/database'
 import type { ImageInfo } from '../../../../typings/userInfo'
 
-type IsLiked = {
-  isLiked: boolean | null
-}
-
 type Props = {
   imageInfo: ImageInfo
 }
@@ -94,16 +90,20 @@ function LikePhoto({ imageInfo }: Props) {
       {isLiked ? (
         <MdOutlineFavorite
           size={30}
+          tabIndex={0}
           color='#fb1'
           cursor='pointer'
           onClick={() => handlePhotoLike(false)}
+          onKeyDown={({ key }) => key === 'Enter' && handlePhotoLike(false)}
         />
       ) : (
         <MdOutlineFavoriteBorder
           size={30}
+          tabIndex={0}
           color='#333'
           cursor='pointer'
           onClick={() => handlePhotoLike(true)}
+          onKeyDown={({ key }) => key === 'Enter' && handlePhotoLike(true)}
         />
       )}
     </>

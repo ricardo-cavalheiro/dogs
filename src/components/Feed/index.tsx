@@ -29,7 +29,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
   const [totalLikes, setTotalLikes] = useState(imageInfo.likes)
 
   // hooks
-  const { onOpen, onClose, isOpen } = useDisclosure()
+  const { onOpen, onClose, isOpen, onToggle } = useDisclosure()
   const { userInfo } = useUser()
 
   useEffect(() => {
@@ -64,7 +64,14 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
             d: 'flex',
           },
         }}
+        tabIndex={0}
+        transition='200ms'
+        _focus={{
+          boxShadow: '0 0 0 3px rgba(66, 153, 255, 0.6)',
+          outline: '2px solid transparent',
+        }}
         onClick={onOpen}
+        onKeyDown={({ key }) => key === 'Enter' && onToggle()}
       >
         <NextImage
           src={imageInfo.path}
