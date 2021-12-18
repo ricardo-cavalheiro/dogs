@@ -25,8 +25,10 @@ type CardProps = {
 
 function Card({ imageInfo, isAboveTheFold }: CardProps) {
   // states
-  const [totalViews, setTotalViews] = useState(imageInfo.views)
-  const [totalLikes, setTotalLikes] = useState(imageInfo.likes)
+  const [imageMetrics, setImageMetrics] = useState({
+    likes: imageInfo.likes,
+    views: imageInfo.views,
+  })
 
   // hooks
   const { onOpen, onClose, isOpen, onToggle } = useDisclosure()
@@ -41,8 +43,9 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
 
       onValue(imageRef, (snapshot) => {
         if (snapshot.exists()) {
-          setTotalViews(snapshot.val().views)
-          setTotalLikes(snapshot.val().likes)
+          const metrics = snapshot.val()
+
+          setImageMetrics({ likes: metrics.likes, views: metrics.views })
         }
       })
     } catch (err) {
@@ -103,14 +106,14 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
           <Flex align='center' gridGap={1}>
             <MdOutlineVisibility size={30} color='white' />
             <Text as='span' fontWeight='bold' color='light.100'>
-              {totalViews}
+              {imageMetrics.views}
             </Text>
           </Flex>
 
           <Flex align='center' gridGap={1}>
             <MdFavorite size={30} color='#fb1' />
             <Text as='span' fontWeight='bold' color='light.100'>
-              {totalLikes}
+              {imageMetrics.likes}
             </Text>
           </Flex>
         </Flex>

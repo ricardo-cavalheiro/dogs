@@ -1,5 +1,12 @@
-import { useEffect, forwardRef, useRef } from 'react'
-import { FormLabel, Box, Text, Image, Center } from '@chakra-ui/react'
+import { forwardRef } from 'react'
+import {
+  FormLabel,
+  Box,
+  Text,
+  Image,
+  Center,
+  VisuallyHiddenInput,
+} from '@chakra-ui/react'
 import { MdOutlineFileUpload } from 'react-icons/md'
 
 // components
@@ -17,35 +24,32 @@ type Props = {
   label: string
   name: string
   error?: string
+  imageFileURL: string
+  setImageFileURL: Dispatch<SetStateAction<string>>
   onChange: (
     event: React.ChangeEvent<HTMLInputElement>
   ) => Promise<boolean | void>
-  imageFileURL: string
-  setImageFileURL: Dispatch<SetStateAction<string>>
 }
 
 const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { label, name, error, onChange, imageFileURL, setImageFileURL, ...rest },
+  { label, name, error, imageFileURL, setImageFileURL, onChange, ...rest },
   ref
 ) => {
-  async function handleImageUpload(event: ChangeEvent<HTMLInputElement>) {
-    // this line is necessary because as react hook form owns the onChange method, in order to use our own
-    // onChange method, we need to call react-hook-form onChange as well
-    await onChange(event)
+  async function handleImageLoad(event: ChangeEvent<HTMLInputElement>) {
+    try {
+      // this line is necessary because as react hook form owns the onChange method, in order to use our own
+      // onChange method, we need to call react-hook-form onChange as well
+      await onChange(event)
 
-    // thought we have a validation for file size using YUP, that validation only display the error message;
-    // the below validation ensures that images bigger than 10 MB aren't displayed in the image preview
-    if (
-      !event.target.files?.length ||
-      event.target.files[0].size > 10_485_760
-    ) {
-      return
-    }
+      // thought we have a validation for file size using YUP, that validation only display the error message;
+      // the below validation ensures that images bigger than 10 MB aren't displayed in the image preview
+      const imageFile = event.target.files?.[0]
 
-    const image = event.target.files[0]
+      if (!imageFile || imageFile.size > 10_485_760) return
 
-    const imageUrl = URL.createObjectURL(image)
-    setImageFileURL(imageUrl)
+      const imageUrl = URL.createObjectURL(imageFile)
+      setImageFileURL(imageUrl)
+    } catch (err) {}
   }
 
   return (
@@ -110,22 +114,15 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
           </Center>
         )}
 
-        <input
+        <VisuallyHiddenInput
           id={name}
           name={name}
           ref={ref}
           type='file'
-          style={{
-            position: 'absolute',
-            height: '1px',
-            width: '1px',
-            overflow: 'hidden',
-            clip: 'rect(1px, 1px, 1px, 1px)',
-          }}
           aria-hidden='true'
           tabIndex={-1} // prevent input from receiving focus on tabbing
           accept='image/png, image/jpeg'
-          onChange={handleImageUpload}
+          onChange={handleImageLoad}
           {...rest}
         />
       </FormLabel>

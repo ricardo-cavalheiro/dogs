@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Box, Button, Text, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import {
   ref as storageRef,
   uploadBytes,
@@ -15,9 +14,9 @@ import { v4 as uuidv4 } from 'uuid'
 import { Input } from '../../components/form/inputs/RegularInput'
 import { FileUploadInput } from '../../components/form/inputs/FileUploadInput'
 
-// firebase
-import { storage } from '../../services/firebase/storage'
+// firebase services
 import { db } from '../../services/firebase/database'
+import { storage } from '../../services/firebase/storage'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
@@ -26,7 +25,7 @@ import { useUser } from '../../hooks/contexts/useUser'
 import { UserHeader } from '../../components/layout/UserHeader'
 
 // form validation
-import { postPhotoValidation } from '../../components/form/yupSchemaValidations/postImage'
+import { postPhotoValidation } from '../../components/form/validations/postImage'
 
 // types
 import type { SubmitHandler } from 'react-hook-form'
@@ -45,14 +44,11 @@ function Post() {
   const toast = useToast()
   const router = useRouter()
   const {
-    register,
     reset,
+    register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormInputs>({
-    resolver: yupResolver(postPhotoValidation),
-    mode: 'onChange',
-  })
+  } = useForm<FormInputs>()
 
   const onFormSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
@@ -125,7 +121,7 @@ function Post() {
       <Input
         label='Título'
         error={errors.title?.message}
-        {...register('title')}
+        {...register('title', postPhotoValidation.title)}
       />
       <Input
         label='Descrição'
@@ -133,17 +129,18 @@ function Post() {
         as='textarea'
         h='70px'
         pt={3}
-        {...register('description')}
+        {...register('description', postPhotoValidation.description)}
       />
       <FileUploadInput
         label='Escolher foto'
         error={errors.image?.message}
         imageFileURL={imageFileURL}
         setImageFileURL={setImageFileURL}
-        {...register('image')}
+        {...register('image', postPhotoValidation.image)}
       />
 
       <Button
+        w='100%'
         mt={5}
         isLoading={isSubmitting}
         loadingText='Postando...'

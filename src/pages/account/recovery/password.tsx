@@ -9,7 +9,7 @@ import { Input } from '../../../components/form/inputs/RegularInput'
 import { PasswordInput } from '../../../components/form/inputs/PasswordInput'
 
 // form validation
-import { recoveryPasswordValidation } from '../../../components/form/yupSchemaValidations/recoveryPassword'
+import { recoveryPasswordValidation } from '../../../components/form/validations/recoveryPassword'
 
 // firebase services
 import { auth } from '../../../services/firebase/auth'

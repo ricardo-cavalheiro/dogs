@@ -10,7 +10,7 @@ import { Input } from '../../../components/form/inputs/RegularInput'
 import { auth } from '../../../services/firebase/auth'
 
 // form validation
-import { emailValidation } from '../../../components/form/yupSchemaValidations/recovery'
+import { emailValidation } from '../../../components/form/validations/recovery'
 
 // types
 import type { SubmitHandler } from 'react-hook-form'

@@ -19,7 +19,7 @@ import { useUser } from '../../../hooks/contexts/useUser'
 import { auth } from '../../../services/firebase/auth'
 
 // yup validation
-import { signupValidation } from '../../form/yupSchemaValidations/signup'
+import { signupValidation } from '../../form/validations/signup'
 
 // types
 import type { SubmitHandler } from 'react-hook-form'
