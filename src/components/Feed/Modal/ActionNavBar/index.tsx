@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react'
+import { Flex, Box } from '@chakra-ui/react'
 
 // components
 import { LikePhoto } from './LikePhoto'
@@ -9,37 +9,32 @@ import { DeletePhoto } from './DeletePhoto'
 import { useUser } from '../../../../hooks/contexts/useUser'
 
 // types
-import type { Dispatch, SetStateAction } from 'react'
 import type { ImageInfo } from '../../../../typings/userInfo'
 
 type Props = {
   imageInfo: ImageInfo
-  isCommentInputShown: boolean
-  setIsCommentInputShown: Dispatch<SetStateAction<boolean>>
 }
 
-function FooterMenu({
-  imageInfo,
-  isCommentInputShown,
-  setIsCommentInputShown,
-}: Props) {
+function ActionNavBar({ imageInfo }: Props) {
   // hooks
   const { userInfo } = useUser()
 
   return (
-    <Flex gridGap={2}>
-      <LikePhoto imageInfo={imageInfo} />
+    <Flex direction='column'>
+      <Flex gridGap={2}>
+        <LikePhoto imageInfo={imageInfo} />
 
-      <AddComment
-        isCommentInputShown={isCommentInputShown}
-        setIsCommentInputShown={setIsCommentInputShown}
-      />
+        <AddComment imageID={imageInfo.id} />
 
-      {userInfo.username === imageInfo.author_username && (
-        <DeletePhoto imageInfo={imageInfo} />
-      )}
+        {userInfo.username === imageInfo.author_username && (
+          <DeletePhoto imageInfo={imageInfo} />
+        )}
+      </Flex>
+
+      {/* the box below is used to render the comment input through a react portal */}
+      <Box className='comment-input-wrapper'></Box>
     </Flex>
   )
 }
 
-export { FooterMenu }
+export { ActionNavBar }

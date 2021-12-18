@@ -32,6 +32,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
   const { onOpen, onClose, isOpen, onToggle } = useDisclosure()
   const { userInfo } = useUser()
 
+  // fetches the total of views and likes for the image
   useEffect(() => {
     let imageRef: DatabaseReference
 
@@ -71,7 +72,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
           outline: '2px solid transparent',
         }}
         onClick={onOpen}
-        onKeyDown={({ key }) => key === 'Enter' && onToggle()}
+        onKeyDown={({ key }) => key === 'Enter' && onToggle()} // this type error is probably related to chakra ui
       >
         <NextImage
           src={imageInfo.path}

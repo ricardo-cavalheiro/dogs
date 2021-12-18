@@ -12,7 +12,7 @@ import {
   useToast,
   useDisclosure,
 } from '@chakra-ui/react'
-import { MdDeleteOutline } from 'react-icons/md'
+import { MdDeleteOutline, MdDelete } from 'react-icons/md'
 import { ref as databaseRef, update } from 'firebase/database'
 import { ref as storageRef, deleteObject } from 'firebase/storage'
 
@@ -152,14 +152,18 @@ function DeletePhoto({ imageInfo }: Props) {
 
   return (
     <>
-      <MdDeleteOutline
-        size={30}
-        tabIndex={0}
-        color='#333'
-        cursor='pointer'
-        onClick={onToggle}
-        onKeyDown={({ key }) => key === 'Enter' && onToggle}
-      />
+      {isOpen ? (
+        <MdDelete size={30} tabIndex={0} fill='#fb1' cursor='pointer' />
+      ) : (
+        <MdDeleteOutline
+          size={30}
+          tabIndex={0}
+          color='#333'
+          cursor='pointer'
+          onClick={onToggle}
+          onKeyDown={({ key }) => key === 'Enter' && onToggle}
+        />
+      )}
 
       <ConfirmationAlert
         isOpen={isOpen}

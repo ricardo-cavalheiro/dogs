@@ -8,37 +8,24 @@ import {
   Link,
   Text,
   Heading,
-  Button,
   Divider,
-  Collapse,
-  useToast,
 } from '@chakra-ui/react'
-import { MdOutlineVisibility, MdSend } from 'react-icons/md'
-import { push, update, ref, onValue, off, increment } from 'firebase/database'
+import { MdOutlineVisibility } from 'react-icons/md'
+import { update, ref, onValue, off, increment } from 'firebase/database'
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
 import NextImage from 'next/image'
 import NextLink from 'next/link'
 
 // components
-import { Input } from '../../form/inputs/RegularInput'
 import { Comments } from './Comments'
-import { FooterMenu } from './ActionNavBar'
+import { ActionNavBar } from './ActionNavBar'
 
-// hooks
-import { useUser } from '../../../hooks/contexts/useUser'
-
-// firebase
+// firebase services
 import { db } from '../../../services/firebase/database'
 
 // types
-import type { SubmitHandler } from 'react-hook-form'
-import type { DatabaseReference } from 'firebase/database'
+import type { DatabaseReference, Query } from 'firebase/database'
 import type { ImageInfo, Comment } from '../../../typings/userInfo'
-
-type FormInputs = {
-  comment: string
-}
 
 type Props = {
   isOpen: boolean
@@ -50,61 +37,17 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
   // states
   const [imageComments, setImageComments] = useState<Comment[]>([])
   const [imageViews, setImageViews] = useState(imageInfo.views)
-  const [isCommentInputShown, setIsCommentInputShown] = useState(false)
 
-  // hooks
-  const toast = useToast()
-  const { userInfo } = useUser()
-  const {
-    reset,
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormInputs>()
-
-  const onCommentSubmit: SubmitHandler<FormInputs> = async (data) => {
-    try {
-      const imageCommentsRef = ref(db, `image_comments/${imageInfo.id}`)
-      const newCommentRef = push(imageCommentsRef)
-
-      await update(newCommentRef, {
-        id: newCommentRef.key,
-        comment: data.comment,
-        author_username: userInfo.username,
-        likes: 0,
-      })
-
-      toast({
-        status: 'success',
-        duration: 5000,
-        title: 'Comentário adicionado',
-        isClosable: true,
-      })
-
-      reset()
-    } catch (err) {
-      console.log({ err })
-
-      toast({
-        status: 'error',
-        duration: 5000,
-        title: 'Houve um erro ao adicionar seu comentário.',
-        description: 'Estamos trabalhando para resolver esse problema.',
-        isClosable: true,
-      })
-    }
-  }
-
-  // listens for new comments
+  // loads the latest comments and listens for new ones
   useEffect(() => {
-    let imageCommentsRef: DatabaseReference
+    let imageCommentsRef: Query
 
     try {
       imageCommentsRef = ref(db, `image_comments/${imageInfo.id}`)
 
       onValue(imageCommentsRef, (snapshot) => {
         if (snapshot.exists()) {
-          setImageComments(Object.values(snapshot.val()))
+          setImageComments(Object.values<Comment>(snapshot.val()))
         } else {
           setImageComments([])
         }
@@ -198,41 +141,7 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
 
             <Divider borderColor='#a8a8a8' my={3} />
 
-            <FooterMenu
-              imageInfo={imageInfo}
-              isCommentInputShown={isCommentInputShown}
-              setIsCommentInputShown={setIsCommentInputShown}
-            />
-
-            <Collapse in={isCommentInputShown}>
-              <Flex
-                as='form'
-                gridGap={2}
-                align='flex-end'
-                justify='space-between'
-                onSubmit={handleSubmit(onCommentSubmit)}
-              >
-                <Input
-                  label='Comentar'
-                  as='textarea'
-                  w='100%'
-                  h='60px'
-                  minH='40px'
-                  pt={1.5}
-                  error={errors.comment?.message}
-                  {...register('comment', { required: true })}
-                />
-
-                <Button
-                  type='submit'
-                  isLoading={isSubmitting}
-                  w='70px'
-                  mb='7px'
-                >
-                  <MdSend size={30} cursor='pointer' />
-                </Button>
-              </Flex>
-            </Collapse>
+            <ActionNavBar imageInfo={imageInfo} />
 
             <Divider borderColor='#a8a8a8' my={3} />
 
