@@ -27,7 +27,11 @@ import type { ImageInfo } from '../typings/userInfo'
 
 const getStaticProps: GetStaticProps = async () => {
   try {
-    const latestImagesRef = query(ref(db, 'latest_images'), limitToLast(4))
+    const latestImagesRef = query(
+      ref(db, 'latest_images'),
+      orderByKey(),
+      limitToLast(4)
+    )
 
     const firebaseImages = await get(latestImagesRef)
     off(latestImagesRef)
@@ -54,7 +58,7 @@ const getStaticProps: GetStaticProps = async () => {
 
     return {
       props: {
-        error: error.message,
+        error: [],
       },
     }
   }
@@ -65,7 +69,7 @@ type Props = {
 }
 
 function Home({ firebaseImages }: Props) {
-  const [images, setImages] = useState(firebaseImages)
+  const [images, setImages] = useState(firebaseImages || [])
   const [isLastPage, setIsLastPage] = useState(false)
 
   // hooks

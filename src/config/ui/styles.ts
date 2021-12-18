@@ -33,6 +33,10 @@ const global = {
       d: 'grid',
       gridTemplateRows: 'auto 1fr auto',
     },
+    '.feed:nth-of-type(5n + 2)': {
+      gridColumn: '2 / 4',
+      gridRow: 'span 2',
+    },
   }),
 }
 

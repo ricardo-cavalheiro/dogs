@@ -4,10 +4,12 @@ function useInfiniteScroll() {
   const [shouldLoadMoreItems, setShouldLoadMoreItems] = useState(false)
 
   useEffect(() => {
+    let observer: IntersectionObserver
+
     const target = document.querySelector('footer')
     const options: IntersectionObserverInit = {
       root: null,
-      threshold: 0.2,
+      threshold: 0.8,
     }
     const callback: IntersectionObserverCallback = (entries) => {
       entries[0].isIntersecting
@@ -15,15 +17,13 @@ function useInfiniteScroll() {
         : setShouldLoadMoreItems(false)
     }
 
-    const observer = new IntersectionObserver(callback, options)
+    observer = new IntersectionObserver(callback, options)
 
     if (target) {
       observer.observe(target)
     }
 
-    return () => {
-      observer.disconnect()
-    }
+    return () => observer.disconnect()
   }, [])
 
   return { shouldLoadMoreItems }

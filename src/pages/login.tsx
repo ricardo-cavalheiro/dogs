@@ -1,8 +1,9 @@
 import { parseCookies } from 'nookies'
-import { Flex } from '@chakra-ui/react'
+import { Flex, Box, useBreakpointValue } from '@chakra-ui/react'
 import { getAuth } from 'firebase-admin/auth'
 
 // components
+import { Background } from '../components/form/Background'
 import { LoginForm } from '../components/pages/login/LoginForm'
 import { SignUpCallToAction } from '../components/pages/login/SignUpCallToAction'
 
@@ -41,12 +42,31 @@ const getServerSideProps: GetServerSideProps = async (context) => {
 }
 
 function Login() {
-  return (
-    <Flex as='main' direction='column' p={5}>
-      <LoginForm />
+  // hooks
+  const isWideScreen = useBreakpointValue({ sm: false, md: true })
 
-      <SignUpCallToAction />
-    </Flex>
+  return (
+    <>
+      {isWideScreen ? (
+        <Flex as='main' justify='center' columnGap={5} w='100%' mx='auto'>
+          <Box flexBasis='50%' position='relative'>
+            <Background />
+          </Box>
+
+          <Box flexBasis='50%' p={5} mt='130px'>
+            <LoginForm />
+
+            <SignUpCallToAction />
+          </Box>
+        </Flex>
+      ) : (
+        <Box p={5}>
+          <LoginForm />
+
+          <SignUpCallToAction />
+        </Box>
+      )}
+    </>
   )
 }
 

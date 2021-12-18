@@ -54,6 +54,7 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
 
   return (
     <Box
+      minW='300px'
       onKeyDown={({ key }) =>
         key === 'Enter' &&
         document.querySelector<HTMLInputElement>('#image')?.click()
@@ -68,8 +69,11 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
             alt='Imagem enviada pelo usuário.'
             cursor='pointer'
             borderRadius='md'
-            transition='100ms'
-            objectFit='fill'
+            transition='500ms'
+            objectFit='cover'
+            objectPosition='center'
+            width='300px'
+            height='300px'
             tabIndex={0}
             _hover={{
               bg: 'white',
@@ -87,7 +91,7 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
           />
         ) : (
           <Center
-            h='200px'
+            h='300px'
             bg='light.100'
             d='flex'
             align='center'

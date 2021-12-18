@@ -89,8 +89,8 @@ function Password({}: Props) {
   }
 
   return (
-    <Box as='main' p={5}>
-      <Box as='form' onSubmit={handleSubmit(onFormSubmit)}>
+    <Box as='main' p={5} maxW='768px' mx='auto'>
+      <Box as='form' onSubmit={handleSubmit(onFormSubmit)} w='100%'>
         <PasswordInput
           label='Nova senha'
           error={errors.password?.message}

@@ -1,4 +1,12 @@
-import { Box, Button, Text, Heading, useToast } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Text,
+  Flex,
+  Heading,
+  useToast,
+  useBreakpointValue,
+} from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { sendPasswordResetEmail } from 'firebase/auth'
@@ -22,6 +30,7 @@ type FormInputProps = {
 function Recovery() {
   // hooks
   const toast = useToast()
+  const isWideScreen = useBreakpointValue({ sm: false, md: true })
   const {
     reset,
     register,
@@ -58,32 +67,64 @@ function Recovery() {
   }
 
   return (
-    <Box as='main' p={5}>
+    <Box as='main' p={5} maxW='768px' mx='auto'>
       <Heading>Alterar senha</Heading>
 
-      <Text mt={5}>
-        Para mudar de senha, digite o e-mail associado à sua conta e clique em
-        enviar. Você receberá um e-mail contendo as intruções para mudar sua
-        senha.
-      </Text>
+      {isWideScreen ? (
+        <Flex columnGap={5}>
+          <Box flexBasis='50%'>
+            <Text mt={5}>
+              Para mudar de senha, digite o e-mail associado à sua conta e
+              clique em enviar. Você receberá um e-mail contendo as intruções
+              para mudar sua senha.
+            </Text>
+          </Box>
 
-      <Box as='form' onSubmit={handleSubmit(onFormSubmit)}>
-        <Input
-          label='E-mail'
-          error={errors.email?.message}
-          {...register('email')}
-        />
+          <Box as='form' onSubmit={handleSubmit(onFormSubmit)} flexBasis='50%'>
+            <Input
+              label='E-mail'
+              error={errors.email?.message}
+              {...register('email')}
+            />
 
-        <Button
-          type='submit'
-          isLoading={isSubmitting}
-          loadingText='Enviando...'
-          mt={4}
-          w='100%'
-        >
-          Enviar
-        </Button>
-      </Box>
+            <Button
+              type='submit'
+              isLoading={isSubmitting}
+              loadingText='Enviando...'
+              mt={4}
+              w='100%'
+            >
+              Enviar
+            </Button>
+          </Box>
+        </Flex>
+      ) : (
+        <>
+          <Text mt={5}>
+            Para mudar de senha, digite o e-mail associado à sua conta e clique
+            em enviar. Você receberá um e-mail contendo as intruções para mudar
+            sua senha.
+          </Text>
+
+          <Box as='form' onSubmit={handleSubmit(onFormSubmit)}>
+            <Input
+              label='E-mail'
+              error={errors.email?.message}
+              {...register('email')}
+            />
+
+            <Button
+              type='submit'
+              isLoading={isSubmitting}
+              loadingText='Enviando...'
+              mt={4}
+              w='100%'
+            >
+              Enviar
+            </Button>
+          </Box>
+        </>
+      )}
     </Box>
   )
 }

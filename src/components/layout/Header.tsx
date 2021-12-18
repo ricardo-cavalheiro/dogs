@@ -1,9 +1,18 @@
-import { Flex, Box, Link, Text, Spinner, Center } from '@chakra-ui/react'
+import {
+  Flex,
+  Box,
+  Link,
+  Text,
+  Spinner,
+  Center,
+  Avatar,
+} from '@chakra-ui/react'
 import { useRouter } from 'next/router'
+import { AiOutlineUser } from 'react-icons/ai'
 import NextLink from 'next/link'
 
 // components
-import { DogsIcon, UserIcon } from '../Icons'
+import { DogsIcon } from '../Icons'
 import { VerifyEmailMessage } from '../VerifyEmailMessage'
 
 // hooks
@@ -12,9 +21,10 @@ import { useUser } from '../../hooks/contexts/useUser'
 type UserAccount = {
   href: string
   label: string
+  username?: string
 }
 
-function UserAccount({ href, label }: UserAccount) {
+function UserAccount({ href, label, username }: UserAccount) {
   return (
     <NextLink href={href} passHref>
       <Link
@@ -24,7 +34,11 @@ function UserAccount({ href, label }: UserAccount) {
         gridGap={2.5}
       >
         <Text as='span'>{label}</Text>
-        <UserIcon />
+        <Avatar
+          name={username}
+          bg='light.300'
+          icon={<AiOutlineUser color='#333' />}
+        />
       </Link>
     </NextLink>
   )
@@ -57,7 +71,7 @@ function Header() {
     >
       {showEmailConfirmationMessage && <VerifyEmailMessage />}
 
-      <Flex align='center' justify='space-between' w='100%' p={5}>
+      <Flex align='center' justify='space-between' w='100%' maxW='768px' p={5}>
         <NextLink href='/' passHref>
           <Link>
             <DogsIcon />
@@ -73,6 +87,7 @@ function Header() {
             <UserAccount
               href={`/account/${userInfo.username}`}
               label={userInfo.username}
+              username={userInfo.username}
             />
           ) : (
             <UserAccount href='/login' label='Entrar / Criar conta' />

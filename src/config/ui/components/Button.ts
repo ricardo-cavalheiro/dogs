@@ -26,7 +26,6 @@ const Button = {
     fileUpload: (props: StyleFunctionProps) => ({
       bg: 'light.100',
       w: '100%',
-      h: '200px',
     }),
     cancel: (props: StyleFunctionProps) => ({
       bg: 'gray.100',

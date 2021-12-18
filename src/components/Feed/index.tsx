@@ -138,7 +138,15 @@ type Props = {
 
 function Feed({ images }: Props) {
   return (
-    <Grid as='ul' gap={5}>
+    <Grid
+      mx='auto'
+      maxW='768px'
+      as='ul'
+      gap={5}
+      templateRows={['1fr']}
+      templateColumns={['1fr', 'repeat(3, 1fr)']}
+      className='feed'
+    >
       {images.map((image, index) => (
         <Card
           key={image.id}

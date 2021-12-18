@@ -1,8 +1,9 @@
-import { Flex } from '@chakra-ui/react'
+import { Flex, Box, useBreakpointValue } from '@chakra-ui/react'
 import { parseCookies } from 'nookies'
 import { getAuth } from 'firebase-admin/auth'
 
 // components
+import { Background } from '../components/form/Background'
 import { SignUpForm } from '../components/pages/signup/signupForm'
 
 // firebase services
@@ -33,10 +34,27 @@ const getServerSideProps: GetServerSideProps = async (context) => {
 }
 
 function SignUp() {
+  // hooks
+  const isWideScreen = useBreakpointValue({ sm: false, md: true })
+
   return (
-    <Flex as='main' direction='column' p={5}>
-      <SignUpForm />
-    </Flex>
+    <>
+      {isWideScreen ? (
+        <Flex as='main' justify='center' columnGap={5} w='100%' mx='auto'>
+          <Box flexBasis='50%' position='relative'>
+            <Background />
+          </Box>
+
+          <Box flexBasis='50%' p={5} mt='130px'>
+            <SignUpForm />
+          </Box>
+        </Flex>
+      ) : (
+        <Box p={5}>
+          <SignUpForm />
+        </Box>
+      )}
+    </>
   )
 }
 

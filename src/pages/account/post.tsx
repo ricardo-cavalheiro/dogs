@@ -1,14 +1,21 @@
 import { useState } from 'react'
-import { Box, Button, Text, useToast } from '@chakra-ui/react'
+import {
+  Button,
+  Text,
+  Flex,
+  Box,
+  Grid,
+  useToast,
+  useBreakpointValue,
+} from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import {
   ref as storageRef,
   uploadBytes,
   getDownloadURL,
 } from 'firebase/storage'
-import { ref as databaseRef, update } from 'firebase/database'
+import { ref as databaseRef, update, push } from 'firebase/database'
 import { useRouter } from 'next/router'
-import { v4 as uuidv4 } from 'uuid'
 
 // components
 import { Input } from '../../components/form/inputs/RegularInput'
@@ -43,6 +50,7 @@ function Post() {
   const { userInfo } = useUser()
   const toast = useToast()
   const router = useRouter()
+  const isWideScreen = useBreakpointValue({ sm: false, md: true, lg: true })
   const {
     reset,
     register,
@@ -52,7 +60,7 @@ function Post() {
 
   const onFormSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      const imageID = uuidv4()
+      const imageID = push(databaseRef(db, `images/${userInfo.username}`)).key
 
       const uploadedImageLocationRef = storageRef(
         storage,
@@ -117,38 +125,98 @@ function Post() {
   }
 
   return (
-    <Box as='form' mt={10} onSubmit={handleSubmit(onFormSubmit)}>
-      <Input
-        label='Título'
-        error={errors.title?.message}
-        {...register('title', postPhotoValidation.title)}
-      />
-      <Input
-        label='Descrição'
-        error={errors.description?.message}
-        as='textarea'
-        h='70px'
-        pt={3}
-        {...register('description', postPhotoValidation.description)}
-      />
-      <FileUploadInput
-        label='Escolher foto'
-        error={errors.image?.message}
-        imageFileURL={imageFileURL}
-        setImageFileURL={setImageFileURL}
-        {...register('image', postPhotoValidation.image)}
-      />
+    <>
+      {isWideScreen ? (
+        <Box
+          maxW='768px'
+          mx='auto'
+          as='form'
+          onSubmit={handleSubmit(onFormSubmit)}
+        >
+          <Flex justify='center' columnGap={5}>
+            <FileUploadInput
+              label='Escolher foto'
+              error={errors.image?.message}
+              imageFileURL={imageFileURL}
+              setImageFileURL={setImageFileURL}
+              {...register('image', postPhotoValidation.image)}
+            />
 
-      <Button
-        w='100%'
-        mt={5}
-        isLoading={isSubmitting}
-        loadingText='Postando...'
-        type='submit'
-      >
-        Postar
-      </Button>
-    </Box>
+            <Flex w='100%' direction='column'>
+              <Input
+                label='Título'
+                error={errors.title?.message}
+                {...register('title', postPhotoValidation.title)}
+              />
+
+              <Input
+                label='Descrição'
+                error={errors.description?.message}
+                as='textarea'
+                h='70px'
+                pt={3}
+                {...register('description', postPhotoValidation.description)}
+              />
+
+              <Button
+                mt={2}
+                w={['100%', 32]}
+                alignSelf='flex-end'
+                isLoading={isSubmitting}
+                loadingText='Postando...'
+                type='submit'
+              >
+                Postar
+              </Button>
+            </Flex>
+          </Flex>
+        </Box>
+      ) : (
+        <Box
+          maxW='768px'
+          mx='auto'
+          as='form'
+          onSubmit={handleSubmit(onFormSubmit)}
+        >
+          <Box>
+            <Input
+              label='Título'
+              error={errors.title?.message}
+              {...register('title', postPhotoValidation.title)}
+            />
+
+            <Input
+              label='Descrição'
+              error={errors.description?.message}
+              as='textarea'
+              h='70px'
+              pt={3}
+              {...register('description', postPhotoValidation.description)}
+            />
+          </Box>
+
+          <Box>
+            <FileUploadInput
+              label='Escolher foto'
+              error={errors.image?.message}
+              imageFileURL={imageFileURL}
+              setImageFileURL={setImageFileURL}
+              {...register('image', postPhotoValidation.image)}
+            />
+          </Box>
+
+          <Button
+            w={['100%', 32]}
+            mt={5}
+            isLoading={isSubmitting}
+            loadingText='Postando...'
+            type='submit'
+          >
+            Postar
+          </Button>
+        </Box>
+      )}
+    </>
   )
 }
 

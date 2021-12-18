@@ -64,7 +64,14 @@ function Header() {
   }
 
   return (
-    <Flex as='header' align='center' justify='space-between' mb={5}>
+    <Flex
+      mx='auto'
+      maxW='768px'
+      as='header'
+      align='center'
+      justify='space-between'
+      mb={5}
+    >
       <Heading>{mapPageTitleToRoutePath.header}</Heading>
 
       <Flex as='nav' zIndex={3}>
