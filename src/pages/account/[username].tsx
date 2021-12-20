@@ -115,7 +115,7 @@ function Account({ firebaseImages }: Props) {
 
   // hooks
   const { userInfo } = useUser()
-  const { shouldLoadMoreItems } = useInfiniteScroll()
+  const { shouldLoadMoreItems } = useInfiniteScroll('footer')
   const toast = useToast()
 
   useEffect(() => {

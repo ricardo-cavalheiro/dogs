@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 
-function useInfiniteScroll() {
+function useInfiniteScroll(targetElement: string) {
   const [shouldLoadMoreItems, setShouldLoadMoreItems] = useState(false)
 
   useEffect(() => {
     let observer: IntersectionObserver
 
-    const target = document.querySelector('footer')
+    const target = document.querySelector(targetElement)
     const options: IntersectionObserverInit = {
       root: null,
       threshold: 0.8,

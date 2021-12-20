@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Grid, Box, Flex, Text, useDisclosure } from '@chakra-ui/react'
+import {
+  Grid,
+  Box,
+  Flex,
+  Text,
+  useDisclosure,
+  useBreakpointValue,
+} from '@chakra-ui/react'
 import { MdOutlineVisibility, MdFavorite } from 'react-icons/md'
 import { ref, onValue, off } from 'firebase/database'
 import NextImage from 'next/image'
@@ -15,6 +22,7 @@ import { useUser } from '../../hooks/contexts/useUser'
 import { db } from '../../services/firebase/database'
 
 // types
+import type { KeyboardEventHandler } from 'react'
 import type { ImageInfo } from '../../typings/userInfo'
 import type { DatabaseReference } from 'firebase/database'
 
@@ -31,8 +39,9 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
   })
 
   // hooks
-  const { onOpen, onClose, isOpen, onToggle } = useDisclosure()
   const { userInfo } = useUser()
+  const { onOpen, onClose, isOpen, onToggle } = useDisclosure()
+  const isWideScreen = useBreakpointValue({ sm: false, md: true, lg: true })
 
   // fetches the total of views and likes for the image
   useEffect(() => {
@@ -44,6 +53,8 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
       onValue(imageRef, (snapshot) => {
         if (snapshot.exists()) {
           const metrics = snapshot.val()
+
+          console.log({ metrics })
 
           setImageMetrics({ likes: metrics.likes, views: metrics.views })
         }
@@ -67,6 +78,10 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
           '&:hover > .post-info': {
             d: 'flex',
           },
+          '&:nth-child(3n + 2)': {
+            gridColumn: isWideScreen && '2 / 4',
+            gridRow: isWideScreen && 'span 2',
+          },
         }}
         tabIndex={0}
         transition='200ms'
@@ -75,7 +90,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
           outline: '2px solid transparent',
         }}
         onClick={onOpen}
-        onKeyDown={({ key }) => key === 'Enter' && onToggle()} // this type error is probably related to chakra ui
+        onKeyDown={({ key }) => (key === 'Enter' ? onToggle() : undefined)} // this type error is probably related to chakra ui
       >
         <NextImage
           src={imageInfo.path}
@@ -85,7 +100,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
           layout='responsive'
           objectFit='cover'
           placeholder='empty'
-          quality={30}
+          quality={isWideScreen ? 100 : 30}
           priority={isAboveTheFold}
         />
 
@@ -148,11 +163,7 @@ function Feed({ images }: Props) {
       className='feed'
     >
       {images.map((image, index) => (
-        <Card
-          key={image.id}
-          imageInfo={image}
-          isAboveTheFold={index < 2 && true}
-        />
+        <Card key={image.id} imageInfo={image} isAboveTheFold={index < 4} />
       ))}
     </Grid>
   )

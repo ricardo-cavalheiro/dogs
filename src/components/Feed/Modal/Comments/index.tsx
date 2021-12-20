@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/react'
+import { Box, Text, SlideFade } from '@chakra-ui/react'
 
 // components
 import { Comment } from './Comment'
@@ -13,12 +13,14 @@ type CommentsProps = {
 
 function Comments({ comments, imageId }: CommentsProps) {
   return (
-    <Box>
+    <Box as='ul' className='comments-wrapper' overflowY='auto' mb={2}>
       {comments.length === 0 ? (
         <Text>Nenhum comentário ainda...</Text>
       ) : (
         comments.map((comment) => (
-          <Comment key={comment.id} comment={comment} imageId={imageId} />
+          <SlideFade in={true} key={comment.id}>
+            <Comment comment={comment} imageId={imageId} />
+          </SlideFade>
         ))
       )}
     </Box>

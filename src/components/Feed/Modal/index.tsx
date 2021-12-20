@@ -5,13 +5,23 @@ import {
   ModalBody,
   Box,
   Flex,
+  Grid,
   Link,
   Text,
   Heading,
   Divider,
 } from '@chakra-ui/react'
 import { MdOutlineVisibility } from 'react-icons/md'
-import { update, ref, onValue, off, increment } from 'firebase/database'
+import {
+  update,
+  ref,
+  onValue,
+  off,
+  increment,
+  query,
+  limitToLast,
+  orderByKey,
+} from 'firebase/database'
 import { useState, useEffect } from 'react'
 import NextImage from 'next/image'
 import NextLink from 'next/link'
@@ -19,6 +29,7 @@ import NextLink from 'next/link'
 // components
 import { Comments } from './Comments'
 import { ActionNavBar } from './ActionNavBar'
+import { LoadMoreComments } from './Comments/LoadMoreComments'
 
 // firebase services
 import { db } from '../../../services/firebase/database'
@@ -43,13 +54,15 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
     let imageCommentsRef: Query
 
     try {
-      imageCommentsRef = ref(db, `image_comments/${imageInfo.id}`)
+      imageCommentsRef = query(
+        ref(db, `image_comments/${imageInfo.id}`),
+        orderByKey(),
+        limitToLast(4)
+      )
 
       onValue(imageCommentsRef, (snapshot) => {
         if (snapshot.exists()) {
-          setImageComments(Object.values<Comment>(snapshot.val()))
-        } else {
-          setImageComments([])
+          setImageComments(Object.values<Comment>(snapshot.val()).reverse())
         }
       })
     } catch (err) {
@@ -95,58 +108,77 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
   return (
     <CModal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
-        <ModalBody>
-          <Box position='relative'>
+      <ModalContent
+        minW={[null, null, '80vw']}
+        h={[null, null, '100%']}
+        alignContent='center'
+        justifyContent='center'
+      >
+        <ModalBody d='flex' flexDirection={['column', null, 'row']}>
+          <Box position='relative' w='100%' h={['300px', '400px', '100%']}>
             <NextImage
               src={imageInfo.path}
               alt={imageInfo.description}
-              layout='responsive'
-              height='200px'
-              width='200px'
+              layout='fill'
+              objectFit='cover'
+              objectPosition='center'
+              quality={100}
               priority={true}
             />
           </Box>
 
-          <Box px={3} py={2}>
-            <Flex justify='space-between' mt={2} mb={2} opacity={0.5}>
+          <Grid
+            p={3}
+            w={[null, null, '600px']}
+            templateRows='min-content 280px'
+            py={[null, null, 5]}
+          >
+            <Box>
+              <Flex justify='space-between' mt={2} mb={2} opacity={0.5}>
+                <Box>
+                  <NextLink
+                    href={`/account/${imageInfo.author_username}`}
+                    passHref
+                  >
+                    <Link>@{imageInfo.author_username}</Link>
+                  </NextLink>
+                </Box>
+
+                <Flex align='center' gridGap={1}>
+                  <MdOutlineVisibility size={20} />
+
+                  <Text as='span'>{imageViews}</Text>
+                </Flex>
+              </Flex>
+
+              <Divider borderColor='#a8a8a8' my={3} />
+
               <Box>
-                <NextLink
-                  href={`/account/${imageInfo.author_username}`}
-                  passHref
-                >
-                  <Link>@{imageInfo.author_username}</Link>
-                </NextLink>
+                <Heading fontSize={40}>{imageInfo.title}</Heading>
+
+                {/* this avoids react rendering an empty `p` tag */}
+                {imageInfo.description && (
+                  <Text as='p' mt={5}>
+                    {imageInfo.description}
+                  </Text>
+                )}
               </Box>
 
-              <Flex align='center' gridGap={1}>
-                <MdOutlineVisibility size={20} />
+              <Divider borderColor='#a8a8a8' my={3} />
 
-                <Text as='span'>{imageViews}</Text>
-              </Flex>
-            </Flex>
+              <ActionNavBar imageInfo={imageInfo} />
 
-            <Divider borderColor='#a8a8a8' my={3} />
-
-            <Box>
-              <Heading fontSize={40}>{imageInfo.title}</Heading>
-
-              {/* this avoids react rendering an empty `p` tag */}
-              {imageInfo.description && (
-                <Text as='p' mt={5}>
-                  {imageInfo.description}
-                </Text>
-              )}
+              <Divider borderColor='#a8a8a8' my={3} />
             </Box>
 
-            <Divider borderColor='#a8a8a8' my={3} />
-
-            <ActionNavBar imageInfo={imageInfo} />
-
-            <Divider borderColor='#a8a8a8' my={3} />
-
             <Comments comments={imageComments} imageId={imageInfo.id} />
-          </Box>
+
+            <LoadMoreComments
+              imageID={imageInfo.id}
+              imageComments={imageComments}
+              setImageComments={setImageComments}
+            />
+          </Grid>
         </ModalBody>
       </ModalContent>
     </CModal>

@@ -14,7 +14,7 @@ import {
 // components
 import { Feed } from '../components/Feed'
 
-// firebase
+// firebase services
 import { db } from '../services/firebase/database'
 
 // hooks
@@ -69,12 +69,13 @@ type Props = {
 }
 
 function Home({ firebaseImages }: Props) {
+  // states
   const [images, setImages] = useState(firebaseImages || [])
   const [isLastPage, setIsLastPage] = useState(false)
 
   // hooks
   const toast = useToast()
-  const { shouldLoadMoreItems } = useInfiniteScroll()
+  const { shouldLoadMoreItems } = useInfiniteScroll('footer')
 
   // infinite scroll
   useEffect(() => {

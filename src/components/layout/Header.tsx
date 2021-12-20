@@ -3,9 +3,9 @@ import {
   Box,
   Link,
   Text,
-  Spinner,
-  Center,
   Avatar,
+  Skeleton,
+  SkeletonCircle,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { AiOutlineUser } from 'react-icons/ai'
@@ -32,12 +32,16 @@ function UserAccount({ href, label, username }: UserAccount) {
         alignItems='center'
         justifyContent='flex-end'
         gridGap={2.5}
+        _hover={{
+          textDecoration: 'none'
+        }}
       >
         <Text as='span'>{label}</Text>
         <Avatar
           name={username}
           bg='light.300'
           icon={<AiOutlineUser color='#333' />}
+          
         />
       </Link>
     </NextLink>
@@ -71,7 +75,13 @@ function Header() {
     >
       {showEmailConfirmationMessage && <VerifyEmailMessage />}
 
-      <Flex align='center' justify='space-between' w='100%' maxW='768px' p={5}>
+      <Flex
+        align='center'
+        justify='space-between'
+        w='100%'
+        maxW='768px'
+        p={[5, null, '20px 0px']}
+      >
         <NextLink href='/' passHref>
           <Link>
             <DogsIcon />
@@ -80,9 +90,10 @@ function Header() {
 
         <Box>
           {fetchingUserInfoFirebase ? (
-            <Center>
-              <Spinner />
-            </Center>
+            <Flex align='center' columnGap={2}>
+              <Skeleton w='100px' h='20px' />
+              <SkeletonCircle size='48px' />
+            </Flex>
           ) : userInfo.isLoggedIn ? (
             <UserAccount
               href={`/account/${userInfo.username}`}

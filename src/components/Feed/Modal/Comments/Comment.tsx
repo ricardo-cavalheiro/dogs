@@ -39,9 +39,10 @@ function Comment({ comment, imageId }: CommentProps) {
         `/liked_comments/${imageId}/${userInfo.username}/${comment.id}`
       )
 
-      onValue(likedCommentRef, (snapshot) => {
-        if (snapshot.exists()) setIsLiked(true)
-      })
+      onValue(
+        likedCommentRef,
+        (snapshot) => snapshot.exists() && setIsLiked(true)
+      )
     } catch (err) {
       console.log('erro ao ao atualizar os comentarios já curtidos', { err })
     }
@@ -56,40 +57,37 @@ function Comment({ comment, imageId }: CommentProps) {
       `/image_comments/${imageId}/${comment.id}/likes`
     )
 
-    onValue(authorCommentRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setCommentTotalLikes(snapshot.val())
-      }
-    })
+    onValue(
+      authorCommentRef,
+      (snapshot) => snapshot.exists() && setCommentTotalLikes(snapshot.val())
+    )
 
     return () => off(authorCommentRef)
   }, [])
 
   return (
-    <Box>
-      <Flex align='center' justify='space-between' gridGap={3}>
-        <Box>
-          <NextLink href={`/account/${comment.author_username}`} passHref>
-            <Link fontWeight='bold'>{comment.author_username}</Link>
-          </NextLink>
+    <Flex as='li' align='center' justify='space-between' gridGap={3}>
+      <Box>
+        <NextLink href={`/account/${comment.author_username}`} passHref>
+          <Link fontWeight='bold'>{comment.author_username}</Link>
+        </NextLink>
 
-          <Text as='p'>{comment.comment}</Text>
+        <Text as='p'>{comment.comment}</Text>
 
-          <Flex>
-            <Text as='span' fontWeight='bold' opacity={0.8} fontSize={13}>
-              {commentTotalLikes} likes
-            </Text>
-          </Flex>
-        </Box>
+        <Flex>
+          <Text as='span' fontWeight='bold' opacity={0.8} fontSize={13}>
+            {commentTotalLikes} likes
+          </Text>
+        </Flex>
+      </Box>
 
-        <LikeComment
-          imageId={imageId}
-          commentId={comment.id}
-          isLiked={isLiked}
-          setIsLiked={setIsLiked}
-        />
-      </Flex>
-    </Box>
+      <LikeComment
+        imageId={imageId}
+        commentId={comment.id}
+        isLiked={isLiked}
+        setIsLiked={setIsLiked}
+      />
+    </Flex>
   )
 }
 
