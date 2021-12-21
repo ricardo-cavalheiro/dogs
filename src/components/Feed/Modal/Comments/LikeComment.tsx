@@ -28,7 +28,7 @@ function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
       if (isLiked === true) {
         const updates = {
           [`/image_comments/${imageId}/${commentId}/likes`]: increment(1),
-          [`/liked_comments/${imageId}/${userInfo.username}/${commentId}`]:
+          [`/liked_comments/${imageId}/${userInfo.uid}/${commentId}`]:
             true,
         }
 
@@ -38,7 +38,7 @@ function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
       } else {
         const updates = {
           [`/image_comments/${imageId}/${commentId}/likes`]: increment(-1),
-          [`/liked_comments/${imageId}/${userInfo.username}/${commentId}`]:
+          [`/liked_comments/${imageId}/${userInfo.uid}/${commentId}`]:
             null,
         }
 

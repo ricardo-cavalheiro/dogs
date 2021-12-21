@@ -37,7 +37,7 @@ function Comment({ comment, imageId }: CommentProps) {
     try {
       likedCommentRef = ref(
         db,
-        `/liked_comments/${imageId}/${userInfo.username}/${comment.id}`
+        `/liked_comments/${imageId}/${userInfo.uid}/${comment.id}`
       )
 
       onValue(

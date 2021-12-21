@@ -7,15 +7,16 @@ import {
   endBefore,
   orderByKey,
   onValue,
-  get,
   off,
 } from 'firebase/database'
+import { getDatabase } from 'firebase-admin/database'
 
 // components
 import { Feed } from '../components/Feed'
 
 // firebase services
 import { db } from '../services/firebase/database'
+import { adminApp } from '../services/firebase/admin'
 
 // hooks
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
@@ -27,30 +28,22 @@ import type { ImageInfo } from '../typings/userInfo'
 
 const getStaticProps: GetStaticProps = async () => {
   try {
-    const latestImagesRef = query(
-      ref(db, 'latest_images'),
-      orderByKey(),
-      limitToLast(4)
-    )
+    const db = getDatabase(adminApp)
+    const ref = db.ref('latest_images').orderByKey().limitToLast(4)
+    const snapshot = await ref.once('value')
 
-    const firebaseImages = await get(latestImagesRef)
-    off(latestImagesRef)
-
-    if (firebaseImages.exists()) {
+    if (snapshot.exists())
       return {
         props: {
-          firebaseImages: Object.values<ImageInfo>(
-            firebaseImages.val()
-          ).reverse(),
+          firebaseImages: Object.values<ImageInfo>(snapshot.val()).reverse(),
         },
       }
-    } else {
+    else
       return {
         props: {
           firebaseImages: [],
         },
       }
-    }
   } catch (err) {
     const error = err as Error
 
@@ -58,7 +51,7 @@ const getStaticProps: GetStaticProps = async () => {
 
     return {
       props: {
-        error: [],
+        firebaseImages: [],
       },
     }
   }

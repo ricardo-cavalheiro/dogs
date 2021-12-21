@@ -4,7 +4,6 @@ import {
   ref,
   query,
   limitToLast,
-  get,
   orderByKey,
   endBefore,
   onValue,
@@ -12,6 +11,7 @@ import {
 } from 'firebase/database'
 import { parseCookies } from 'nookies'
 import { getAuth } from 'firebase-admin/auth'
+import { getDatabase } from 'firebase-admin/database'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
@@ -31,68 +31,31 @@ import type { Query } from 'firebase/database'
 import type { ImageInfo } from '../../typings/userInfo'
 
 const getServerSideProps: GetServerSideProps = async (context) => {
-  const userIDToken = parseCookies(context)['@dogs:token']
+  const userToken = parseCookies(context)['@dogs:token']
 
-  if (!userIDToken)
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    }
+  if (!userToken) return { redirect: { destination: '/', permanent: false } }
 
   try {
     const auth = getAuth(adminApp)
+    const user = await auth.verifyIdToken(userToken)
 
-    const user = await auth.verifyIdToken(userIDToken)
+    const db = getDatabase(adminApp)
+    const ref = db.ref(`images/${user.uid}`).orderByKey().limitToLast(4)
+    const snapshot = await ref.once('value')
 
-    if (user) {
-      try {
-        const latestImagesRef = query(
-          ref(db, `images/${user.name}`),
-          limitToLast(4)
-        )
-
-        const firebaseImages = await get(latestImagesRef)
-        off(latestImagesRef)
-
-        if (firebaseImages.exists()) {
-          return {
-            props: {
-              firebaseImages: Object.values<ImageInfo>(
-                firebaseImages.val()
-              ).reverse(),
-            },
-          }
-        } else {
-          return {
-            props: {
-              firebaseImages: [],
-            },
-          }
-        }
-      } catch (err) {
-        const error = err as Error
-
-        console.log('erro ao buscar as imagens mais recentes', { error })
-
-        return {
-          props: {
-            firebaseImages: [],
-          },
-        }
+    if (snapshot.exists())
+      return {
+        props: {
+          firebaseImages: Object.values<ImageInfo>(snapshot.val()).reverse(),
+        },
       }
-    }
-
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    }
+    else
+      return {
+        props: {
+          firebaseImages: [],
+        },
+      }
   } catch (err) {
-    console.log({ err })
-
     return {
       redirect: {
         destination: '/',
@@ -112,22 +75,23 @@ function Account({ firebaseImages }: Props) {
   const [isLastPage, setIsLastPage] = useState(false)
 
   // hooks
+  const toast = useToast()
   const { userInfo } = useUser()
   const { shouldLoadMoreItems } = useInfiniteScroll('footer')
-  const toast = useToast()
 
   useEffect(() => {
-    if (!images.length) return
+    if (images.length === 0) return
 
     if (!shouldLoadMoreItems || isLastPage) return
 
     let moreImagesRef: Query
 
+
     try {
       const lastImageID = images.at(-1)?.id as string
 
       moreImagesRef = query(
-        ref(db, `images/${userInfo.username}`),
+        ref(db, `images/${userInfo.uid}`),
         orderByKey(),
         endBefore(lastImageID),
         limitToLast(4)
@@ -135,11 +99,9 @@ function Account({ firebaseImages }: Props) {
 
       onValue(moreImagesRef, (snapshot) => {
         if (snapshot.exists()) {
-          const images = Object.values(snapshot.val() as ImageInfo[]).reverse()
+          const images = Object.values<ImageInfo>(snapshot.val()).reverse()
 
-          if (images.length < 4) {
-            setIsLastPage(true)
-          }
+          if (images.length < 4) setIsLastPage(true)
 
           setImages((prevImages) => [...prevImages, ...images])
         }

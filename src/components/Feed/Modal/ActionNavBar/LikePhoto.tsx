@@ -33,7 +33,7 @@ function LikePhoto({ imageInfo }: Props) {
     try {
       likedImageRef = ref(
         db,
-        `liked_images/${imageInfo.id}/${userInfo.username}`
+        `liked_images/${imageInfo.id}/${userInfo.uid}`
       )
 
       onValue(
@@ -54,9 +54,8 @@ function LikePhoto({ imageInfo }: Props) {
     try {
       if (isLiked === true) {
         const updates = {
-          [`images/${imageInfo.author_username}/${imageInfo.id}/likes`]:
-            increment(1),
-          [`liked_images/${imageInfo.id}/${userInfo.username}`]: true,
+          [`image_metrics/${imageInfo.id}/likes`]: increment(1),
+          [`liked_images/${imageInfo.id}/${userInfo.uid}`]: true,
         }
 
         await update(ref(db), updates)
@@ -64,9 +63,8 @@ function LikePhoto({ imageInfo }: Props) {
         setIsLiked(true)
       } else {
         const updates = {
-          [`images/${imageInfo.author_username}/${imageInfo.id}/likes`]:
-            increment(-1),
-          [`liked_images/${imageInfo.id}/${userInfo.username}`]: null,
+          [`image_metrics/${imageInfo.id}/likes`]: increment(-1),
+          [`liked_images/${imageInfo.id}/${userInfo.uid}`]: null,
         }
 
         await update(ref(db), updates)

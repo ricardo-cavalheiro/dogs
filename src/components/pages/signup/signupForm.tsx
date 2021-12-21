@@ -49,19 +49,23 @@ function SignUpForm() {
     username,
   }) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password)
+      const {
+        user: { uid, emailVerified },
+      } = await createUserWithEmailAndPassword(auth, email, password)
 
       if (auth.currentUser) {
         await updateProfile(auth.currentUser, { displayName: username })
+
         await sendEmailVerification(auth.currentUser, {
           url: 'http://localhost:3000/',
         })
       }
 
       setUserInfo({
+        uid,
         email,
         username,
-        isAccountVerified: false,
+        isAccountVerified: emailVerified,
         isLoggedIn: true,
       })
 
@@ -112,9 +116,7 @@ function SignUpForm() {
   return (
     <Box as='form' onSubmit={handleSubmit(onFormSubmit)}>
       <Box as='fieldset'>
-        <Heading as='legend'>
-          Criar conta
-        </Heading>
+        <Heading as='legend'>Criar conta</Heading>
 
         <Input
           label='Usuário'

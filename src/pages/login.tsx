@@ -16,10 +16,7 @@ import type { GetServerSideProps } from 'next'
 const getServerSideProps: GetServerSideProps = async (context) => {
   const userIDToken = parseCookies(context)['@dogs:token']
 
-  if (!userIDToken)
-    return {
-      props: {},
-    }
+  if (!userIDToken) return { props: {} }
 
   try {
     const auth = getAuth(adminApp)
@@ -49,11 +46,11 @@ function Login() {
     <>
       {isWideScreen ? (
         <Flex as='main' justify='center' columnGap={5} w='100%' mx='auto'>
-          <Box flexBasis='50%' position='relative'>
+          <Box flexBasis='50vw' position='relative'>
             <Background />
           </Box>
 
-          <Box flexBasis='50%' p={5} mt='130px'>
+          <Box flexBasis='50vw' p={5} mt='130px'>
             <LoginForm />
 
             <SignUpCallToAction />

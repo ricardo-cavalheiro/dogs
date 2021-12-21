@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react'
 import { MdModeComment, MdOutlineModeComment, MdSend } from 'react-icons/md'
 import { useForm } from 'react-hook-form'
-import { push, update, ref } from 'firebase/database'
+import { push, set, ref } from 'firebase/database'
 
 // components
 import { Input } from '../../../form/inputs/RegularInput'
@@ -48,11 +48,10 @@ function AddComment({ imageID }: Props) {
 
   const onCommentSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      const imageCommentsRef = ref(db, `image_comments/${imageID}`)
-      const newCommentRef = push(imageCommentsRef)
+      const newCommentID = push(ref(db, `image_comments/${imageID}`)).key
 
-      await update(newCommentRef, {
-        id: newCommentRef.key,
+      await set(ref(db, `image_comments/${imageID}/${newCommentID}`), {
+        id: newCommentID,
         comment: data.comment,
         author_username: userInfo.username,
         likes: 0,

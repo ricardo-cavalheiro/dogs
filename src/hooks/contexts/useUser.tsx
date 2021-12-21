@@ -27,6 +27,7 @@ type Props = {
 function UserContextProvider({ children }: Props) {
   // states
   const [userInfo, setUserInfo] = useState<UserInfo>({
+    uid: '',
     email: '',
     username: '',
     isLoggedIn: false,
@@ -43,6 +44,7 @@ function UserContextProvider({ children }: Props) {
       await signOut(auth)
 
       setUserInfo({
+        uid: '',
         email: '',
         username: '',
         isLoggedIn: false,
@@ -61,9 +63,10 @@ function UserContextProvider({ children }: Props) {
   useEffect(() => {
     const onChange: NextOrObserver<User> = (user) => {
       if (user?.email && user?.displayName) {
-        const { email, displayName: username } = user
+        const { email, displayName: username, uid } = user
 
         setUserInfo({
+          uid,
           email,
           username,
           isLoggedIn: true,
@@ -75,6 +78,7 @@ function UserContextProvider({ children }: Props) {
       }
 
       setUserInfo({
+        uid: '',
         email: '',
         username: '',
         isLoggedIn: false,

@@ -55,15 +55,16 @@ function ConfirmationAlert({
     try {
       const storageImageRef = storageRef(
         storage,
-        `images/${userInfo.username}/${imageInfo.id}`
+        `images/${userInfo.uid}/${imageInfo.id}`
       )
 
       const updates = {
-        [`images/${imageInfo.author_username}/${imageInfo.id}`]: null,
         [`image_comments/${imageInfo.id}`]: null,
+        [`image_metrics/${imageInfo.id}`]: null,
+        [`images/${imageInfo.author_id}/${imageInfo.id}`]: null,
+        [`latest_images/${imageInfo.id}`]: null,
         [`liked_comments/${imageInfo.id}`]: null,
         [`liked_images/${imageInfo.id}`]: null,
-        [`latest_images/${imageInfo.id}`]: null,
       }
 
       await Promise.all([

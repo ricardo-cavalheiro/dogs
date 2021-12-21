@@ -6,7 +6,6 @@ import {
   Text,
   Button,
   Box,
-  Flex,
   Divider,
   useToast,
 } from '@chakra-ui/react'

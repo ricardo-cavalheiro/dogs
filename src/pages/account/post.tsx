@@ -59,11 +59,11 @@ function Post() {
 
   const onFormSubmit: SubmitHandler<FormInputs> = async (data) => {
     try {
-      const imageID = push(databaseRef(db, `images/${userInfo.username}`)).key
+      const imageID = push(databaseRef(db, `images/${userInfo.uid}`)).key
 
       const uploadedImageLocationRef = storageRef(
         storage,
-        `images/${userInfo.username}/${imageID}`
+        `images/${userInfo.uid}/${imageID}`
       )
 
       // save image to storage
@@ -77,15 +77,14 @@ function Post() {
       const imageInfo = {
         id: imageID,
         author_username: userInfo.username,
+        author_id: userInfo.uid,
         path: imageURL,
         title: data.title,
         description: data.description,
         created_at: timeCreated,
-        views: 0,
-        likes: 0,
       }
       const updates = {
-        [`images/${userInfo.username}/${imageID}`]: imageInfo,
+        [`images/${userInfo.uid}/${imageID}`]: imageInfo,
         [`latest_images/${imageID}`]: imageInfo,
       }
       await update(databaseRef(db), updates)
@@ -117,9 +116,11 @@ function Post() {
 
   if (userInfo.isAccountVerified === false) {
     return (
-      <Text>
-        Você precisa verificar sua conta antes de começar a postar suas fotos.
-      </Text>
+      <Box maxW='768px' mx='auto'>
+        <Text>
+          Você precisa verificar sua conta antes de começar a postar suas fotos.
+        </Text>
+      </Box>
     )
   }
 

@@ -11,6 +11,9 @@ if (getApps().length === 0) {
   adminApp = initializeApp({
     credential: applicationDefault(),
     databaseURL: 'https://dogs-ffe57-default-rtdb.firebaseio.com',
+    databaseAuthVariableOverride: {
+      uid: 'nodejs-backend',
+    },
   })
 }
 

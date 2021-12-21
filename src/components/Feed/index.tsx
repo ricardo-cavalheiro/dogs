@@ -49,7 +49,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
     let imageRef: DatabaseReference
 
     try {
-      imageRef = ref(db, `images/${imageInfo.author_username}/${imageInfo.id}`)
+      imageRef = ref(db, `image_metrics/${imageInfo.id}`)
 
       onValue(imageRef, (snapshot) => {
         if (snapshot.exists()) {
@@ -122,7 +122,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
             <MdOutlineVisibility size={30} color='white' />
 
             <Text as='span' fontWeight='bold' color='light.100'>
-              {imageMetrics.views}
+              {imageMetrics.views || 0}
             </Text>
           </Flex>
 
@@ -130,7 +130,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
             <MdFavorite size={30} color='#fb1' />
 
             <Text as='span' fontWeight='bold' color='light.100'>
-              {imageMetrics.likes}
+              {imageMetrics.likes || 0}
             </Text>
           </Flex>
         </Flex>

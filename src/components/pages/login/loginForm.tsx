@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Box, Heading, Button, useToast, useColorMode } from '@chakra-ui/react'
+import { Box, Heading, Button, useToast } from '@chakra-ui/react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { useRouter } from 'next/router'
@@ -9,9 +9,6 @@ import { useRouter } from 'next/router'
 import { Input } from '../../form/inputs/RegularInput'
 import { PasswordInput } from '../../form/inputs/PasswordInput'
 import { PasswordRecovery } from './PasswordRecovery'
-
-// hooks
-import { useUser } from '../../../hooks/contexts/useUser'
 
 // firebase
 import { auth } from '../../../services/firebase/auth'
@@ -32,8 +29,6 @@ function LoginForm() {
   // hooks
   const toast = useToast()
   const router = useRouter()
-  const { setUserInfo } = useUser()
-  const { colorMode } = useColorMode()
   const {
     register,
     handleSubmit,
@@ -46,12 +41,6 @@ function LoginForm() {
   }) => {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password)
-
-      setUserInfo((prevUserInfo) => ({
-        ...prevUserInfo,
-        email,
-        username: user.displayName as string,
-      }))
 
       router.push(`/account/${user.displayName}`)
     } catch (err) {

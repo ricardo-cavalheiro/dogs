@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react'
 import { MdOutlineVisibility } from 'react-icons/md'
 import {
-  update,
+  set,
   ref,
   onValue,
   off,
@@ -60,11 +60,12 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
         limitToLast(4)
       )
 
-      onValue(imageCommentsRef, (snapshot) => {
-        if (snapshot.exists()) {
+      onValue(
+        imageCommentsRef,
+        (snapshot) =>
+          snapshot.exists() &&
           setImageComments(Object.values<Comment>(snapshot.val()).reverse())
-        }
-      })
+      )
     } catch (err) {
       console.log('erro ao atualizar a lista de comentarios', { err })
 
@@ -79,21 +80,15 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
     let imageRef: DatabaseReference
     ;(async () => {
       try {
-        imageRef = ref(
-          db,
-          `images/${imageInfo.author_username}/${imageInfo.id}`
-        )
+        imageRef = ref(db, `image_metrics/${imageInfo.id}/views`)
 
         if (isOpen) {
-          await update(imageRef, {
-            views: increment(1),
-          })
+          await set(imageRef, increment(1))
 
-          onValue(imageRef, (snapshot) => {
-            if (snapshot.exists()) {
-              setImageViews(snapshot.val().views)
-            }
-          })
+          onValue(
+            imageRef,
+            (snapshot) => snapshot.exists() && setImageViews(snapshot.val())
+          )
         }
       } catch (err) {
         console.log('erro incrementando total de views da imagem', { err })
