@@ -1,3 +1,6 @@
+import { mode } from '@chakra-ui/theme-tools'
+
+// types
 import type { StyleFunctionProps } from '@chakra-ui/theme-tools'
 
 const Button = {
@@ -22,10 +25,6 @@ const Button = {
       _disabled: {
         opacity: '1',
       },
-    }),
-    fileUpload: (props: StyleFunctionProps) => ({
-      bg: 'light.100',
-      w: '100%',
     }),
     cancel: (props: StyleFunctionProps) => ({
       bg: 'gray.100',

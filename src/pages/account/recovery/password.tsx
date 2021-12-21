@@ -1,7 +1,11 @@
 import { Box, Button, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
-import { updatePassword } from 'firebase/auth'
+import {
+  updatePassword,
+  verifyPasswordResetCode,
+  confirmPasswordReset,
+} from 'firebase/auth'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 
 // components
@@ -20,11 +24,11 @@ import type { GetServerSideProps } from 'next'
 import type { SubmitHandler } from 'react-hook-form'
 
 const getServerSideProps: GetServerSideProps = async (context) => {
-  const emailAction = context.query
+  const oobCode = context.query['oobCode'] as string
 
-  if (emailAction.mode === 'resetPassword') {
+  if (oobCode) {
     return {
-      props: {},
+      props: { oobCode },
     }
   }
 
@@ -41,9 +45,11 @@ type FormInputsProps = {
   confirmPassword: string
 }
 
-type Props = {}
+type Props = {
+  oobCode: string
+}
 
-function Password({}: Props) {
+function Password({ oobCode }: Props) {
   // hooks
   const toast = useToast()
   const router = useRouter()
@@ -58,11 +64,9 @@ function Password({}: Props) {
 
   const onFormSubmit: SubmitHandler<FormInputsProps> = async (data) => {
     try {
-      const user = auth.currentUser
+      await verifyPasswordResetCode(auth, oobCode)
 
-      if (user) {
-        await updatePassword(user, data.password)
-      }
+      await confirmPasswordReset(auth, oobCode, data.password)
 
       reset()
 

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Box, Heading, Button, useToast } from '@chakra-ui/react'
+import { Box, Heading, Button, useToast, useColorMode } from '@chakra-ui/react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { useRouter } from 'next/router'
@@ -33,6 +33,7 @@ function LoginForm() {
   const toast = useToast()
   const router = useRouter()
   const { setUserInfo } = useUser()
+  const { colorMode } = useColorMode()
   const {
     register,
     handleSubmit,
@@ -97,9 +98,7 @@ function LoginForm() {
   return (
     <Box as='form' onSubmit={handleSubmit(onFormSubmit)}>
       <Box as='fieldset'>
-        <Heading as='legend' color='light.800'>
-          Entrar
-        </Heading>
+        <Heading as='legend'>Entrar</Heading>
 
         <Input
           label='E-mail'

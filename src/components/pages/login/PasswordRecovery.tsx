@@ -7,7 +7,6 @@ function PasswordRecovery() {
       <Link
         mt={5}
         d='inline-block'
-        color='light.900'
         position='relative'
         _hover={{ textDecoration: 'none' }}
         _after={{

@@ -6,6 +6,7 @@ import {
   Image,
   Center,
   VisuallyHiddenInput,
+  useColorMode,
 } from '@chakra-ui/react'
 import { MdOutlineFileUpload } from 'react-icons/md'
 
@@ -35,6 +36,9 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
   { label, name, error, imageFileURL, setImageFileURL, onChange, ...rest },
   ref
 ) => {
+  // hooks
+  const { colorMode } = useColorMode()
+
   async function handleImageLoad(event: ChangeEvent<HTMLInputElement>) {
     try {
       // this line is necessary because as react hook form owns the onChange method, in order to use our own
@@ -92,7 +96,7 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
         ) : (
           <Center
             h='300px'
-            bg='light.100'
+            bg={`${colorMode === 'light' ? 'light.100' : 'dark.800'}`}
             d='flex'
             align='center'
             justify='center'
@@ -113,8 +117,16 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
               borderWidth: '1px',
               boxShadow: `0 0 0 3px #fea`,
             }}
+            sx={{
+              '&:hover > svg': {
+                fill: '#333'
+              }
+            }}
           >
-            <MdOutlineFileUpload size='70px' />
+            <MdOutlineFileUpload
+              size='70px'
+              color={`${colorMode === 'light' ? '#333' : '#fff'}`}
+            />
           </Center>
         )}
 

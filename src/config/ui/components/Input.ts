@@ -4,21 +4,25 @@ import { mode } from '@chakra-ui/theme-tools'
 import type { StyleFunctionProps } from '@chakra-ui/theme-tools'
 
 const Input = {
-  baseStyle: {},
+  baseStyle: (props: StyleFunctionProps) => ({
+    color: mode('light.800', 'dark.800')(props),
+  }),
   variants: {
     filled: (props: StyleFunctionProps) => ({
       field: {
-        bg: mode('light.100', 'red.200')(props),
+        bg: mode('light.100', 'dark.800')(props),
         borderRadius: 'md',
         _hover: {
-          bg: mode('white', 'blue.200')(props),
-          borderColor: mode('light.300', 'red.200')(props),
+          bg: mode('light.50', 'dark.50')(props),
+          color: mode('light.800', 'dark.800')(props),
+          borderColor: 'light.300',
           borderWidth: '1px',
           boxShadow: `0 0 0 3px ${props.theme.colors.light['200']}`,
         },
         _focus: {
-          bg: mode('white', 'blue.200')(props),
-          borderColor: mode('light.300', 'red.200')(props),
+          bg: mode('light.50', 'dark.50')(props),
+          color: mode('light.800', 'dark.800')(props),
+          borderColor: 'light.300',
           borderWidth: '1px',
           boxShadow: `0 0 0 3px ${props.theme.colors.light['200']}`,
         },

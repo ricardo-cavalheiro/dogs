@@ -112,7 +112,7 @@ function SignUpForm() {
   return (
     <Box as='form' onSubmit={handleSubmit(onFormSubmit)}>
       <Box as='fieldset'>
-        <Heading as='legend' color='light.800'>
+        <Heading as='legend'>
           Criar conta
         </Heading>
 

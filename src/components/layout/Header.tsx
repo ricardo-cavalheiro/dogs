@@ -6,6 +6,7 @@ import {
   Avatar,
   Skeleton,
   SkeletonCircle,
+  useColorMode,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { AiOutlineUser } from 'react-icons/ai'
@@ -33,7 +34,7 @@ function UserAccount({ href, label, username }: UserAccount) {
         justifyContent='flex-end'
         gridGap={2.5}
         _hover={{
-          textDecoration: 'none'
+          textDecoration: 'none',
         }}
       >
         <Text as='span'>{label}</Text>
@@ -41,7 +42,6 @@ function UserAccount({ href, label, username }: UserAccount) {
           name={username}
           bg='light.300'
           icon={<AiOutlineUser color='#333' />}
-          
         />
       </Link>
     </NextLink>
@@ -50,8 +50,9 @@ function UserAccount({ href, label, username }: UserAccount) {
 
 function Header() {
   // hooks
-  const { userInfo, fetchingUserInfoFirebase } = useUser()
   const router = useRouter()
+  const { colorMode } = useColorMode()
+  const { userInfo, fetchingUserInfoFirebase } = useUser()
 
   // basically, the email confirmation message will only show
   // in the public feed and user account pages
@@ -71,7 +72,7 @@ function Header() {
       zIndex={4}
       position='sticky'
       backdropFilter='blur(6px)'
-      boxShadow='0 1px 1px rgb(0 0 0 / 10%)'
+      boxShadow={`0 1px 1px ${colorMode === 'light' ? '#ddd' : '#333'}`}
     >
       {showEmailConfirmationMessage && <VerifyEmailMessage />}
 
@@ -84,7 +85,7 @@ function Header() {
       >
         <NextLink href='/' passHref>
           <Link>
-            <DogsIcon />
+            <DogsIcon color={colorMode === 'dark' ? '#fff' : ''} />
           </Link>
         </NextLink>
 

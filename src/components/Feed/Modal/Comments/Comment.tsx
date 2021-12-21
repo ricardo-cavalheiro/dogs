@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Flex, Link, Text } from '@chakra-ui/react'
+import { Box, Flex, Link, Text, useColorMode } from '@chakra-ui/react'
 import { ref, onValue, off } from 'firebase/database'
 import NextLink from 'next/link'
 
@@ -28,6 +28,7 @@ function Comment({ comment, imageId }: CommentProps) {
 
   // hooks
   const { userInfo } = useUser()
+  const { colorMode } = useColorMode()
 
   // checks if the comment was already liked by the user
   useEffect(() => {

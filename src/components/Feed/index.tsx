@@ -17,12 +17,12 @@ import { UserNotLoggedInModal } from './UserNotLoggedInModal'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
+import { useShimmer } from '../../hooks/useShimmer'
 
-// firebase
+// firebase services
 import { db } from '../../services/firebase/database'
 
 // types
-import type { KeyboardEventHandler } from 'react'
 import type { ImageInfo } from '../../typings/userInfo'
 import type { DatabaseReference } from 'firebase/database'
 
@@ -40,6 +40,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
 
   // hooks
   const { userInfo } = useUser()
+  const shimmer = useShimmer(200, 200)
   const { onOpen, onClose, isOpen, onToggle } = useDisclosure()
   const isWideScreen = useBreakpointValue({ sm: false, md: true, lg: true })
 
@@ -53,8 +54,6 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
       onValue(imageRef, (snapshot) => {
         if (snapshot.exists()) {
           const metrics = snapshot.val()
-
-          console.log({ metrics })
 
           setImageMetrics({ likes: metrics.likes, views: metrics.views })
         }
@@ -99,7 +98,8 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
           height='200px'
           layout='responsive'
           objectFit='cover'
-          placeholder='empty'
+          placeholder='blur'
+          blurDataURL={shimmer}
           quality={isWideScreen ? 100 : 30}
           priority={isAboveTheFold}
         />
@@ -120,6 +120,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
         >
           <Flex align='center' gridGap={1}>
             <MdOutlineVisibility size={30} color='white' />
+
             <Text as='span' fontWeight='bold' color='light.100'>
               {imageMetrics.views}
             </Text>
@@ -127,6 +128,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
 
           <Flex align='center' gridGap={1}>
             <MdFavorite size={30} color='#fb1' />
+
             <Text as='span' fontWeight='bold' color='light.100'>
               {imageMetrics.likes}
             </Text>
@@ -158,7 +160,6 @@ function Feed({ images }: Props) {
       maxW='768px'
       as='ul'
       gap={5}
-      templateRows={['1fr']}
       templateColumns={['1fr', 'repeat(3, 1fr)']}
       className='feed'
     >

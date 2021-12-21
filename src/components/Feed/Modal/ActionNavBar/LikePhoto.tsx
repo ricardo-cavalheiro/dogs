@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useToast } from '@chakra-ui/react'
+import { useToast, useColorMode } from '@chakra-ui/react'
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
 import { ref, update, increment, onValue, off } from 'firebase/database'
 
@@ -22,9 +22,11 @@ function LikePhoto({ imageInfo }: Props) {
   const [isLiked, setIsLiked] = useState<boolean | null>(null)
 
   // hooks
-  const { userInfo } = useUser()
   const toast = useToast()
+  const { userInfo } = useUser()
+  const { colorMode } = useColorMode()
 
+  // verfies if the image is already liked by the user
   useEffect(() => {
     let likedImageRef: DatabaseReference
 
@@ -34,11 +36,10 @@ function LikePhoto({ imageInfo }: Props) {
         `liked_images/${imageInfo.id}/${userInfo.username}`
       )
 
-      onValue(likedImageRef, (snapshot) => {
-        if (snapshot.exists()) {
-          setIsLiked(true)
-        }
-      })
+      onValue(
+        likedImageRef,
+        (snapshot) => snapshot.exists() && setIsLiked(true)
+      )
     } catch (err) {
       console.log(
         'houve um erro ao tentar verificar se a imagem ja estava curtida',
@@ -100,7 +101,7 @@ function LikePhoto({ imageInfo }: Props) {
         <MdOutlineFavoriteBorder
           size={30}
           tabIndex={0}
-          color='#333'
+          color={`${colorMode === 'light' ? '#333' : '#fff'}`}
           cursor='pointer'
           onClick={() => handlePhotoLike(true)}
           onKeyDown={({ key }) => key === 'Enter' && handlePhotoLike(true)}

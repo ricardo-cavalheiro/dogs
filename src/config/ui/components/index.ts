@@ -4,6 +4,7 @@ import { FormLabel } from './FormLabel'
 import { Button } from './Button'
 import { Link } from './Link'
 import { Modal } from './Modal'
+import { Menu } from './Menu'
 
 const components = {
   Heading,
@@ -12,6 +13,7 @@ const components = {
   Button,
   Link,
   Modal,
+  Menu,
 }
 
 export { components }

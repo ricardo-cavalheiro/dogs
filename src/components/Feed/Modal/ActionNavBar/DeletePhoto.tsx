@@ -11,6 +11,7 @@ import {
   Text,
   useToast,
   useDisclosure,
+  useColorMode,
 } from '@chakra-ui/react'
 import { MdDeleteOutline, MdDelete } from 'react-icons/md'
 import { ref as databaseRef, update } from 'firebase/database'
@@ -46,6 +47,7 @@ function ConfirmationAlert({
   const toast = useToast()
   const { userInfo } = useUser()
   const closeAlertRef = useRef(null)
+  const { colorMode } = useColorMode()
 
   async function deletePhoto() {
     setIsDeleting(true)
@@ -64,14 +66,17 @@ function ConfirmationAlert({
         [`latest_images/${imageInfo.id}`]: null,
       }
 
-      await update(databaseRef(db), updates)
-      await deleteObject(storageImageRef)
+      await Promise.all([
+        update(databaseRef(db), updates),
+        deleteObject(storageImageRef),
+      ])
 
       toast({
         title: 'Foto apagada!',
         status: 'success',
         duration: 5000,
         isClosable: true,
+        onCloseComplete: () => location.reload(),
       })
     } catch (err) {
       console.log('houve um erro ao deletar a foto', { err })
@@ -99,8 +104,7 @@ function ConfirmationAlert({
 
       <AlertDialogContent>
         <AlertDialogHeader
-          boxShadow='0 1px 1px rgb(0 0 0 / 10%);'
-          color='light.800'
+          color={`${colorMode === 'light' ? 'light.800' : 'dark.50'}`}
         >
           Deletar foto
           <AlertDialogCloseButton />
@@ -148,17 +152,18 @@ type Props = {
 
 function DeletePhoto({ imageInfo }: Props) {
   // hooks
+  const { colorMode } = useColorMode()
   const { isOpen, onToggle, onClose } = useDisclosure()
 
   return (
     <>
       {isOpen ? (
-        <MdDelete size={30} tabIndex={0} fill='#fb1' cursor='pointer' />
+        <MdDelete size={30} tabIndex={0} color='#fb1' cursor='pointer' />
       ) : (
         <MdDeleteOutline
           size={30}
           tabIndex={0}
-          color='#333'
+          color={`${colorMode === 'light' ? '#333' : '#fff'}`}
           cursor='pointer'
           onClick={onToggle}
           onKeyDown={({ key }) => key === 'Enter' && onToggle}

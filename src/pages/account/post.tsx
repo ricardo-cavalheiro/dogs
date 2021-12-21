@@ -4,7 +4,6 @@ import {
   Text,
   Flex,
   Box,
-  Grid,
   useToast,
   useBreakpointValue,
 } from '@chakra-ui/react'
@@ -101,7 +100,7 @@ function Post() {
         duration: 5000,
         isClosable: true,
         status: 'success',
-        onCloseComplete: () => router.push(`/account/${userInfo.username}`),
+        onCloseComplete: () => router.push('/account/myphotos'),
       })
     } catch (err) {
       console.log({ err })

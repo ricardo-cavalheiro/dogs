@@ -10,6 +10,7 @@ const fonts = {
 
 const colors = {
   light: {
+    50: '#FFF',
     100: '#EEE', // gray color
     150: '#DDD',
     200: '#FEA', // bright yellow
@@ -19,14 +20,23 @@ const colors = {
     800: '#333333', // primary text color
     900: '#666666', // secondary text color
   },
+  dark: {
+    50: '#FFF',
+    400: '#FB1',
+    800: '#333333',
+    900: '#101010',
+  },
 }
 
 const textStyles = {}
 
 const global = {
   global: (props: GlobalStyleProps) => ({
-    'a, h1, h2, label, input, p, span': {
-      color: mode('light.800', 'red.200')(props),
+    'h1, h2, label, input, p, span, legend': {
+      color: mode('light.800', 'dark.50')(props),
+    },
+    body: {
+      bg: mode('light.50', 'dark.900')(props),
     },
     '#__next': {
       h: '100vh',

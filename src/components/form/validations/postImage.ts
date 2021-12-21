@@ -1,4 +1,5 @@
 // types
+import type { ChangeEvent } from 'react'
 import type { RegisterOptions } from 'react-hook-form'
 
 type FormInputs = {

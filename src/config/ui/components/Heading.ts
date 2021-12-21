@@ -1,29 +1,32 @@
+import { mode } from '@chakra-ui/theme-tools'
+
 // types
 import type { StyleFunctionProps } from '@chakra-ui/theme-tools'
 
 const Heading = {
-  baseStyle: {
+  baseStyle: (props: StyleFunctionProps) => ({
     position: 'relative',
     _before: {
       content: '""',
       display: 'block',
       width: '24px',
       height: '24px',
-      bg: 'light.300',
+      bgColor: 'light.300',
       bottom: '5px',
       position: 'absolute',
       borderRadius: 'base',
-      zIndex: 'hide',
+      zIndex: -1,
     },
-  },
+    zIndex: 1,
+  }),
   sizes: {
     lg: {
       fontSize: '48px',
       lineHeight: 'none',
     },
     md: {
-      fontSize: '32px'
-    }
+      fontSize: '32px',
+    },
   },
   variants: {
     outline: (props: StyleFunctionProps) => ({
@@ -33,7 +36,7 @@ const Heading = {
         display: 'block',
         position: 'absolute',
         bottom: '-5px',
-        backgroundColor: 'light.150',
+        bgColor: mode('light.150', 'dark.400')(props),
         height: 2,
         width: 12,
         borderRadius: 'base',

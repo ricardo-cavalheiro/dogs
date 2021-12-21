@@ -1,5 +1,11 @@
 import { useState } from 'react'
-import { Collapse, Flex, Button, useToast } from '@chakra-ui/react'
+import {
+  Collapse,
+  Flex,
+  Button,
+  useToast,
+  useColorMode,
+} from '@chakra-ui/react'
 import { MdModeComment, MdOutlineModeComment, MdSend } from 'react-icons/md'
 import { useForm } from 'react-hook-form'
 import { push, update, ref } from 'firebase/database'
@@ -32,6 +38,7 @@ function AddComment({ imageID }: Props) {
   // hooks
   const toast = useToast()
   const { userInfo } = useUser()
+  const { colorMode } = useColorMode()
   const {
     reset,
     register,
@@ -89,7 +96,7 @@ function AddComment({ imageID }: Props) {
         <MdOutlineModeComment
           size={30}
           tabIndex={0}
-          color='#333'
+          color={`${colorMode === 'light' ? '#333' : '#fff'}`}
           cursor='pointer'
           onClick={() => setIsCommentInputShown(!isCommentInputShown)}
           onKeyDown={({ key }) =>

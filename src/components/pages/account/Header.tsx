@@ -7,6 +7,7 @@ import {
   MenuItem,
   IconButton,
   Link,
+  useColorMode,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import {
@@ -16,6 +17,7 @@ import {
   MdOutlineAdd,
   MdOutlineLogout,
 } from 'react-icons/md'
+import { AiOutlineUser } from 'react-icons/ai'
 import NextLink from 'next/link'
 
 // hooks
@@ -46,19 +48,26 @@ function HeaderMenuItem({ href, label, icon, onClick }: HeaderMenuItemProps) {
 function Header() {
   // hooks
   const { asPath } = useRouter()
+  const { colorMode } = useColorMode()
   const { userInfo, signUserOut } = useUser()
 
-  type RoutePaths = '/account' | '/account/stats' | '/account/post'
+  type RoutePaths =
+    | '/account'
+    | '/account/stats'
+    | '/account/post'
+    | '/account/myphotos'
 
   const mapPageTitleToRoutePath = {
     get header() {
       switch (asPath as RoutePaths) {
+        case '/account/myphotos':
+          return 'Minhas fotos'
         case '/account/stats':
           return 'Estatísticas'
         case '/account/post':
           return 'Postar Foto'
         default:
-          return 'Minhas Fotos'
+          return 'Minha Conta'
       }
     },
   }
@@ -81,7 +90,12 @@ function Header() {
               as={IconButton}
               variant='iconButton'
               aria-label='Abrir menu'
-              icon={<MdOutlineMenu size={60} color='#333' />}
+              icon={
+                <MdOutlineMenu
+                  size={60}
+                  color={`${colorMode === 'light' ? '#333' : '#fff'}`}
+                />
+              }
             >
               Button
             </MenuButton>
@@ -89,24 +103,55 @@ function Header() {
             <MenuList>
               <HeaderMenuItem
                 href={`/account/${userInfo.username}`}
+                label='Minha Conta'
+                icon={
+                  <AiOutlineUser
+                    size={30}
+                    color={`${colorMode === 'light' ? '#333' : '#fff'}`}
+                  />
+                }
+              />
+
+              <HeaderMenuItem
+                href={'/account/myphotos'}
                 label='Minhas Fotos'
-                icon={<MdOutlineSpaceDashboard size={30} color='#333' />}
+                icon={
+                  <MdOutlineSpaceDashboard
+                    size={30}
+                    color={`${colorMode === 'light' ? '#333' : '#fff'}`}
+                  />
+                }
               />
 
               <HeaderMenuItem
                 href='/account/stats'
                 label='Estatísticas'
-                icon={<MdOutlineTrendingUp size={30} color='#333' />}
+                icon={
+                  <MdOutlineTrendingUp
+                    size={30}
+                    color={`${colorMode === 'light' ? '#333' : '#fff'}`}
+                  />
+                }
               />
 
               <HeaderMenuItem
                 href='/account/post'
                 label='Postar Foto'
-                icon={<MdOutlineAdd size={30} color='#333' />}
+                icon={
+                  <MdOutlineAdd
+                    size={30}
+                    color={`${colorMode === 'light' ? '#333' : '#fff'}`}
+                  />
+                }
               />
 
               <MenuItem
-                icon={<MdOutlineLogout size={30} color='#333' />}
+                icon={
+                  <MdOutlineLogout
+                    size={30}
+                    color={`${colorMode === 'light' ? '#333' : '#fff'}`}
+                  />
+                }
                 _hover={{ bg: 'none' }}
                 onClick={async () => await signUserOut()}
               >

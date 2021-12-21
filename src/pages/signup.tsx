@@ -15,8 +15,15 @@ import type { GetServerSideProps } from 'next'
 const getServerSideProps: GetServerSideProps = async (context) => {
   const userIDToken = parseCookies(context)['@dogs:token']
 
+  if (!userIDToken)
+    return {
+      props: {},
+    }
+
   try {
-    await getAuth(adminApp).verifyIdToken(userIDToken)
+    const auth = getAuth(adminApp)
+
+    await auth.verifyIdToken(userIDToken)
 
     return {
       redirect: {
