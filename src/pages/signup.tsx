@@ -3,8 +3,8 @@ import { parseCookies } from 'nookies'
 import { getAuth } from 'firebase-admin/auth'
 
 // components
-import { Background } from '../components/pages/signup/Form
-import { SignUpForm } from '../components/pages/signup/signupForm'
+import { Background } from '../components/form/Background'
+import { SignUpForm } from '../components/pages/signup/Form'
 
 // firebase services
 import { adminApp } from '../services/firebase/admin'

@@ -3,8 +3,8 @@ import { Flex, Box, useBreakpointValue } from '@chakra-ui/react'
 import { getAuth } from 'firebase-admin/auth'
 
 // components
-import { Background } from ../components/pages/login/Form
-import { LoginForm } from '../components/pages/login/LoginForm'
+import { Background } from '../components/form/Background'
+import { LoginForm } from '../components/pages/login/Form'
 import { SignUpCallToAction } from '../components/pages/login/SignUpCallToAction'
 
 // firebase services
