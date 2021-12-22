@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import * as Sentry from '@sentry/nextjs'
 import { Box, useToast } from '@chakra-ui/react'
 import {
   ref,
@@ -46,6 +47,12 @@ const getServerSideProps: GetServerSideProps = async () => {
       }
   } catch (err) {
     const error = err as Error
+
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error)
+    } else {
+      console.log({ error })
+    }
 
     console.log('erro ao buscar as imagens mais recentes', { error })
 
@@ -98,9 +105,11 @@ function Home({ firebaseImages }: Props) {
         }
       })
     } catch (err) {
-      console.log('houve um erro ao buscar mais imagens no scroll infinito', {
-        err,
-      })
+      if (process.env.NODE_ENV === 'production') {
+        Sentry.captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       toast({
         title: 'Não conseguimos carregar mais imagens.',

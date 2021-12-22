@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { captureException } from '@sentry/nextjs'
 import { useToast } from '@chakra-ui/react'
 import {
   ref,
@@ -56,7 +57,11 @@ const getServerSideProps: GetServerSideProps = async (context) => {
         },
       }
   } catch (err) {
-    console.log({err})
+    if (process.env.NODE_ENV === 'production') {
+      captureException(err)
+    } else {
+      console.log({ err })
+    }
 
     return {
       redirect: {
@@ -88,7 +93,6 @@ function Account({ firebaseImages }: Props) {
 
     let moreImagesRef: Query
 
-
     try {
       const lastImageID = images.at(-1)?.id as string
 
@@ -109,7 +113,11 @@ function Account({ firebaseImages }: Props) {
         }
       })
     } catch (err) {
-      console.log('fetching images', { err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       toast({
         status: 'error',

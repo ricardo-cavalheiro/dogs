@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useToast, useColorMode } from '@chakra-ui/react'
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
 import { ref, update, increment, onValue, off } from 'firebase/database'
+import { captureException } from '@sentry/nextjs'
 
 // hooks
 import { useUser } from '../../../../hooks/contexts/useUser'
@@ -31,20 +32,18 @@ function LikePhoto({ imageInfo }: Props) {
     let likedImageRef: DatabaseReference
 
     try {
-      likedImageRef = ref(
-        db,
-        `liked_images/${imageInfo.id}/${userInfo.uid}`
-      )
+      likedImageRef = ref(db, `liked_images/${imageInfo.id}/${userInfo.uid}`)
 
       onValue(
         likedImageRef,
         (snapshot) => snapshot.exists() && setIsLiked(true)
       )
     } catch (err) {
-      console.log(
-        'houve um erro ao tentar verificar se a imagem ja estava curtida',
-        { err }
-      )
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
     }
 
     return () => off(likedImageRef)

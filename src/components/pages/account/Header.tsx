@@ -153,7 +153,7 @@ function Header() {
                   />
                 }
                 _hover={{ bg: 'none' }}
-                onClick={async () => await signUserOut()}
+                onClick={signUserOut}
               >
                 Sair
               </MenuItem>

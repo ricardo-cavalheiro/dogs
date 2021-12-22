@@ -1,4 +1,5 @@
 import { applyActionCode } from 'firebase/auth'
+import { withSentry } from '@sentry/nextjs'
 
 // firebase services
 import { auth } from '../../services/firebase/auth'
@@ -8,7 +9,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 type Modes = 'verifyEmail' | 'recoverEmail' | 'resetPassword'
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function(req: NextApiRequest, res: NextApiResponse) {
   const mode = req.query['mode'] as Modes
   const oobCode = req.query['oobCode'] as string
 
@@ -25,7 +26,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return res
         .status(307)
         .redirect(`/account/recovery/password?oobCode=${oobCode}`)
+    default:
+      return res.status(500)
   }
 }
 
-export default handler
+export default withSentry(handler)

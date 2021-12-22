@@ -7,6 +7,7 @@ import {
   useDisclosure,
   useBreakpointValue,
 } from '@chakra-ui/react'
+import { captureException } from '@sentry/nextjs'
 import { MdOutlineVisibility, MdFavorite } from 'react-icons/md'
 import { ref, onValue, off } from 'firebase/database'
 import NextImage from 'next/image'
@@ -59,7 +60,11 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
         }
       })
     } catch (err) {
-      console.log('erro ao buscar as views da foto no feed', { err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
     }
 
     return () => off(imageRef)

@@ -11,6 +11,7 @@ import {
   Heading,
   Divider,
 } from '@chakra-ui/react'
+import { captureException } from '@sentry/nextjs'
 import { MdOutlineVisibility } from 'react-icons/md'
 import {
   set,
@@ -67,7 +68,11 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
           setImageComments(Object.values<Comment>(snapshot.val()).reverse())
       )
     } catch (err) {
-      console.log('erro ao atualizar a lista de comentarios', { err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       setImageComments([])
     }
@@ -91,7 +96,11 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
           )
         }
       } catch (err) {
-        console.log('erro incrementando total de views da imagem', { err })
+        if (process.env.NODE_ENV === 'production') {
+          captureException(err)
+        } else {
+          console.log({ err })
+        }
 
         setImageViews(0)
       }

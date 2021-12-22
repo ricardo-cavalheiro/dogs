@@ -1,4 +1,5 @@
 import { Box, Text, Button, useToast } from '@chakra-ui/react'
+import { captureException } from '@sentry/nextjs'
 import { sendEmailVerification } from 'firebase/auth'
 
 // firebase services
@@ -26,8 +27,13 @@ function VerifyEmailMessage() {
         status: 'success',
       })
     } catch (err) {
-      console.log('erro ao reenviar o e-mail', { err })
       const error = err as AuthError
+
+      if (process.env.NODE_ENV === 'production') {
+        captureException(error)
+      } else {
+        console.log({ error })
+      }
 
       const mapErrorCodeToMessageError = {
         'auth/too-many-requests': {

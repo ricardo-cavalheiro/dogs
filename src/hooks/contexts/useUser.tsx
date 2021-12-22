@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react'
+import { captureException } from '@sentry/nextjs'
 import { onAuthStateChanged, signOut, onIdTokenChanged } from 'firebase/auth'
 import { useRouter } from 'next/router'
 import { setCookie, destroyCookie } from 'nookies'
@@ -55,7 +56,11 @@ function UserContextProvider({ children }: Props) {
 
       router.push('/login')
     } catch (err) {
-      console.log({ err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
     }
   }
 
@@ -104,7 +109,11 @@ function UserContextProvider({ children }: Props) {
           const token = await user.getIdToken()
           setCookie(null, '@dogs:token', token, { path: '/', maxAge: 60 * 60 })
         } catch (err) {
-          console.log('houve um erro ao setar os cookies', { err })
+          if (process.env.NODE_ENV === 'production') {
+            captureException(err)
+          } else {
+            console.log({ err })
+          }
         }
       }
     }

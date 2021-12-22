@@ -7,6 +7,7 @@ import {
   useToast,
   useBreakpointValue,
 } from '@chakra-ui/react'
+import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { sendPasswordResetEmail } from 'firebase/auth'
@@ -53,9 +54,11 @@ function Recovery() {
 
       reset()
     } catch (err) {
-      console.log('houve um erro ao tentar enviar o email de confirmação', {
-        err,
-      })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       toast({
         title: 'Não conseguimos enviar o e-mail.',

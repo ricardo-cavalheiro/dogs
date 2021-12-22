@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { captureException } from '@sentry/nextjs'
 import {
   Flex,
   Text,
@@ -82,7 +83,11 @@ function DeleteAccountAlertDialog({
         deleteUser(auth.currentUser!),
       ])
     } catch (err) {
-      console.log('houve um erro ao tentar delatar a conta', { err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       toast({
         title: 'Não conseguimos deletar sua conta.',
