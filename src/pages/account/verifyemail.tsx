@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Box, useToast } from '@chakra-ui/react'
+import { Box, Text, useToast } from '@chakra-ui/react'
 import { applyActionCode } from 'firebase/auth'
 import { captureException } from '@sentry/nextjs'
 
 // firebase services
 import { auth } from '../../services/firebase/auth'
+
+// hooks
+import { useUser } from '../../hooks/contexts/useUser'
 
 // types
 import type { GetServerSideProps } from 'next'
@@ -28,11 +31,17 @@ function VerifyEmail({ oobCode }: Props) {
 
   // hooks
   const toast = useToast()
+  const { setUserInfo } = useUser()
 
   useEffect(() => {
     applyActionCode(auth, oobCode)
       .then(() => {
         setIsEmailVerified(true)
+
+        setUserInfo((prevUserInfo) => ({
+          ...prevUserInfo,
+          isAccountVerified: true,
+        }))
 
         toast({
           title: 'Seu e-email foi confirmado.',
@@ -62,12 +71,14 @@ function VerifyEmail({ oobCode }: Props) {
   }, [])
 
   return (
-    <Box>
-      {isEmailVerified === true
-        ? 'Tudo certo!'
-        : isEmailVerified === false
-        ? 'Não conseguimos verificar seu e-mail.'
-        : 'Verificando seu e-mail...'}
+    <Box maxW='768px' mx='auto'>
+      {isEmailVerified === true ? (
+        <Text as='strong'>Tudo certo!</Text>
+      ) : isEmailVerified === false ? (
+        <Text as='strong'>Não conseguimos verificar seu e-mail.</Text>
+      ) : (
+        <Text as='strong'>Verificando seu e-mail...</Text>
+      )}
     </Box>
   )
 }
