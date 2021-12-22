@@ -22,11 +22,11 @@ import { adminApp } from '../services/firebase/admin'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 
 // type
-import type { GetStaticProps } from 'next'
+import type { GetServerSideProps } from 'next'
 import type { Query } from 'firebase/database'
 import type { ImageInfo } from '../typings/userInfo'
 
-const getStaticProps: GetStaticProps = async () => {
+const getServerSideProps: GetServerSideProps = async () => {
   try {
     const db = getDatabase(adminApp)
     const ref = db.ref('latest_images').orderByKey().limitToLast(4)
@@ -121,6 +121,6 @@ function Home({ firebaseImages }: Props) {
   )
 }
 
-export { getStaticProps }
+export { getServerSideProps }
 
 export default Home
