@@ -6,6 +6,7 @@ import {
   Input as CInput,
   InputRightElement,
   IconButton as CIconButton,
+  useColorMode,
 } from '@chakra-ui/react'
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from 'react-icons/md'
 
@@ -45,6 +46,9 @@ const PasswordInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
 ) => {
   const [showPassword, setShowPassword] = useState(false)
 
+  // hooks
+  const { colorMode } = useColorMode()
+
   function handleClick() {
     setShowPassword(!showPassword)
   }
@@ -59,15 +63,26 @@ const PasswordInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
           type={showPassword ? 'text' : 'password'}
           ref={ref}
           {...rest}
+          sx={{
+            '&:hover + div > button > svg': {
+              fill: 'dark.800',
+            },
+          }}
         />
         <InputRightElement>
           {showPassword ? (
             <IconButton onClick={handleClick}>
-              <MdOutlineVisibilityOff size={30} color='#333' />
+              <MdOutlineVisibilityOff
+                size={30}
+                color={colorMode === 'light' ? '#333' : '#fff'}
+              />
             </IconButton>
           ) : (
             <IconButton onClick={handleClick}>
-              <MdOutlineVisibility size={30} color='#333' />
+              <MdOutlineVisibility
+                size={30}
+                color={colorMode === 'light' ? '#333' : '#fff'}
+              />
             </IconButton>
           )}
         </InputRightElement>
