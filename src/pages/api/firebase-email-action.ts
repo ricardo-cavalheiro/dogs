@@ -1,5 +1,6 @@
 import { applyActionCode } from 'firebase/auth'
 import { withSentry } from '@sentry/nextjs'
+import { captureException } from '@sentry/nextjs'
 
 // firebase services
 import { auth } from '../../services/firebase/auth'
@@ -18,7 +19,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       try {
         await applyActionCode(auth, oobCode)
       } catch (err) {
-        console.log({ err })
+        if (process.env.NODE_ENV === 'production') {
+          captureException(err)
+        } else {
+          console.log({ err })
+        }
       } finally {
         res.status(307).redirect('/')
       }
