@@ -13,7 +13,7 @@ import { AiOutlineUser } from 'react-icons/ai'
 import NextLink from 'next/link'
 
 // components
-import { DogsIcon } from '../Icons'
+import { DogsIcon } from '../MyIcons'
 import { VerifyEmailMessage } from '../VerifyEmailMessage'
 
 // hooks
