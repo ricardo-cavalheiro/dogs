@@ -41,7 +41,7 @@ function Recovery() {
   const onFormSubmit: SubmitHandler<FormInputProps> = async (data) => {
     try {
       await sendPasswordResetEmail(auth, data.email, {
-        url: 'http://localhost:3000/login',
+        url: 'https://dogs-ricardo-passos.vercel.app/login',
       })
 
       toast({

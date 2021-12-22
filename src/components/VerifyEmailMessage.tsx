@@ -15,7 +15,7 @@ function VerifyEmailMessage() {
     try {
       if (auth.currentUser) {
         await sendEmailVerification(auth.currentUser, {
-          url: 'http://localhost:3000',
+          url: 'https://dogs-ricardo-passos.vercel.app/',
         })
       }
 

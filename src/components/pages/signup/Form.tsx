@@ -57,7 +57,7 @@ function SignUpForm() {
         await updateProfile(auth.currentUser, { displayName: username })
 
         await sendEmailVerification(auth.currentUser, {
-          url: 'http://localhost:3000/',
+          url: 'https://dogs-ricardo-passos.vercel.app/',
         })
       }
 
