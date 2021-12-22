@@ -24,6 +24,7 @@ class MyDocument extends Document {
             href='https://fonts.googleapis.com/css2?family=Spectral:wght@700&display=swap'
             rel='stylesheet'
           />
+          <link rel="shortcut icon" href="/favicon.svg" />
         </Head>
         <body>
           <Main />

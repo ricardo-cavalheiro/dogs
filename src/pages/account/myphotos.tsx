@@ -13,6 +13,7 @@ import {
 import { parseCookies } from 'nookies'
 import { getAuth } from 'firebase-admin/auth'
 import { getDatabase } from 'firebase-admin/database'
+import Head from 'next/head'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
@@ -133,7 +134,15 @@ function Account({ firebaseImages }: Props) {
     }
   }, [shouldLoadMoreItems])
 
-  return <Feed images={images} />
+  return (
+    <>
+      <Head>
+        <title>Dogs | Minhas fotos</title>
+      </Head>
+
+      <Feed images={images} />
+    </>
+  )
 }
 
 Account.UserHeader = UserHeader

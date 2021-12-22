@@ -2,6 +2,7 @@ import { parseCookies } from 'nookies'
 import { getAuth } from 'firebase-admin/auth'
 import { captureException } from '@sentry/nextjs'
 import { Flex, Box, useBreakpointValue } from '@chakra-ui/react'
+import Head from 'next/head'
 
 // components
 import { Background } from '../components/form/Background'
@@ -51,6 +52,10 @@ function SignUp() {
 
   return (
     <>
+      <Head>
+        <title>Dogs | Cadastrar</title>
+      </Head>
+      
       {isWideScreen ? (
         <Flex as='main' justify='center' columnGap={5} w='100%' mx='auto'>
           <Box flexBasis='50%' position='relative'>

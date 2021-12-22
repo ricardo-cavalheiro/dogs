@@ -11,6 +11,7 @@ import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { sendPasswordResetEmail } from 'firebase/auth'
+import Head from 'next/head'
 
 // components
 import { Input } from '../../../components/form/inputs/RegularInput'
@@ -71,6 +72,10 @@ function Recovery() {
 
   return (
     <Box as='main' p={5} maxW='768px' mx='auto'>
+      <Head>
+        <title>Dogs | Alterar senha</title>
+      </Head>
+      
       <Heading>Alterar senha</Heading>
 
       {isWideScreen ? (
