@@ -7,6 +7,7 @@ import {
   MenuItem,
   IconButton,
   Link,
+  Box,
   useColorMode,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
@@ -80,25 +81,32 @@ function Header() {
       align='center'
       justify='space-between'
       mb={5}
+      flexWrap='wrap'
+      columnGap={5}
     >
-      <Heading>{mapPageTitleToRoutePath.header}</Heading>
+      <Heading flexBasis='50%'>{mapPageTitleToRoutePath.header}</Heading>
 
       <Flex as='nav' zIndex={3}>
         <Menu>
           <>
-            <MenuButton
-              as={IconButton}
-              variant='iconButton'
-              aria-label='Abrir menu'
-              icon={
-                <MdOutlineMenu
-                  size={60}
-                  color={`${colorMode === 'light' ? '#333' : '#fff'}`}
-                />
-              }
+            <Box
+              bgColor={colorMode == 'light' ? 'light.100' : 'dark.900'}
+              borderRadius='sm'
             >
-              Button
-            </MenuButton>
+              <MenuButton
+                as={IconButton}
+                variant='iconButton'
+                aria-label='Abrir menu'
+                icon={
+                  <MdOutlineMenu
+                    size={45}
+                    color={`${colorMode === 'light' ? '#333' : '#fff'}`}
+                  />
+                }
+              >
+                Button
+              </MenuButton>
+            </Box>
 
             <MenuList>
               <HeaderMenuItem
