@@ -1,4 +1,4 @@
-import { initializeApp, applicationDefault, getApps } from 'firebase-admin/app'
+import { initializeApp, applicationDefault, getApps, cert } from 'firebase-admin/app'
 
 // types
 import type { App } from 'firebase-admin/app'
@@ -9,7 +9,11 @@ let adminApp: App
 // `ReferenceError: Cannot access 'adminApp' before initialization` is thrown
 if (getApps().length === 0) {
   adminApp = initializeApp({
-    credential: applicationDefault(),
+    credential: cert({
+      clientEmail: process.env.SERVICE_ACCOUNT_CLIENT_EMAIL,
+      privateKey: process.env.SERVICE_ACCOUNT_PRIVATE_KEY,
+      projectId: process.env.SERVICE_ACCOUNT_PROJECT_ID
+    }),
     databaseURL: 'https://dogs-ffe57-default-rtdb.firebaseio.com',
     databaseAuthVariableOverride: {
       uid: 'nodejs-backend',
