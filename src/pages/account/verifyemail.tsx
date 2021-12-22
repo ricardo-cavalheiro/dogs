@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Box, Text, useToast } from '@chakra-ui/react'
 import { applyActionCode } from 'firebase/auth'
 import { captureException } from '@sentry/nextjs'
+import Head from 'next/head'
 
 // firebase services
 import { auth } from '../../services/firebase/auth'
@@ -71,15 +72,21 @@ function VerifyEmail({ oobCode }: Props) {
   }, [])
 
   return (
-    <Box maxW='768px' mx='auto'>
-      {isEmailVerified === true ? (
-        <Text as='strong'>Tudo certo!</Text>
-      ) : isEmailVerified === false ? (
-        <Text as='strong'>Não conseguimos verificar seu e-mail.</Text>
-      ) : (
-        <Text as='strong'>Verificando seu e-mail...</Text>
-      )}
-    </Box>
+    <>
+      <Head>
+        <title>Dogs | Verificar e-mail</title>
+      </Head>
+
+      <Box maxW='768px' mx='auto'>
+        {isEmailVerified === true ? (
+          <Text as='strong'>Tudo certo!</Text>
+        ) : isEmailVerified === false ? (
+          <Text as='strong'>Não conseguimos verificar seu e-mail.</Text>
+        ) : (
+          <Text as='strong'>Verificando seu e-mail...</Text>
+        )}
+      </Box>
+    </>
   )
 }
 

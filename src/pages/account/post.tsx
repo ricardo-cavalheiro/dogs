@@ -16,6 +16,7 @@ import {
 } from 'firebase/storage'
 import { ref as databaseRef, update, push } from 'firebase/database'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 
 // components
 import { Input } from '../../components/form/inputs/RegularInput'
@@ -121,16 +122,27 @@ function Post() {
 
   if (userInfo.isAccountVerified === false) {
     return (
-      <Box maxW='768px' mx='auto'>
-        <Text>
-          Você precisa verificar sua conta antes de começar a postar suas fotos.
-        </Text>
-      </Box>
+      <>
+        <Head>
+          <title>Dogs | Postar foto</title>
+        </Head>
+        
+        <Box maxW='768px' mx='auto'>
+          <Text>
+            Você precisa verificar sua conta antes de começar a postar suas
+            fotos.
+          </Text>
+        </Box>
+      </>
     )
   }
 
   return (
     <>
+      <Head>
+        <title>Dogs | Postar foto</title>
+      </Head>
+
       {isWideScreen ? (
         <Box
           maxW='768px'

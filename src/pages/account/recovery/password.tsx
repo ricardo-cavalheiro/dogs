@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
+import Head from 'next/head'
 
 // components
 import { Input } from '../../../components/form/inputs/RegularInput'
@@ -95,6 +96,10 @@ function Password({ oobCode }: Props) {
 
   return (
     <Box as='main' p={5} maxW='768px' mx='auto'>
+      <Head>
+        <title>Dogs | Mudar senha</title>
+      </Head>
+
       <Box as='form' onSubmit={handleSubmit(onFormSubmit)} w='100%'>
         <PasswordInput
           label='Nova senha'

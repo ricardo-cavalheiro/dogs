@@ -11,6 +11,7 @@ import {
   off,
 } from 'firebase/database'
 import { getDatabase } from 'firebase-admin/database'
+import Head from 'next/head'
 
 // components
 import { Feed } from '../components/Feed'
@@ -125,6 +126,10 @@ function Home({ firebaseImages }: Props) {
 
   return (
     <Box as='main' p={5}>
+      <Head>
+        <title>Dogs | Feed</title>
+      </Head>
+      
       <Feed images={images} />
     </Box>
   )

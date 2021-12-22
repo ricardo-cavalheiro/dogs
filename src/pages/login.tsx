@@ -2,6 +2,7 @@ import { parseCookies } from 'nookies'
 import { captureException } from '@sentry/nextjs'
 import { Flex, Box, useBreakpointValue } from '@chakra-ui/react'
 import { getAuth } from 'firebase-admin/auth'
+import Head from 'next/head'
 
 // components
 import { Background } from '../components/form/Background'
@@ -49,6 +50,10 @@ function Login() {
 
   return (
     <>
+      <Head>
+        <title>Dogs | Entrar</title>
+      </Head>
+      
       {isWideScreen ? (
         <Flex as='main' justify='center' columnGap={5} w='100%' mx='auto'>
           <Box flexBasis='50vw' position='relative'>
