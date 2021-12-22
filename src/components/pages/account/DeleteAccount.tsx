@@ -50,12 +50,13 @@ function DeleteAccountAlertDialog({
     try {
       setIsDeleting(true)
 
-      const ref = storageRef(storage, `/images/${userInfo.username}`)
+      const ref = storageRef(storage, `/images/${userInfo.uid}`)
       const fileList = await listAll(ref)
 
       const updatesList = fileList.items.map((image) => ({
+        [`image_metrics/${image.name}`]: null,
         [`image_comments/${image.name}`]: null,
-        [`images/${userInfo.username}`]: null,
+        [`images/${userInfo.uid}`]: null,
         [`latest_images/${image.name}`]: null,
         [`liked_comments/${image.name}`]: null,
         [`liked_images/${image.name}`]: null,
