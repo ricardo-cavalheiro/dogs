@@ -16,17 +16,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   switch (mode) {
     case 'verifyEmail':
-      try {
-        await applyActionCode(auth, oobCode)
-      } catch (err) {
-        if (process.env.NODE_ENV === 'production') {
-          captureException(err)
-        } else {
-          console.log({ err })
-        }
-      } finally {
-        res.status(307).redirect('/')
-      }
+      return res.status(307).redirect(`/account/verifyemail?oobCode=${oobCode}`)
     case 'resetPassword':
       return res
         .status(307)
