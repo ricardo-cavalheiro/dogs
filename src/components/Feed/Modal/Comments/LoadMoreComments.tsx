@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button, Text } from '@chakra-ui/react'
+import { captureException } from '@sentry/nextjs'
 import {
   query,
   ref,
@@ -24,11 +25,7 @@ type Props = {
   setImageComments: Dispatch<SetStateAction<Comment[]>>
 }
 
-function LoadMoreComments({
-  imageID,
-  imageComments,
-  setImageComments,
-}: Props) {
+function LoadMoreComments({ imageID, imageComments, setImageComments }: Props) {
   const [isLastPage, setIsLastPage] = useState(false)
 
   function loadMoreComments() {
@@ -58,7 +55,11 @@ function LoadMoreComments({
         }
       })
     } catch (err) {
-      console.log('erro ao atualizar a lista de comentarios', { err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       setImageComments([])
     }

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { Box, Heading, Button, useToast } from '@chakra-ui/react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
@@ -45,6 +46,12 @@ function LoginForm() {
       router.push(`/account/${user.displayName}`)
     } catch (err) {
       const error = err as AuthError
+
+      if (process.env.NODE_ENV === 'production') {
+        captureException(error)
+      } else {
+        console.log({ error })
+      }
 
       const mapFirebaseErrorCodeToErrorMessage = {
         'auth/wrong-password': 'Verifique o e-mail e/ou senha inserido.',

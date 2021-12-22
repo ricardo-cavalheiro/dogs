@@ -6,6 +6,7 @@ import {
   useToast,
   useColorMode,
 } from '@chakra-ui/react'
+import { captureException } from '@sentry/nextjs'
 import { MdModeComment, MdOutlineModeComment, MdSend } from 'react-icons/md'
 import { useForm } from 'react-hook-form'
 import { push, set, ref } from 'firebase/database'
@@ -66,7 +67,11 @@ function AddComment({ imageID }: Props) {
 
       reset()
     } catch (err) {
-      console.log({ err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       toast({
         status: 'error',

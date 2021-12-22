@@ -13,6 +13,7 @@ import {
   useDisclosure,
   useColorMode,
 } from '@chakra-ui/react'
+import { captureException } from '@sentry/nextjs'
 import { MdDeleteOutline, MdDelete } from 'react-icons/md'
 import { ref as databaseRef, update } from 'firebase/database'
 import { ref as storageRef, deleteObject } from 'firebase/storage'
@@ -80,7 +81,11 @@ function ConfirmationAlert({
         onCloseComplete: () => location.reload(),
       })
     } catch (err) {
-      console.log('houve um erro ao deletar a foto', { err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       toast({
         status: 'error',

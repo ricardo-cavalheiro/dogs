@@ -1,6 +1,7 @@
-import { Flex, Box, useBreakpointValue } from '@chakra-ui/react'
 import { parseCookies } from 'nookies'
 import { getAuth } from 'firebase-admin/auth'
+import { captureException } from '@sentry/nextjs'
+import { Flex, Box, useBreakpointValue } from '@chakra-ui/react'
 
 // components
 import { Background } from '../components/form/Background'
@@ -32,7 +33,11 @@ const getServerSideProps: GetServerSideProps = async (context) => {
       },
     }
   } catch (err) {
-    console.log({ err })
+    if (process.env.NODE_ENV === 'production') {
+      captureException(err)
+    } else {
+      console.log({ err })
+    }
 
     return {
       props: {},

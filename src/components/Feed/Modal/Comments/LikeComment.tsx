@@ -1,5 +1,6 @@
 import { Box, useToast } from '@chakra-ui/react'
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
+import { captureException } from '@sentry/nextjs'
 import { ref, update, increment } from 'firebase/database'
 
 // hooks
@@ -28,8 +29,7 @@ function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
       if (isLiked === true) {
         const updates = {
           [`/image_comments/${imageId}/${commentId}/likes`]: increment(1),
-          [`/liked_comments/${imageId}/${userInfo.uid}/${commentId}`]:
-            true,
+          [`/liked_comments/${imageId}/${userInfo.uid}/${commentId}`]: true,
         }
 
         await update(ref(db), updates)
@@ -38,8 +38,7 @@ function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
       } else {
         const updates = {
           [`/image_comments/${imageId}/${commentId}/likes`]: increment(-1),
-          [`/liked_comments/${imageId}/${userInfo.uid}/${commentId}`]:
-            null,
+          [`/liked_comments/${imageId}/${userInfo.uid}/${commentId}`]: null,
         }
 
         await update(ref(db), updates)
@@ -47,7 +46,11 @@ function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
         setIsLiked(false)
       }
     } catch (err) {
-      console.log('erro ao atualizar o comentario curtido', { err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       toast({
         status: 'error',

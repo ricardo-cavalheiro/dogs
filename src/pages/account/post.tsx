@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { captureException } from '@sentry/nextjs'
 import {
   Button,
   Text,
@@ -102,7 +103,11 @@ function Post() {
         onCloseComplete: () => router.push('/account/myphotos'),
       })
     } catch (err) {
-      console.log({ err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
 
       toast({
         title: 'Não conseguimos postar sua foto.',

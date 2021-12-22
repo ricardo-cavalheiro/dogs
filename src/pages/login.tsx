@@ -1,4 +1,5 @@
 import { parseCookies } from 'nookies'
+import { captureException } from '@sentry/nextjs'
 import { Flex, Box, useBreakpointValue } from '@chakra-ui/react'
 import { getAuth } from 'firebase-admin/auth'
 
@@ -30,7 +31,11 @@ const getServerSideProps: GetServerSideProps = async (context) => {
       },
     }
   } catch (err) {
-    console.log({ err })
+    if (process.env.NODE_ENV === 'production') {
+      captureException(err)
+    } else {
+      console.log({ err })
+    }
 
     return {
       props: {},

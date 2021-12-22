@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Box, Flex, Link, Text } from '@chakra-ui/react'
 import { ref, onValue, off } from 'firebase/database'
+import { captureException } from '@sentry/nextjs'
 import NextLink from 'next/link'
 
 // components
@@ -44,7 +45,11 @@ function Comment({ comment, imageId }: CommentProps) {
         (snapshot) => snapshot.exists() && setIsLiked(true)
       )
     } catch (err) {
-      console.log('erro ao ao atualizar os comentarios já curtidos', { err })
+      if (process.env.NODE_ENV === 'production') {
+        captureException(err)
+      } else {
+        console.log({ err })
+      }
     }
 
     return () => off(likedCommentRef)

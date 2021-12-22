@@ -1,11 +1,8 @@
 import { Box, Button, useToast } from '@chakra-ui/react'
+import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
-import {
-  updatePassword,
-  verifyPasswordResetCode,
-  confirmPasswordReset,
-} from 'firebase/auth'
+import { verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 
 // components
@@ -81,7 +78,11 @@ function Password({ oobCode }: Props) {
     } catch (err) {
       const error = err as AuthError
 
-      console.log(error)
+      if (process.env.NODE_ENV === 'production') {
+        captureException(error)
+      } else {
+        console.log({ error })
+      }
 
       toast({
         title: 'Não foi possível alterar sua senha.',

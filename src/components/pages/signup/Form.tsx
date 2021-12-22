@@ -1,5 +1,6 @@
 import { Heading, Box, Button, Text, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
+import { captureException } from '@sentry/nextjs'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import {
   createUserWithEmailAndPassword,
@@ -80,6 +81,12 @@ function SignUpForm() {
       })
     } catch (err) {
       const error = err as AuthError
+
+      if (process.env.NODE_ENV === 'production') {
+        captureException(error)
+      } else {
+        console.log({ error })
+      }
 
       const mapErrorCodeToMessageError = {
         'auth/email-already-in-use':
