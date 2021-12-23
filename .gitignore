@@ -38,5 +38,12 @@ yarn-error.log*
 
 # firebase
 service-account.json
+database-debug.log
+firebase-debug.log
+ui-debug.log
+database.rules.json
+storage.rules
+.firebaserc
+
 # Sentry
 .sentryclirc

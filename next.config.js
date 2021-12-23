@@ -12,7 +12,11 @@ const moduleExports = {
   },
   staticPageGenerationTimeout: 320,
   images: {
-    domains: ['firebasestorage.googleapis.com'],
+    domains: [
+      process.env.NODE_ENV === 'development'
+        ? 'localhost'
+        : 'firebasestorage.googleapis.com',
+    ],
   },
 }
 

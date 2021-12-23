@@ -1,9 +1,4 @@
-import { applyActionCode } from 'firebase/auth'
 import { withSentry } from '@sentry/nextjs'
-import { captureException } from '@sentry/nextjs'
-
-// firebase services
-import { auth } from '../../services/firebase/auth'
 
 // types
 import type { NextApiRequest, NextApiResponse } from 'next'
