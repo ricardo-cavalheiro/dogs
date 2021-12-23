@@ -61,12 +61,11 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
         limitToLast(4)
       )
 
-      onValue(
-        imageCommentsRef,
-        (snapshot) =>
-          snapshot.exists() &&
+      onValue(imageCommentsRef, (snapshot) => {
+        if (snapshot.exists()) {
           setImageComments(Object.values<Comment>(snapshot.val()).reverse())
-      )
+        }
+      })
     } catch (err) {
       if (process.env.NODE_ENV === 'production') {
         captureException(err)
