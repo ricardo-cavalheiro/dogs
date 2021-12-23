@@ -59,7 +59,7 @@ function Comment({ comment, imageId }: CommentProps) {
   useEffect(() => {
     const authorCommentRef = ref(
       db,
-      `/image_comments/${imageId}/${comment.id}/likes`
+      `/comment_metrics/${comment.id}/likes`
     )
 
     onValue(
