@@ -1,7 +1,7 @@
 import { Heading, Box, Button, Text, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { captureException } from '@sentry/nextjs'
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
   createUserWithEmailAndPassword,
   updateProfile,
