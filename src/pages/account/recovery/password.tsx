@@ -3,7 +3,7 @@ import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth'
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 import Head from 'next/head'
 
 // components

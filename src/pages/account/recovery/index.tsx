@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import Head from 'next/head'
 

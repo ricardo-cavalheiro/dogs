@@ -3,7 +3,7 @@ import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { Box, Heading, Button, useToast } from '@chakra-ui/react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useRouter } from 'next/router'
 
 // components
@@ -11,7 +11,7 @@ import { Input } from '../../form/inputs/RegularInput'
 import { PasswordInput } from '../../form/inputs/PasswordInput'
 import { PasswordRecovery } from './PasswordRecovery'
 
-// firebase
+// firebase services
 import { auth } from '../../../services/firebase/auth'
 
 // yup validation
