@@ -67,6 +67,9 @@ const PasswordInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
             '&:hover + div > button > svg': {
               fill: 'dark.800',
             },
+            '&:focus + div > button > svg': {
+              fill: 'dark.800',
+            },
           }}
         />
         <InputRightElement>
