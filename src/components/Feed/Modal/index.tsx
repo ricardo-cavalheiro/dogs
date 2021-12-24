@@ -26,6 +26,7 @@ import {
 import { useState, useEffect } from 'react'
 import NextImage from 'next/image'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 
 // components
 import { Comments } from './Comments'
@@ -49,6 +50,25 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
   // states
   const [imageComments, setImageComments] = useState<Comment[]>([])
   const [imageViews, setImageViews] = useState(imageInfo.views)
+
+  // hooks
+  const router = useRouter()
+
+  // the two useEffect below are used to handle user pressing mobile back button
+  useEffect(() => {
+    isOpen
+      ? router.push('/', `/photo/${imageInfo.id}`, { shallow: true })
+      : router.push('/', '/', { shallow: true })
+  }, [isOpen])
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) =>
+      url === '/' ? onClose() : undefined
+
+    router.events.on('routeChangeStart', handleRouteChange)
+
+    return () => router.events.off('routeChangeStart', handleRouteChange)
+  }, [])
 
   // loads the latest comments and listens for new ones
   useEffect(() => {
