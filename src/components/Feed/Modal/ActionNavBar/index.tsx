@@ -1,8 +1,7 @@
-import { Flex, Box } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 
 // components
 import { LikePhoto } from './LikePhoto'
-import { AddComment } from './AddComment'
 import { DeletePhoto } from './DeletePhoto'
 
 // hooks
@@ -20,19 +19,12 @@ function ActionNavBar({ imageInfo }: Props) {
   const { userInfo } = useUser()
 
   return (
-    <Flex direction='column'>
-      <Flex gridGap={2}>
-        <LikePhoto imageInfo={imageInfo} />
+    <Flex gridGap={2} justifyContent='space-between'>
+      <LikePhoto imageInfo={imageInfo} />
 
-        <AddComment imageID={imageInfo.id} />
-
-        {userInfo.username === imageInfo.author_username && (
-          <DeletePhoto imageInfo={imageInfo} />
-        )}
-      </Flex>
-
-      {/* the box below is used to render the comment input through a react portal */}
-      <Box className='comment-input-wrapper'></Box>
+      {userInfo.uid === imageInfo.author_id && (
+        <DeletePhoto imageInfo={imageInfo} />
+      )}
     </Flex>
   )
 }

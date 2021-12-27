@@ -18,3 +18,4 @@ Upcoming features:
 ## Technical Details
 
 Built on top of Next.js (v12) and Firebase (v9). Deployed on Vercel.
+Errors in production are sent to Sentry.
