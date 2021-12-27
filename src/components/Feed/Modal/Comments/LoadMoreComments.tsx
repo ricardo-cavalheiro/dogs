@@ -11,13 +11,16 @@ import {
   off,
 } from 'firebase/database'
 
+// hooks
+import { useHandleError } from '../../../../hooks/useHandleError'
+
 // firebase services
 import { db } from '../../../../services/firebase/database'
 
 // types
-import type { Comment } from '../../../../typings/userInfo'
-import type { Query } from 'firebase/database'
+import type { AuthError } from 'firebase/auth'
 import type { Dispatch, SetStateAction } from 'react'
+import type { Comment } from '../../../../typings/userInfo'
 
 type Props = {
   imageID: string
@@ -26,24 +29,27 @@ type Props = {
 }
 
 function LoadMoreComments({ imageID, imageComments, setImageComments }: Props) {
+  // states
   const [isLastPage, setIsLastPage] = useState(false)
+
+  // hooks
+  const { handleError } = useHandleError()
 
   function loadMoreComments() {
     if (isLastPage) return
 
-    let imageCommentsRef: Query
+    const lastCommentID = imageComments.at(-1)?.id as string
 
-    try {
-      const lastCommentID = imageComments.at(-1)?.id as string
+    const imageCommentsRef = query(
+      ref(db, `image_comments/${imageID}`),
+      orderByKey(),
+      limitToLast(4),
+      endBefore(lastCommentID)
+    )
 
-      imageCommentsRef = query(
-        ref(db, `image_comments/${imageID}`),
-        orderByKey(),
-        limitToLast(4),
-        endBefore(lastCommentID)
-      )
-
-      onValue(imageCommentsRef, (snapshot) => {
+    onValue(
+      imageCommentsRef,
+      (snapshot) => {
         if (snapshot.exists()) {
           const newComments = Object.values<Comment>(snapshot.val()).reverse()
 
@@ -53,16 +59,22 @@ function LoadMoreComments({ imageID, imageComments, setImageComments }: Props) {
         } else {
           setIsLastPage(true)
         }
-      })
-    } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
-      }
+      },
+      (err) => {
+        const error = err as AuthError
 
-      setImageComments([])
-    }
+        switch (error.code) {
+          default:
+            handleError('default')
+
+            process.env.NODE_ENV === 'production'
+              ? captureException(error)
+              : console.log({ error })
+
+            break
+        }
+      }
+    )
 
     return () => off(imageCommentsRef)
   }

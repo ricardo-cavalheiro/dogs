@@ -5,7 +5,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 type Modes = 'verifyEmail' | 'recoverEmail' | 'resetPassword'
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+function handler(req: NextApiRequest, res: NextApiResponse) {
   const mode = req.query['mode'] as Modes
   const oobCode = req.query['oobCode'] as string
 

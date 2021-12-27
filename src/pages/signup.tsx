@@ -34,11 +34,9 @@ const getServerSideProps: GetServerSideProps = async (context) => {
       },
     }
   } catch (err) {
-    if (process.env.NODE_ENV === 'production') {
-      captureException(err)
-    } else {
-      console.log({ err })
-    }
+    process.env.NODE_ENV === 'production'
+      ? captureException(err)
+      : console.log({ err })
 
     return {
       props: {},
@@ -55,7 +53,7 @@ function SignUp() {
       <Head>
         <title>Dogs | Cadastrar</title>
       </Head>
-      
+
       {isWideScreen ? (
         <Flex as='main' justify='center' columnGap={5} w='100%' mx='auto'>
           <Box flexBasis='50%' position='relative'>

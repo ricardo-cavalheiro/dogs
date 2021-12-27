@@ -17,16 +17,19 @@ import { captureException } from '@sentry/nextjs'
 import { MdDeleteOutline, MdDelete } from 'react-icons/md'
 import { ref as databaseRef, update } from 'firebase/database'
 import { ref as storageRef, deleteObject } from 'firebase/storage'
+import { useRouter } from 'next/router'
 
 // hooks
 import { useUser } from '../../../../hooks/contexts/useUser'
+import { useHandleError } from '../../../../hooks/useHandleError'
 
 // firebase services
 import { db } from '../../../../services/firebase/database'
 import { storage } from '../../../../services/firebase/storage'
 
 // types
-import { ImageInfo } from '../../../../typings/userInfo'
+import type { AuthError } from 'firebase/auth'
+import type { ImageInfo } from '../../../../typings/userInfo'
 
 type ConfirmationAlertProps = {
   isOpen: boolean
@@ -46,9 +49,11 @@ function ConfirmationAlert({
 
   // hooks
   const toast = useToast()
+  const router = useRouter()
   const { userInfo } = useUser()
   const closeAlertRef = useRef(null)
   const { colorMode } = useColorMode()
+  const { handleError } = useHandleError()
 
   async function deletePhoto() {
     setIsDeleting(true)
@@ -60,6 +65,7 @@ function ConfirmationAlert({
       )
 
       const updates = {
+        [`comment_metrics/${imageInfo.id}`]: null,
         [`image_comments/${imageInfo.id}`]: null,
         [`image_metrics/${imageInfo.id}`]: null,
         [`images/${imageInfo.author_id}/${imageInfo.id}`]: null,
@@ -78,22 +84,21 @@ function ConfirmationAlert({
         status: 'success',
         duration: 5000,
         isClosable: true,
-        onCloseComplete: () => location.reload(),
+        onCloseComplete: () => router.push('/'),
       })
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
-      }
+      const error = err as AuthError
 
-      toast({
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        title: 'Não foi possível deletar a foto.',
-        description: 'Por favor, tente novamente em alguns instantes',
-      })
+      switch (error.code) {
+        default:
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
+      }
     } finally {
       setIsDeleting(false)
     }

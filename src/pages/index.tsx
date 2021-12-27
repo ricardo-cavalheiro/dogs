@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import * as Sentry from '@sentry/nextjs'
-import { Box, useToast } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import {
   ref,
   query,
@@ -21,10 +21,12 @@ import { db } from '../services/firebase/database'
 import { adminApp } from '../services/firebase/admin'
 
 // hooks
+import { useHandleError } from '../hooks/useHandleError'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 
 // type
 import type { GetServerSideProps } from 'next'
+import type { AuthError } from 'firebase/auth'
 import type { Query } from 'firebase/database'
 import type { ImageInfo } from '../typings/userInfo'
 
@@ -49,13 +51,9 @@ const getServerSideProps: GetServerSideProps = async () => {
   } catch (err) {
     const error = err as Error
 
-    if (process.env.NODE_ENV === 'production') {
-      Sentry.captureException(error)
-    } else {
-      console.log({ error })
-    }
-
-    console.log('erro ao buscar as imagens mais recentes', { error })
+    process.env.NODE_ENV === 'production'
+      ? Sentry.captureException(error)
+      : console.log('erro ao buscar as imagens mais recentes', { error })
 
     return {
       props: {
@@ -75,7 +73,7 @@ function Home({ firebaseImages }: Props) {
   const [isLastPage, setIsLastPage] = useState(false)
 
   // hooks
-  const toast = useToast()
+  const { handleError } = useHandleError()
   const { shouldLoadMoreItems } = useInfiniteScroll('footer')
 
   // infinite scroll
@@ -106,19 +104,18 @@ function Home({ firebaseImages }: Props) {
         }
       })
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        Sentry.captureException(err)
-      } else {
-        console.log({ err })
-      }
+      const error = err as AuthError
 
-      toast({
-        title: 'Não conseguimos carregar mais imagens.',
-        description: 'Por favor, tente novamente em alguns instantes.',
-        duration: 5000,
-        isClosable: true,
-        status: 'error',
-      })
+      switch (error.code) {
+        default:
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? Sentry.captureException(error)
+            : console.log({ error })
+
+          break
+      }
     }
 
     return () => off(moreImagesRef)
@@ -129,7 +126,7 @@ function Home({ firebaseImages }: Props) {
       <Head>
         <title>Dogs | Feed</title>
       </Head>
-      
+
       <Feed images={images} />
     </Box>
   )

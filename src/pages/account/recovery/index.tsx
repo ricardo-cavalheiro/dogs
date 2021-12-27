@@ -16,6 +16,9 @@ import Head from 'next/head'
 // components
 import { Input } from '../../../components/form/inputs/RegularInput'
 
+// hooks
+import { useHandleError } from '../../../hooks/useHandleError'
+
 // firebase services
 import { auth } from '../../../services/firebase/auth'
 
@@ -23,6 +26,7 @@ import { auth } from '../../../services/firebase/auth'
 import { emailValidation } from '../../../components/form/validations/recovery'
 
 // types
+import type { AuthError } from 'firebase/auth'
 import type { SubmitHandler } from 'react-hook-form'
 
 type FormInputProps = {
@@ -32,6 +36,7 @@ type FormInputProps = {
 function Recovery() {
   // hooks
   const toast = useToast()
+  const { handleError } = useHandleError()
   const isWideScreen = useBreakpointValue({ sm: false, md: true })
   const {
     reset,
@@ -55,18 +60,18 @@ function Recovery() {
 
       reset()
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
-      }
+      const error = err as AuthError
 
-      toast({
-        title: 'Não conseguimos enviar o e-mail.',
-        description: 'Por favor, tente novamente em alguns instantes.',
-        status: 'error',
-        isClosable: true,
-      })
+      switch (error.code) {
+        default:
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
+      }
     }
   }
 
@@ -75,7 +80,7 @@ function Recovery() {
       <Head>
         <title>Dogs | Alterar senha</title>
       </Head>
-      
+
       <Heading>Alterar senha</Heading>
 
       {isWideScreen ? (

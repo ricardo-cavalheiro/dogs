@@ -17,15 +17,16 @@ import { Modal } from './Modal'
 import { UserNotLoggedInModal } from './UserNotLoggedInModal'
 
 // hooks
-import { useUser } from '../../hooks/contexts/useUser'
 import { useShimmer } from '../../hooks/useShimmer'
+import { useUser } from '../../hooks/contexts/useUser'
+import { useHandleError } from '../../hooks/useHandleError'
 
 // firebase services
 import { db } from '../../services/firebase/database'
 
 // types
+import type { AuthError } from 'firebase/auth'
 import type { ImageInfo } from '../../typings/userInfo'
-import type { DatabaseReference } from 'firebase/database'
 
 type CardProps = {
   imageInfo: ImageInfo
@@ -42,30 +43,38 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
   // hooks
   const { userInfo } = useUser()
   const shimmer = useShimmer(200, 200)
+  const { handleError } = useHandleError()
   const { onOpen, onClose, isOpen, onToggle } = useDisclosure()
   const isWideScreen = useBreakpointValue({ sm: false, md: true, lg: true })
 
   // fetches the total of views and likes for the image
   useEffect(() => {
-    let imageRef: DatabaseReference
+    const imageRef = ref(db, `image_metrics/${imageInfo.id}`)
 
-    try {
-      imageRef = ref(db, `image_metrics/${imageInfo.id}`)
-
-      onValue(imageRef, (snapshot) => {
+    onValue(
+      imageRef,
+      (snapshot) => {
         if (snapshot.exists()) {
           const metrics = snapshot.val()
 
           setImageMetrics({ likes: metrics.likes, views: metrics.views })
         }
-      })
-    } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
+      },
+      (err) => {
+        const error = err as AuthError
+
+        switch (error.code) {
+          default:
+            handleError('default')
+
+            process.env.NODE_ENV === 'production'
+              ? captureException(error)
+              : console.log({ error })
+
+            break
+        }
       }
-    }
+    )
 
     return () => off(imageRef)
   }, [isOpen])
@@ -166,7 +175,6 @@ function Feed({ images }: Props) {
       as='ul'
       gap={5}
       templateColumns={['1fr', 'repeat(3, 1fr)']}
-      className='feed'
     >
       {images.map((image, index) => (
         <Card key={image.id} imageInfo={image} isAboveTheFold={index < 4} />

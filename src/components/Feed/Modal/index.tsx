@@ -33,10 +33,14 @@ import { Comments } from './Comments'
 import { ActionNavBar } from './ActionNavBar'
 import { LoadMoreComments } from './Comments/LoadMoreComments'
 
+// hooks
+import { useHandleError } from '../../../hooks/useHandleError'
+
 // firebase services
 import { db } from '../../../services/firebase/database'
 
 // types
+import type { AuthError } from 'firebase/auth'
 import type { DatabaseReference, Query } from 'firebase/database'
 import type { ImageInfo, Comment } from '../../../typings/userInfo'
 
@@ -53,6 +57,7 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
 
   // hooks
   const router = useRouter()
+  const { handleError } = useHandleError()
 
   // the two useEffect below are used to handle user pressing mobile back button
   useEffect(() => {
@@ -72,29 +77,32 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
 
   // loads the latest comments and listens for new ones
   useEffect(() => {
-    let imageCommentsRef: Query
+    const imageCommentsRef = query(
+      ref(db, `image_comments/${imageInfo.id}`),
+      orderByKey(),
+      limitToLast(4)
+    )
 
-    try {
-      imageCommentsRef = query(
-        ref(db, `image_comments/${imageInfo.id}`),
-        orderByKey(),
-        limitToLast(4)
-      )
+    onValue(
+      imageCommentsRef,
+      (snapshot) =>
+        snapshot.exists() &&
+        setImageComments(Object.values<Comment>(snapshot.val()).reverse()),
+      (err) => {
+        const error = err as AuthError
 
-      onValue(imageCommentsRef, (snapshot) => {
-        if (snapshot.exists()) {
-          setImageComments(Object.values<Comment>(snapshot.val()).reverse())
+        switch (error.code) {
+          default:
+            handleError('default')
+
+            process.env.NODE_ENV === 'production'
+              ? captureException(error)
+              : console.log({ error })
+
+            break
         }
-      })
-    } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
       }
-
-      setImageComments([])
-    }
+    )
 
     return () => off(imageCommentsRef)
   }, [])
@@ -115,17 +123,22 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
           )
         }
       } catch (err) {
-        if (process.env.NODE_ENV === 'production') {
-          captureException(err)
-        } else {
-          console.log({ err })
-        }
+        const error = err as AuthError
 
-        setImageViews(0)
+        switch (error.code) {
+          default:
+            handleError('default')
+
+            process.env.NODE_ENV === 'production'
+              ? captureException(err)
+              : console.log({ err })
+
+            break
+        }
       }
     })()
 
-    return () => off(imageRef)
+    return () => (imageRef ? off(imageRef) : undefined)
   }, [isOpen])
 
   return (
@@ -170,14 +183,18 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
                 <Flex align='center' gridGap={1}>
                   <MdOutlineVisibility size={20} />
 
-                  <Text as='span'>{imageViews}</Text>
+                  <Text as='span'>{imageViews || 0}</Text>
                 </Flex>
               </Flex>
 
               <Divider borderColor='#a8a8a8' my={3} />
 
               <Box>
-                <Heading fontSize={40}>{imageInfo.title}</Heading>
+                <NextLink href={`/photo/${imageInfo.id}`} passHref>
+                  <Link>
+                    <Heading fontSize={40}>{imageInfo.title}</Heading>
+                  </Link>
+                </NextLink>
 
                 {/* this avoids react rendering an empty `p` tag */}
                 {imageInfo.description && (

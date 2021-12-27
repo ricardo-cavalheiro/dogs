@@ -10,6 +10,9 @@ import Head from 'next/head'
 import { Input } from '../../../components/form/inputs/RegularInput'
 import { PasswordInput } from '../../../components/form/inputs/PasswordInput'
 
+// hooks
+import { useHandleError } from '../../../hooks/useHandleError'
+
 // form validation
 import { recoveryPasswordValidation } from '../../../components/form/validations/recoveryPassword'
 
@@ -51,6 +54,7 @@ function Password({ oobCode }: Props) {
   // hooks
   const toast = useToast()
   const router = useRouter()
+  const { handleError } = useHandleError()
   const {
     reset,
     register,
@@ -79,18 +83,16 @@ function Password({ oobCode }: Props) {
     } catch (err) {
       const error = err as AuthError
 
-      if (process.env.NODE_ENV === 'production') {
-        captureException(error)
-      } else {
-        console.log({ error })
-      }
+      switch (error.code) {
+        default:
+          handleError('default')
 
-      toast({
-        title: 'Não foi possível alterar sua senha.',
-        description: 'Por favor, tente novamente em alguns instantes.',
-        status: 'error',
-        isClosable: true,
-      })
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
+      }
     }
   }
 

@@ -11,6 +11,9 @@ import { Input } from '../../form/inputs/RegularInput'
 import { PasswordInput } from '../../form/inputs/PasswordInput'
 import { PasswordRecovery } from './PasswordRecovery'
 
+// hooks
+import { useHandleError } from '../../../hooks/useHandleError'
+
 // firebase services
 import { auth } from '../../../services/firebase/auth'
 
@@ -30,6 +33,7 @@ function LoginForm() {
   // hooks
   const toast = useToast()
   const router = useRouter()
+  const { handleError } = useHandleError()
   const {
     register,
     handleSubmit,
@@ -47,39 +51,20 @@ function LoginForm() {
     } catch (err) {
       const error = err as AuthError
 
-      if (process.env.NODE_ENV === 'production') {
-        captureException(error)
-      } else {
-        console.log({ error })
-      }
-
-      const mapFirebaseErrorCodeToErrorMessage = {
-        'auth/wrong-password': 'Verifique o e-mail e/ou senha inserido.',
-        'auth/user-not-found': 'Verifique o e-mail e/ou senha inserido.',
-        default:
-          'Esse erro foi inesperado. Já estamos trabalhando para resolvê-lo.',
-      }
-
-      type SignatureIndex = keyof typeof mapFirebaseErrorCodeToErrorMessage
-
-      const customErrorToast = (errorCode: SignatureIndex) => {
-        return toast({
-          title: 'Não foi possível fazer o login.',
-          description: mapFirebaseErrorCodeToErrorMessage[errorCode],
-          duration: 5000,
-          isClosable: true,
-          status: errorCode !== 'default' ? 'warning' : 'error',
-        })
-      }
-
       switch (error.code) {
         case 'auth/wrong-password':
         case 'auth/user-not-found':
-          customErrorToast(error.code)
-          return
+          handleError(error.code)
+          
+          break
         default:
-          customErrorToast('default')
-          return
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
       }
     }
   }

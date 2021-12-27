@@ -9,9 +9,11 @@ import { auth } from '../../services/firebase/auth'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
+import { useHandleError } from '../../hooks/useHandleError'
 
 // types
 import type { GetServerSideProps } from 'next'
+import type { AuthError } from 'firebase/auth'
 
 const getServerSideProps: GetServerSideProps = async (context) => {
   const oobCode = context.query['oobCode']
@@ -33,6 +35,7 @@ function VerifyEmail({ oobCode }: Props) {
   // hooks
   const toast = useToast()
   const { setUserInfo } = useUser()
+  const { handleError } = useHandleError()
 
   useEffect(() => {
     applyActionCode(auth, oobCode)
@@ -53,21 +56,20 @@ function VerifyEmail({ oobCode }: Props) {
         })
       })
       .catch((err) => {
+        const error = err as AuthError
+
         setIsEmailVerified(false)
 
-        if (process.env.NODE_ENV === 'production') {
-          captureException(err)
-        } else {
-          console.log({ err })
-        }
+        switch (error.code) {
+          default:
+            handleError('default')
 
-        toast({
-          title: 'E-mail não confirmado',
-          description: 'Por favor, tente novamente em alguns instantes.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        })
+            process.env.NODE_ENV === 'production'
+              ? captureException(error)
+              : console.log({ error })
+
+            break
+        }
       })
   }, [])
 

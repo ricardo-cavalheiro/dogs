@@ -9,12 +9,13 @@ import { LikeComment } from './LikeComment'
 
 // hooks
 import { useUser } from '../../../../hooks/contexts/useUser'
+import { useHandleError } from '../../../../hooks/useHandleError'
 
 // firebase
 import { db } from '../../../../services/firebase/database'
 
 // types
-import type { DatabaseReference } from 'firebase/database'
+import type { AuthError } from 'firebase/auth'
 import type { Comment as CommentType } from '../../../../typings/userInfo'
 
 type CommentProps = {
@@ -29,28 +30,33 @@ function Comment({ comment, imageId }: CommentProps) {
 
   // hooks
   const { userInfo } = useUser()
+  const { handleError } = useHandleError()
 
   // checks if the comment was already liked by the user
   useEffect(() => {
-    let likedCommentRef: DatabaseReference
+    const likedCommentRef = ref(
+      db,
+      `/liked_comments/${imageId}/${userInfo.uid}/${comment.id}`
+    )
 
-    try {
-      likedCommentRef = ref(
-        db,
-        `/liked_comments/${imageId}/${userInfo.uid}/${comment.id}`
-      )
+    onValue(
+      likedCommentRef,
+      (snapshot) => snapshot.exists() && setIsLiked(true),
+      (err) => {
+        const error = err as AuthError
 
-      onValue(
-        likedCommentRef,
-        (snapshot) => snapshot.exists() && setIsLiked(true)
-      )
-    } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
+        switch (error.code) {
+          default:
+            handleError('default')
+
+            process.env.NODE_ENV === 'production'
+              ? captureException(error)
+              : console.log({ error })
+
+            break
+        }
       }
-    }
+    )
 
     return () => off(likedCommentRef)
   }, [])
@@ -59,12 +65,26 @@ function Comment({ comment, imageId }: CommentProps) {
   useEffect(() => {
     const authorCommentRef = ref(
       db,
-      `/comment_metrics/${comment.id}/likes`
+      `/comment_metrics/${imageId}/${comment.id}/likes`
     )
 
     onValue(
       authorCommentRef,
-      (snapshot) => snapshot.exists() && setCommentTotalLikes(snapshot.val())
+      (snapshot) => snapshot.exists() && setCommentTotalLikes(snapshot.val()),
+      (err) => {
+        const error = err as AuthError
+
+        switch (error.code) {
+          default:
+            handleError('default')
+
+            process.env.NODE_ENV === 'production'
+              ? captureException(error)
+              : console.log({ error })
+
+            break
+        }
+      }
     )
 
     return () => off(authorCommentRef)
