@@ -17,6 +17,7 @@ import {
   set,
   ref,
   onValue,
+  onChildAdded,
   off,
   increment,
   query,
@@ -31,7 +32,7 @@ import { useRouter } from 'next/router'
 // components
 import { Comments } from './Comments'
 import { ActionNavBar } from './ActionNavBar'
-import { LoadMoreComments } from './Comments/LoadMoreComments'
+import { AddComment } from './ActionNavBar/AddComment'
 
 // hooks
 import { useHandleError } from '../../../hooks/useHandleError'
@@ -41,7 +42,7 @@ import { db } from '../../../services/firebase/database'
 
 // types
 import type { AuthError } from 'firebase/auth'
-import type { DatabaseReference, Query } from 'firebase/database'
+import type { DatabaseReference } from 'firebase/database'
 import type { ImageInfo, Comment } from '../../../typings/userInfo'
 
 type Props = {
@@ -166,11 +167,11 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
           <Grid
             p={3}
             w={[null, null, '600px']}
-            templateRows='min-content 280px'
+            templateRows={['min-content 200px 73px', 'min-content 305px 73px']}
             py={[null, null, 5]}
           >
             <Box>
-              <Flex justify='space-between' mt={2} mb={2} opacity={0.5}>
+              <Flex justify='space-between' mb={2} opacity={0.5}>
                 <Box>
                   <NextLink
                     href={`/account/${imageInfo.author_username}`}
@@ -211,13 +212,13 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
               <Divider borderColor='#a8a8a8' my={3} />
             </Box>
 
-            <Comments comments={imageComments} imageId={imageInfo.id} />
-
-            <LoadMoreComments
-              imageID={imageInfo.id}
-              imageComments={imageComments}
+            <Comments
+              comments={imageComments}
+              imageId={imageInfo.id}
               setImageComments={setImageComments}
             />
+
+            <AddComment imageID={imageInfo.id} />
           </Grid>
         </ModalBody>
       </ModalContent>

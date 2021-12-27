@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react'
-import {
-  Box,
-  Flex,
-  Link,
-  Text,
-  Heading,
-  Divider,
-  useToast,
-} from '@chakra-ui/react'
+import { Box, Flex, Grid, Link, Text, Heading, Divider } from '@chakra-ui/react'
 import { captureException } from '@sentry/nextjs'
 import {
   ref,
@@ -28,7 +20,7 @@ import Head from 'next/head'
 // components
 import { ActionNavBar } from '../../components/Feed/Modal/ActionNavBar'
 import { Comments } from '../../components/Feed/Modal/Comments'
-import { LoadMoreComments } from '../../components/Feed/Modal/Comments/LoadMoreComments'
+import { AddComment } from '../../components/Feed/Modal/ActionNavBar/AddComment'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
@@ -160,7 +152,7 @@ function Photo({ imageInfo }: Props) {
           />
         </Box>
 
-        <Box flexBasis='30%'>
+        <Grid flexBasis='30%' templateRows='min-content 173px 40px'>
           <Box>
             <Flex
               justify='space-between'
@@ -205,14 +197,14 @@ function Photo({ imageInfo }: Props) {
             <Divider borderColor='#a8a8a8' my={3} />
           </Box>
 
-          <Comments comments={imageComments} imageId={imageInfo.id} />
-
-          <LoadMoreComments
-            imageID={imageInfo.id}
-            imageComments={imageComments}
+          <Comments
+            comments={imageComments}
+            imageId={imageInfo.id}
             setImageComments={setImageComments}
           />
-        </Box>
+
+          <AddComment imageID={imageInfo.id} />
+        </Grid>
       </Flex>
     </>
   )

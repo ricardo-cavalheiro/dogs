@@ -35,6 +35,20 @@ const global = {
     'h1, h2, label, input, p, span, legend': {
       color: mode('light.800', 'dark.50')(props),
     },
+    '::-webkit-scrollbar': {
+      width: '10px',
+    },
+    '::-webkit-scrollbar-track': {
+      background: props.theme.colors.light['150'],
+      borderRadius: '10px',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: props.theme.colors.light['300'],
+      borderRadius: '10px',
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+      background: props.theme.colors.light['800'],
+    },
     body: {
       bg: mode('light.50', 'dark.900')(props),
     },

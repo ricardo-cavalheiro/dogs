@@ -44,6 +44,7 @@ ui-debug.log
 database.rules.json
 storage.rules
 .firebaserc
+/firebase-emulator-data/**/*
 
 # Sentry
 .sentryclirc

@@ -1,15 +1,8 @@
-import { useState } from 'react'
-import {
-  Collapse,
-  Flex,
-  Button,
-  useToast,
-  useColorMode,
-} from '@chakra-ui/react'
+import { Flex, Button, useToast } from '@chakra-ui/react'
 import { captureException } from '@sentry/nextjs'
-import { MdModeComment, MdOutlineModeComment, MdSend } from 'react-icons/md'
 import { useForm } from 'react-hook-form'
 import { push, set, ref } from 'firebase/database'
+import { MdSend } from 'react-icons/md'
 
 // components
 import { Input } from '../../../form/inputs/RegularInput'
@@ -18,7 +11,6 @@ import { Input } from '../../../form/inputs/RegularInput'
 import { db } from '../../../../services/firebase/database'
 
 // hooks
-import { Portal } from '../../../../hooks/usePortal'
 import { useHandleError } from '../../../../hooks/useHandleError'
 import { useUser } from '../../../../hooks/contexts/useUser'
 
@@ -35,14 +27,10 @@ type Props = {
 }
 
 function AddComment({ imageID }: Props) {
-  // states
-  const [isCommentInputShown, setIsCommentInputShown] = useState(false)
-
   // hooks
   const toast = useToast()
   const { userInfo } = useUser()
   const { handleError } = useHandleError()
-  const { colorMode } = useColorMode()
   const {
     reset,
     register,
@@ -83,56 +71,26 @@ function AddComment({ imageID }: Props) {
 
   return (
     <>
-      {isCommentInputShown ? (
-        <MdModeComment
-          size={30}
-          tabIndex={0}
-          color='#fb1'
-          cursor='pointer'
-          onClick={() => setIsCommentInputShown(!isCommentInputShown)}
-          onKeyDown={({ key }) =>
-            key === 'Enter' && setIsCommentInputShown(!isCommentInputShown)
-          }
+      <Flex
+        as='form'
+        h='min-content'
+        gridGap={2}
+        align='flex-end'
+        justify='space-between'
+        onSubmit={handleSubmit(onCommentSubmit)}
+      >
+        <Input
+          label='Comentar'
+          w='100%'
+          minH='40px'
+          error={errors.comment?.message}
+          {...register('comment', { required: true })}
         />
-      ) : (
-        <MdOutlineModeComment
-          size={30}
-          tabIndex={0}
-          color={`${colorMode === 'light' ? '#333' : '#fff'}`}
-          cursor='pointer'
-          onClick={() => setIsCommentInputShown(!isCommentInputShown)}
-          onKeyDown={({ key }) =>
-            key === 'Enter' && setIsCommentInputShown(!isCommentInputShown)
-          }
-        />
-      )}
 
-      <Portal container='.comment-input-wrapper'>
-        <Collapse in={isCommentInputShown}>
-          <Flex
-            as='form'
-            gridGap={2}
-            align='flex-end'
-            justify='space-between'
-            onSubmit={handleSubmit(onCommentSubmit)}
-          >
-            <Input
-              label='Comentar'
-              as='textarea'
-              w='100%'
-              h='60px'
-              minH='40px'
-              pt={1.5}
-              error={errors.comment?.message}
-              {...register('comment', { required: true })}
-            />
-
-            <Button type='submit' isLoading={isSubmitting} w='70px' mb='7px'>
-              <MdSend size={30} cursor='pointer' />
-            </Button>
-          </Flex>
-        </Collapse>
-      </Portal>
+        <Button type='submit' isLoading={isSubmitting} w='70px'>
+          <MdSend size={30} cursor='pointer' />
+        </Button>
+      </Flex>
     </>
   )
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Text } from '@chakra-ui/react'
+import { Button, IconButton, Text } from '@chakra-ui/react'
 import { captureException } from '@sentry/nextjs'
 import {
   query,
@@ -8,8 +8,8 @@ import {
   limitToLast,
   endBefore,
   onValue,
-  off,
 } from 'firebase/database'
+import { MdAddCircleOutline } from 'react-icons/md'
 
 // hooks
 import { useHandleError } from '../../../../hooks/useHandleError'
@@ -75,18 +75,22 @@ function LoadMoreComments({ imageID, imageComments, setImageComments }: Props) {
         }
       }
     )
-
-    return () => off(imageCommentsRef)
   }
 
   if (imageComments.length === 0) return null
 
   return (
     <>
-      {!isLastPage ? (
-        <Button onClick={loadMoreComments} mb={5}>
-          Mais comentários
-        </Button>
+      {!isLastPage && imageComments.length >= 4 ? (
+        <IconButton
+          mb={1}
+          w='50%'
+          variant='ghost'
+          alignSelf='center'
+          onClick={loadMoreComments}
+          aria-label='Carregar mais comentários.'
+          icon={<MdAddCircleOutline size={30} />}
+        />
       ) : (
         <Text as='strong' textAlign='center'>
           Sem mais comentários.
