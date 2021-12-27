@@ -137,7 +137,7 @@ function Photo({ imageInfo }: Props) {
         <Box
           position='relative'
           flexBasis={[null, '70%']}
-          h={['300px', '400px', '100%']}
+          h={['300px', '100%']}
           borderRadius='base'
           overflow='hidden'
         >
@@ -152,7 +152,11 @@ function Photo({ imageInfo }: Props) {
           />
         </Box>
 
-        <Grid flexBasis='30%' templateRows='min-content 173px 40px'>
+        <Grid
+          flexBasis='30%'
+          h='calc(100vh - 40px)'
+          templateRows='auto 1fr auto'
+        >
           <Box>
             <Flex
               justify='space-between'

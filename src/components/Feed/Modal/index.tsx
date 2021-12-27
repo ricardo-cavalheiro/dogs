@@ -166,8 +166,9 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
 
           <Grid
             p={3}
+            h='calc(100vh - 40px)'
             w={[null, null, '600px']}
-            templateRows={['min-content 200px 73px', 'min-content 305px 73px']}
+            templateRows='auto 1fr auto'
             py={[null, null, 5]}
           >
             <Box>
