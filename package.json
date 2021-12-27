@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "emulators:start": "firebase emulators:start"
+    "firebase:emulators": "firebase emulators:start --export-on-exit=./firebase-emulator-data --import=./firebase-emulator-data"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.7.3",
