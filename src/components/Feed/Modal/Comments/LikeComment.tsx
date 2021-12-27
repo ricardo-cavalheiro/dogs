@@ -1,16 +1,18 @@
-import { Box, useToast } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
 import { captureException } from '@sentry/nextjs'
 import { ref, update, increment } from 'firebase/database'
 
 // hooks
 import { useUser } from '../../../../hooks/contexts/useUser'
+import { useHandleError } from '../../../../hooks/useHandleError'
 
 // firebase services
 import { db } from '../../../../services/firebase/database'
 
 // types
 import type { Dispatch, SetStateAction } from 'react'
+import type { AuthError } from 'firebase/auth'
 
 type Props = {
   imageId: string
@@ -21,14 +23,14 @@ type Props = {
 
 function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
   // hooks
-  const toast = useToast()
   const { userInfo } = useUser()
+  const { handleError } = useHandleError()
 
   async function handleCommentLike(isLiked: boolean) {
     try {
       if (isLiked === true) {
         const updates = {
-          [`/comment_metrics/${commentId}/likes`]: increment(1),
+          [`/comment_metrics/${imageId}/${commentId}/likes`]: increment(1),
           [`/liked_comments/${imageId}/${userInfo.uid}/${commentId}`]: true,
         }
 
@@ -37,7 +39,7 @@ function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
         setIsLiked(true)
       } else {
         const updates = {
-          [`/comment_metrics/${commentId}/likes`]: increment(-1),
+          [`/comment_metrics/${imageId}/${commentId}/likes`]: increment(-1),
           [`/liked_comments/${imageId}/${userInfo.uid}/${commentId}`]: null,
         }
 
@@ -46,19 +48,18 @@ function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
         setIsLiked(false)
       }
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
-      }
+      const error = err as AuthError
 
-      toast({
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        title: 'Houve um erro ao curtir o comentário.',
-        description: 'Por favor, tente novamente em alguns instantes.',
-      })
+      switch (error.code) {
+        default:
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
+      }
     }
   }
 

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { captureException } from '@sentry/nextjs'
-import { useToast } from '@chakra-ui/react'
 import {
   ref,
   query,
@@ -17,6 +16,7 @@ import Head from 'next/head'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
+import { useHandleError } from '../../hooks/useHandleError'
 import { useInfiniteScroll } from '../../hooks/useInfiniteScroll'
 
 // firebase services
@@ -28,6 +28,7 @@ import { UserHeader } from '../../components/layout/UserHeader'
 import { Feed } from '../../components/Feed'
 
 // types
+import type { AuthError } from 'firebase/auth'
 import type { GetServerSideProps } from 'next'
 import type { Query } from 'firebase/database'
 import type { ImageInfo } from '../../typings/userInfo'
@@ -58,11 +59,9 @@ const getServerSideProps: GetServerSideProps = async (context) => {
         },
       }
   } catch (err) {
-    if (process.env.NODE_ENV === 'production') {
-      captureException(err)
-    } else {
-      console.log({ err })
-    }
+    process.env.NODE_ENV === 'production'
+      ? captureException(err)
+      : console.log({ err })
 
     return {
       redirect: {
@@ -83,8 +82,8 @@ function Account({ firebaseImages }: Props) {
   const [isLastPage, setIsLastPage] = useState(false)
 
   // hooks
-  const toast = useToast()
   const { userInfo } = useUser()
+  const { handleError } = useHandleError()
   const { shouldLoadMoreItems } = useInfiniteScroll('footer')
 
   useEffect(() => {
@@ -114,24 +113,21 @@ function Account({ firebaseImages }: Props) {
         }
       })
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
+      const error = err as AuthError
+
+      switch (error.code) {
+        default:
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
       }
-
-      toast({
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        title: 'Houve um erro ao buscar suas fotos.',
-        description: 'Mas já estamos trabalhando para resolver.',
-      })
     }
 
-    return () => {
-      off(moreImagesRef)
-    }
+    return () => off(moreImagesRef)
   }, [shouldLoadMoreItems])
 
   return (

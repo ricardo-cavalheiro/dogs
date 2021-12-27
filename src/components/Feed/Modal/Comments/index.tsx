@@ -13,7 +13,7 @@ type CommentsProps = {
 
 function Comments({ comments, imageId }: CommentsProps) {
   return (
-    <Box as='ul' className='comments-wrapper' overflowY='auto' mb={2}>
+    <Box as='ul' maxH='300px' overflowY='auto' mb={2}>
       {comments.length === 0 ? (
         <Text>Nenhum comentário ainda...</Text>
       ) : (

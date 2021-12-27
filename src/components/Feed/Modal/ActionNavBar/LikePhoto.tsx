@@ -6,12 +6,13 @@ import { captureException } from '@sentry/nextjs'
 
 // hooks
 import { useUser } from '../../../../hooks/contexts/useUser'
+import { useHandleError } from '../../../../hooks/useHandleError'
 
 // firebase services
 import { db } from '../../../../services/firebase/database'
 
 // types
-import type { DatabaseReference } from 'firebase/database'
+import type { AuthError } from 'firebase/auth'
 import type { ImageInfo } from '../../../../typings/userInfo'
 
 type Props = {
@@ -26,25 +27,33 @@ function LikePhoto({ imageInfo }: Props) {
   const toast = useToast()
   const { userInfo } = useUser()
   const { colorMode } = useColorMode()
+  const { handleError } = useHandleError()
 
   // verfies if the image is already liked by the user
   useEffect(() => {
-    let likedImageRef: DatabaseReference
+    const likedImageRef = ref(
+      db,
+      `liked_images/${imageInfo.id}/${userInfo.uid}`
+    )
 
-    try {
-      likedImageRef = ref(db, `liked_images/${imageInfo.id}/${userInfo.uid}`)
+    onValue(
+      likedImageRef,
+      (snapshot) => snapshot.exists() && setIsLiked(true),
+      (err) => {
+        const error = err as AuthError
 
-      onValue(
-        likedImageRef,
-        (snapshot) => snapshot.exists() && setIsLiked(true)
-      )
-    } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
+        switch (error.code) {
+          default:
+            handleError('default')
+
+            process.env.NODE_ENV === 'production'
+              ? captureException(error)
+              : console.log({ error })
+
+            break
+        }
       }
-    }
+    )
 
     return () => off(likedImageRef)
   }, [])
@@ -71,15 +80,18 @@ function LikePhoto({ imageInfo }: Props) {
         setIsLiked(false)
       }
     } catch (err) {
-      console.log('houve um erro ao tentar curtir a foto', { err })
+      const error = err as AuthError
 
-      toast({
-        title: 'Não foi possível curtir a foto.',
-        description: 'Por favor, tente novamente em alguns instantes.',
-        status: 'error',
-        isClosable: true,
-        duration: 5000,
-      })
+      switch (error.code) {
+        default:
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
+      }
     }
   }
 

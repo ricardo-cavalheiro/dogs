@@ -8,12 +8,12 @@ import {
   useToast,
   useBreakpointValue,
 } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
 import {
   ref as storageRef,
   uploadBytes,
   getDownloadURL,
 } from 'firebase/storage'
+import { useForm } from 'react-hook-form'
 import { ref as databaseRef, update, push } from 'firebase/database'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
@@ -28,6 +28,7 @@ import { storage } from '../../services/firebase/storage'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
+import { useHandleError } from '../../hooks/useHandleError'
 
 // layout
 import { UserHeader } from '../../components/layout/UserHeader'
@@ -36,6 +37,7 @@ import { UserHeader } from '../../components/layout/UserHeader'
 import { postPhotoValidation } from '../../components/form/validations/postImage'
 
 // types
+import type { AuthError } from 'firebase/auth'
 import type { SubmitHandler } from 'react-hook-form'
 
 type FormInputs = {
@@ -48,9 +50,10 @@ function Post() {
   const [imageFileURL, setImageFileURL] = useState('')
 
   // hooks
-  const { userInfo } = useUser()
   const toast = useToast()
   const router = useRouter()
+  const { userInfo } = useUser()
+  const { handleError } = useHandleError()
   const isWideScreen = useBreakpointValue({ sm: false, md: true, lg: true })
   const {
     reset,
@@ -104,19 +107,18 @@ function Post() {
         onCloseComplete: () => router.push('/account/myphotos'),
       })
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
-      }
+      const error = err as AuthError
 
-      toast({
-        title: 'Não conseguimos postar sua foto.',
-        description: 'Por favor, tente novamente em alguns instantes.',
-        duration: 5000,
-        isClosable: true,
-        status: 'error',
-      })
+      switch (error.code) {
+        default:
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
+      }
     }
   }
 
@@ -126,7 +128,7 @@ function Post() {
         <Head>
           <title>Dogs | Postar foto</title>
         </Head>
-        
+
         <Box maxW='768px' mx='auto'>
           <Text>
             Você precisa verificar sua conta antes de começar a postar suas

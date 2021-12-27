@@ -7,9 +7,9 @@ import {
   Button,
   Box,
   Divider,
-  useToast,
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
+import { captureException } from '@sentry/nextjs'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
@@ -19,6 +19,9 @@ import { PasswordInput } from '../form/inputs/PasswordInput'
 import { PasswordRecovery } from '../pages/login/PasswordRecovery'
 import { SignUpCallToAction } from '../pages/login/SignUpCallToAction'
 
+// hooks
+import { useHandleError } from '../../hooks/useHandleError'
+
 // firebase
 import { auth } from '../../services/firebase/auth'
 
@@ -26,6 +29,7 @@ import { auth } from '../../services/firebase/auth'
 import { loginValidation } from '../form/validations/login'
 
 // types
+import type { AuthError } from 'firebase/auth'
 import type { SubmitHandler } from 'react-hook-form'
 
 type FormInputs = {
@@ -40,7 +44,7 @@ type Props = {
 }
 
 function UserNotLoggedInModal({ isOpen, onClose }: Props) {
-  const toast = useToast()
+  const { handleError } = useHandleError()
   const {
     register,
     handleSubmit,
@@ -53,15 +57,23 @@ function UserNotLoggedInModal({ isOpen, onClose }: Props) {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password)
     } catch (err) {
-      console.log('houve um erro ao logar o usuario', { err })
+      const error = err as AuthError
 
-      toast({
-        title: 'Não conseguimos fazer o seu login.',
-        description: 'Tente novamente mais tarde.',
-        duration: 5000,
-        isClosable: true,
-        status: 'error',
-      })
+      switch (error.code) {
+        case 'auth/wrong-password':
+        case 'auth/user-not-found':
+          handleError(error.code)
+
+          break
+        default:
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
+      }
     }
   }
 

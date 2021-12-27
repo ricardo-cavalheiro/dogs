@@ -18,10 +18,12 @@ import { Input } from '../../../form/inputs/RegularInput'
 import { db } from '../../../../services/firebase/database'
 
 // hooks
-import { useUser } from '../../../../hooks/contexts/useUser'
 import { Portal } from '../../../../hooks/usePortal'
+import { useHandleError } from '../../../../hooks/useHandleError'
+import { useUser } from '../../../../hooks/contexts/useUser'
 
 // types
+import type { AuthError } from 'firebase/auth'
 import type { SubmitHandler } from 'react-hook-form'
 
 type FormInputs = {
@@ -39,6 +41,7 @@ function AddComment({ imageID }: Props) {
   // hooks
   const toast = useToast()
   const { userInfo } = useUser()
+  const { handleError } = useHandleError()
   const { colorMode } = useColorMode()
   const {
     reset,
@@ -55,7 +58,6 @@ function AddComment({ imageID }: Props) {
         id: newCommentID,
         comment: data.comment,
         author_username: userInfo.username,
-        likes: 0,
       })
 
       toast({
@@ -67,19 +69,15 @@ function AddComment({ imageID }: Props) {
 
       reset()
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
-      }
+      const error = err as AuthError
 
-      toast({
-        status: 'error',
-        duration: 5000,
-        title: 'Houve um erro ao adicionar seu comentário.',
-        description: 'Estamos trabalhando para resolver esse problema.',
-        isClosable: true,
-      })
+      process.env.NODE_ENV === 'production'
+        ? captureException(error)
+        : console.log({ error })
+
+      error.code === 'PERMISSION_DENIED'
+        ? handleError('auth/permission-denied')
+        : handleError('default')
     }
   }
 

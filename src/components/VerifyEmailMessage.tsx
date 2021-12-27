@@ -2,6 +2,9 @@ import { Box, Text, Button, useToast } from '@chakra-ui/react'
 import { captureException } from '@sentry/nextjs'
 import { sendEmailVerification } from 'firebase/auth'
 
+// hooks
+import { useHandleError } from '../hooks/useHandleError'
+
 // firebase services
 import { auth } from '../services/firebase/auth'
 
@@ -11,6 +14,7 @@ import type { AuthError } from 'firebase/auth'
 function VerifyEmailMessage() {
   // hooks
   const toast = useToast()
+  const { handleError } = useHandleError()
 
   async function resendEmail() {
     try {
@@ -29,47 +33,19 @@ function VerifyEmailMessage() {
     } catch (err) {
       const error = err as AuthError
 
-      if (process.env.NODE_ENV === 'production') {
-        captureException(error)
-      } else {
-        console.log({ error })
-      }
-
-      const mapErrorCodeToMessageError = {
-        'auth/too-many-requests': {
-          title: 'Owa, vai com calma.',
-          description:
-            'Tente solicitar o reenvio do e-mail daqui a uns minutos.',
-        },
-        default: {
-          title: '',
-          description: 'Por favor, tente novamente em alguns instantes.',
-        },
-      }
-
-      type IndexSignature = keyof typeof mapErrorCodeToMessageError
-
-      const customErrorToast = (errorCode: IndexSignature) => {
-        return toast({
-          title:
-            mapErrorCodeToMessageError[errorCode].title ||
-            'Não conseguimos reenviar o e-mail de confirmação.',
-          description: mapErrorCodeToMessageError[errorCode].description,
-          status: errorCode !== 'default' ? 'warning' : 'error',
-          duration: 5000,
-          isClosable: true,
-          id: 'signup-toast',
-        })
-      }
-
       switch (error.code) {
         case 'auth/too-many-requests':
-          customErrorToast(error.code)
-          return
+          handleError(error.code)
+
+          break
         default:
-          // TODO: send unexpected errors to Sentry
-          customErrorToast('default')
-          return
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
       }
     }
   }

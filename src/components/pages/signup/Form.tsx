@@ -15,6 +15,7 @@ import { PasswordInput } from '../../form/inputs/PasswordInput'
 
 // hooks
 import { useUser } from '../../../hooks/contexts/useUser'
+import { useHandleError } from '../../../hooks/useHandleError'
 
 // firebase services
 import { auth } from '../../../services/firebase/auth'
@@ -37,6 +38,7 @@ function SignUpForm() {
   // hooks
   const toast = useToast()
   const { setUserInfo } = useUser()
+  const { handleError } = useHandleError()
   const {
     reset,
     register,
@@ -82,40 +84,19 @@ function SignUpForm() {
     } catch (err) {
       const error = err as AuthError
 
-      if (process.env.NODE_ENV === 'production') {
-        captureException(error)
-      } else {
-        console.log({ error })
-      }
-
-      const mapErrorCodeToMessageError = {
-        'auth/email-already-in-use':
-          'E-mail já cadastrado. Caso acredite ser um erro, entre em contato conosco.',
-        default:
-          'Estamos com alguns problemas. Mas já estamos trabalhando para resolvê-los.',
-      }
-
-      type IndexSignature = keyof typeof mapErrorCodeToMessageError
-
-      const customErrorToast = (errorCode: IndexSignature) => {
-        return toast({
-          title: 'Houve um erro 😓',
-          description: mapErrorCodeToMessageError[errorCode],
-          status: errorCode !== 'default' ? 'warning' : 'error',
-          duration: 5000,
-          isClosable: true,
-          id: 'signup-toast',
-        })
-      }
-
       switch (error.code) {
         case 'auth/email-already-in-use':
-          customErrorToast(error.code)
-          return
+          handleError(error.code)
+
+          break
         default:
-          // TODO: send unexpected errors to Sentry
-          customErrorToast('default')
-          return
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(error)
+            : console.log({ error })
+
+          break
       }
     }
   }

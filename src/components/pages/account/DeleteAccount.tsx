@@ -12,7 +12,6 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
   useDisclosure,
-  useToast,
 } from '@chakra-ui/react'
 import { ref as databaseRef, update } from 'firebase/database'
 import { ref as storageRef, deleteObject, listAll } from 'firebase/storage'
@@ -20,6 +19,7 @@ import { deleteUser } from 'firebase/auth'
 
 // hooks
 import { useUser } from '../../../hooks/contexts/useUser'
+import { useHandleError } from '../../../hooks/useHandleError'
 
 // firebase services
 import { auth } from '../../../services/firebase/auth'
@@ -28,6 +28,7 @@ import { storage } from '../../../services/firebase/storage'
 
 // types
 import type { MutableRefObject } from 'react'
+import type { AuthError } from 'firebase/auth'
 
 type DeleteAccountAlertDialogProps = {
   isOpen: boolean
@@ -43,8 +44,8 @@ function DeleteAccountAlertDialog({
   const [isDeleting, setIsDeleting] = useState(false)
 
   // hooks
+  const { handleError } = useHandleError()
   const { userInfo, signUserOut } = useUser()
-  const toast = useToast()
 
   async function deleteAccount() {
     try {
@@ -84,19 +85,18 @@ function DeleteAccountAlertDialog({
         deleteUser(auth.currentUser!),
       ])
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
-      }
+      const error = err as AuthError
 
-      toast({
-        title: 'Não conseguimos deletar sua conta.',
-        description: 'Por favor, tente novamente em alguns instantes.',
-        isClosable: true,
-        duration: 5000,
-        status: 'error',
-      })
+      switch (error.code) {
+        default:
+          handleError('default')
+
+          process.env.NODE_ENV === 'production'
+            ? captureException(err)
+            : console.log({ err })
+
+          break
+      }
     } finally {
       setIsDeleting(false)
 
