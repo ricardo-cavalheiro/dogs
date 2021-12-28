@@ -59,30 +59,28 @@ function useHandleError() {
   const handleError = ({ error, silent = false }: HandleError) => {
     const errorCode = error.code as ErrorCodes
 
-    if (silent) {
-      process.env.NODE_ENV === 'production'
-        ? captureException(error)
-        : console.log({ error })
-
-      return
-    }
-
     if (mapErrorCodeToMessageError[errorCode]) {
-      toast({
-        title: mapErrorCodeToMessageError[errorCode].title,
-        description: mapErrorCodeToMessageError[errorCode].description,
-        status: 'warning',
-        duration: 5000,
-        isClosable: true,
-      })
+      silent
+        ? console.log({ error })
+        : toast({
+            title: mapErrorCodeToMessageError[errorCode].title,
+            description: mapErrorCodeToMessageError[errorCode].description,
+            status: 'warning',
+            duration: 5000,
+            isClosable: true,
+          })
     } else {
-      toast({
-        title: mapErrorCodeToMessageError['unknown'].title,
-        description: mapErrorCodeToMessageError['unknown'].description,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      })
+      silent
+        ? process.env.NODE_ENV === 'production'
+          ? captureException(error)
+          : console.log({ error })
+        : toast({
+            title: mapErrorCodeToMessageError['unknown'].title,
+            description: mapErrorCodeToMessageError['unknown'].description,
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          })
 
       process.env.NODE_ENV === 'production'
         ? captureException(error)

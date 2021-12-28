@@ -87,6 +87,8 @@ function Photo({ imageInfo }: Props) {
       (err) => {
         const error = err as FirebaseError
 
+        console.log({error})
+
         handleError({ error, silent: true })
       }
     )
