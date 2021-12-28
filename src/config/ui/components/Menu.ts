@@ -14,7 +14,7 @@ const Menu = {
       ['& > button']: {
         borderBottom: '0px',
       },
-      ['& a:not(:first-child) button, & > button']: {
+      ['& a:not(:first-of-type) button, & > button']: {
         mt: 1,
       },
     },
