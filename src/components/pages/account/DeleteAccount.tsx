@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import { captureException } from '@sentry/nextjs'
 import {
   Flex,
   Text,
@@ -28,7 +27,7 @@ import { storage } from '../../../services/firebase/storage'
 
 // types
 import type { MutableRefObject } from 'react'
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 
 type DeleteAccountAlertDialogProps = {
   isOpen: boolean
@@ -85,18 +84,9 @@ function DeleteAccountAlertDialog({
         deleteUser(auth.currentUser!),
       ])
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(err)
-            : console.log({ err })
-
-          break
-      }
+      handleError({ error })
     } finally {
       setIsDeleting(false)
 

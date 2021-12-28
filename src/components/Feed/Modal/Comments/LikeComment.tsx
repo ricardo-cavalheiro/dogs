@@ -1,7 +1,6 @@
 import { Box } from '@chakra-ui/react'
-import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
-import { captureException } from '@sentry/nextjs'
 import { ref, update, increment } from 'firebase/database'
+import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
 
 // hooks
 import { useUser } from '../../../../hooks/contexts/useUser'
@@ -11,8 +10,8 @@ import { useHandleError } from '../../../../hooks/useHandleError'
 import { db } from '../../../../services/firebase/database'
 
 // types
+import type { FirebaseError } from 'firebase/app'
 import type { Dispatch, SetStateAction } from 'react'
-import type { AuthError } from 'firebase/auth'
 
 type Props = {
   imageId: string
@@ -48,18 +47,9 @@ function LikeComment({ imageId, commentId, isLiked, setIsLiked }: Props) {
         setIsLiked(false)
       }
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     }
   }
 

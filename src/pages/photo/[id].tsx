@@ -24,15 +24,17 @@ import { AddComment } from '../../components/Feed/Modal/ActionNavBar/AddComment'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'
+import { useHandleError } from '../../hooks/useHandleError'
 
 // firebase services
 import { adminApp } from '../../services/firebase/admin'
 import { db } from '../../services/firebase/database'
 
 // types
+import type { FirebaseError } from 'firebase/app'
 import type { GetServerSideProps } from 'next'
 import type { ImageInfo, Comment } from '../../typings/userInfo'
-import type { Query, DatabaseReference } from 'firebase/database'
+import type { DatabaseReference } from 'firebase/database'
 
 const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.query as { id: string }
@@ -67,28 +69,27 @@ function Photo({ imageInfo }: Props) {
 
   // hooks
   const { userInfo } = useUser()
+  const { handleError } = useHandleError()
 
   // loads the latest comments and listens for new ones
   useEffect(() => {
-    let imageCommentsRef: Query
+    const imageCommentsRef = query(
+      ref(db, `image_comments/${imageInfo.id}`),
+      orderByKey(),
+      limitToLast(4)
+    )
 
-    try {
-      imageCommentsRef = query(
-        ref(db, `image_comments/${imageInfo.id}`),
-        orderByKey(),
-        limitToLast(4)
-      )
+    onValue(
+      imageCommentsRef,
+      (snapshot) =>
+        snapshot.exists() &&
+        setImageComments(Object.values<Comment>(snapshot.val()).reverse()),
+      (err) => {
+        const error = err as FirebaseError
 
-      onValue(imageCommentsRef, (snapshot) => {
-        if (snapshot.exists()) {
-          setImageComments(Object.values<Comment>(snapshot.val()).reverse())
-        }
-      })
-    } catch (err) {
-      process.env.NODE_ENV === 'production'
-        ? captureException(err)
-        : console.log('houve um erro ao buscar os comentários', { err })
-    }
+        handleError({ error, silent: true })
+      }
+    )
 
     return () => off(imageCommentsRef)
   }, [])
@@ -106,12 +107,17 @@ function Photo({ imageInfo }: Props) {
 
           onValue(
             imageRef,
-            (snapshot) => snapshot.exists() && setImageViews(snapshot.val())
+            (snapshot) => snapshot.exists() && setImageViews(snapshot.val()),
+            (err) => {
+              const error = err as FirebaseError
+
+              handleError({ error, silent: true })
+            }
           )
         } catch (err) {
-          process.env.NODE_ENV === 'production'
-            ? captureException(err)
-            : console.log({ err })
+          const error = err as FirebaseError
+
+          handleError({ error, silent: true })
         }
       })()
     }

@@ -1,5 +1,4 @@
 import { Box, Text, Button, useToast } from '@chakra-ui/react'
-import { captureException } from '@sentry/nextjs'
 import { sendEmailVerification } from 'firebase/auth'
 
 // hooks
@@ -9,7 +8,7 @@ import { useHandleError } from '../hooks/useHandleError'
 import { auth } from '../services/firebase/auth'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 
 function VerifyEmailMessage() {
   // hooks
@@ -31,22 +30,9 @@ function VerifyEmailMessage() {
         status: 'success',
       })
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        case 'auth/too-many-requests':
-          handleError(error.code)
-
-          break
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     }
   }
 

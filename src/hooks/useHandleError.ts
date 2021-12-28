@@ -1,16 +1,20 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo } from 'react'
 import { useToast } from '@chakra-ui/react'
+import { captureException } from '@sentry/nextjs'
+
+// types
+import type { FirebaseError } from 'firebase/app'
 
 type ErrorCodes =
   | 'auth/email-already-in-use'
-  | 'auth/permission-denied'
   | 'auth/too-many-requests'
   | 'auth/user-not-found'
   | 'auth/wrong-password'
-  | 'default'
+  | 'PERMISSION_DENIED'
+  | 'unknown'
 
 type Error = {
-  [Prop in ErrorCodes]: { title: string; description: string }
+  [Key in ErrorCodes]: { [Key in 'title' | 'description']: string }
 }
 
 function useHandleError() {
@@ -23,7 +27,7 @@ function useHandleError() {
         title: 'E-mail já cadastrado.',
         description: 'Caso acredite ser um erro, entre em contato conosco.',
       },
-      'auth/permission-denied': {
+      PERMISSION_DENIED: {
         title: 'Você precisa estar logado para continuar.',
         description: '',
       },
@@ -39,7 +43,7 @@ function useHandleError() {
         title: 'Owa, vai com calma.',
         description: 'Por favor, tente novamente em alguns instantes.',
       },
-      default: {
+      unknown: {
         title: 'Estamos com alguns problemas.',
         description: 'Mas já estamos trabalhando para resolvê-los.',
       },
@@ -47,17 +51,44 @@ function useHandleError() {
     []
   )
 
-  const toastInfo = useCallback((errorCode: ErrorCodes) => {
-    return toast({
-      title: mapErrorCodeToMessageError[errorCode].title,
-      description: mapErrorCodeToMessageError[errorCode].description,
-      status: errorCode !== 'default' ? 'warning' : 'error',
-      duration: 5000,
-      isClosable: true,
-    })
-  }, [])
+  type HandleError = {
+    error: FirebaseError
+    silent?: boolean
+  }
 
-  const handleError = (errorCode: ErrorCodes) => toastInfo(errorCode)
+  const handleError = ({ error, silent = false }: HandleError) => {
+    const errorCode = error.code as ErrorCodes
+
+    if (silent) {
+      process.env.NODE_ENV === 'production'
+        ? captureException(error)
+        : console.log({ error })
+
+      return
+    }
+
+    if (mapErrorCodeToMessageError[errorCode]) {
+      toast({
+        title: mapErrorCodeToMessageError[errorCode].title,
+        description: mapErrorCodeToMessageError[errorCode].description,
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+      })
+    } else {
+      toast({
+        title: mapErrorCodeToMessageError['unknown'].title,
+        description: mapErrorCodeToMessageError['unknown'].description,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+
+      process.env.NODE_ENV === 'production'
+        ? captureException(error)
+        : console.log({ error })
+    }
+  }
 
   return { handleError }
 }

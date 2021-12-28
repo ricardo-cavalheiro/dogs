@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { captureException } from '@sentry/nextjs'
 import {
   Button,
   Text,
@@ -37,7 +36,7 @@ import { UserHeader } from '../../components/layout/UserHeader'
 import { postPhotoValidation } from '../../components/form/validations/postImage'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { SubmitHandler } from 'react-hook-form'
 
 type FormInputs = {
@@ -107,18 +106,9 @@ function Post() {
         onCloseComplete: () => router.push('/account/myphotos'),
       })
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     }
   }
 

@@ -1,5 +1,4 @@
 import { Flex, Button, useToast } from '@chakra-ui/react'
-import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { push, set, ref } from 'firebase/database'
 import { MdSend } from 'react-icons/md'
@@ -15,7 +14,7 @@ import { useHandleError } from '../../../../hooks/useHandleError'
 import { useUser } from '../../../../hooks/contexts/useUser'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { SubmitHandler } from 'react-hook-form'
 
 type FormInputs = {
@@ -57,15 +56,9 @@ function AddComment({ imageID }: Props) {
 
       reset()
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      process.env.NODE_ENV === 'production'
-        ? captureException(error)
-        : console.log({ error })
-
-      error.code === 'PERMISSION_DENIED'
-        ? handleError('auth/permission-denied')
-        : handleError('default')
+      handleError({ error })
     }
   }
 

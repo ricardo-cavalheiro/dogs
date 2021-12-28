@@ -7,7 +7,6 @@ import {
   useDisclosure,
   useBreakpointValue,
 } from '@chakra-ui/react'
-import { captureException } from '@sentry/nextjs'
 import { MdOutlineVisibility, MdFavorite } from 'react-icons/md'
 import { ref, onValue, off } from 'firebase/database'
 import NextImage from 'next/image'
@@ -25,7 +24,7 @@ import { useHandleError } from '../../hooks/useHandleError'
 import { db } from '../../services/firebase/database'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { ImageInfo } from '../../typings/userInfo'
 
 type CardProps = {
@@ -61,18 +60,9 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
         }
       },
       (err) => {
-        const error = err as AuthError
+        const error = err as FirebaseError
 
-        switch (error.code) {
-          default:
-            handleError('default')
-
-            process.env.NODE_ENV === 'production'
-              ? captureException(error)
-              : console.log({ error })
-
-            break
-        }
+        handleError({ error })
       }
     )
 

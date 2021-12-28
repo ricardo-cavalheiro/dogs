@@ -1,5 +1,4 @@
 import { Box, Button, useToast } from '@chakra-ui/react'
-import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth'
@@ -20,8 +19,8 @@ import { recoveryPasswordValidation } from '../../../components/form/validations
 import { auth } from '../../../services/firebase/auth'
 
 // types
-import type { AuthError } from 'firebase/auth'
 import type { GetServerSideProps } from 'next'
+import type { FirebaseError } from 'firebase/app'
 import type { SubmitHandler } from 'react-hook-form'
 
 const getServerSideProps: GetServerSideProps = async (context) => {
@@ -81,18 +80,9 @@ function Password({ oobCode }: Props) {
         onCloseComplete: () => router.push('/login'),
       })
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     }
   }
 

@@ -1,16 +1,19 @@
 import { useState, useEffect, createContext, useContext } from 'react'
-import { captureException } from '@sentry/nextjs'
 import { onAuthStateChanged, signOut, onIdTokenChanged } from 'firebase/auth'
 import { useRouter } from 'next/router'
 import { setCookie, destroyCookie } from 'nookies'
+
+// hooks
+import { useHandleError } from '../useHandleError'
 
 // firebase services
 import { auth } from '../../services/firebase/auth'
 
 // types
-import type { ReactNode, Dispatch, SetStateAction } from 'react'
+import type { FirebaseError } from 'firebase/app'
 import type { UserInfo } from '../../typings/userInfo'
 import type { NextOrObserver, User } from 'firebase/auth'
+import type { ReactNode, Dispatch, SetStateAction } from 'react'
 
 type UserContextType = {
   userInfo: UserInfo
@@ -39,6 +42,7 @@ function UserContextProvider({ children }: Props) {
 
   // hooks
   const router = useRouter()
+  const { handleError } = useHandleError()
 
   async function signUserOut() {
     try {
@@ -56,11 +60,9 @@ function UserContextProvider({ children }: Props) {
 
       router.push('/login')
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        captureException(err)
-      } else {
-        console.log({ err })
-      }
+      const error = err as FirebaseError
+
+      handleError({ error })
     }
   }
 
@@ -107,13 +109,12 @@ function UserContextProvider({ children }: Props) {
       } else {
         try {
           const token = await user.getIdToken()
+
           setCookie(null, '@dogs:token', token, { path: '/', maxAge: 60 * 60 })
         } catch (err) {
-          if (process.env.NODE_ENV === 'production') {
-            captureException(err)
-          } else {
-            console.log({ err })
-          }
+          const error = err as FirebaseError
+
+          handleError({ error })
         }
       }
     }
