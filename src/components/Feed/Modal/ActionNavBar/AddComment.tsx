@@ -1,4 +1,4 @@
-import { Flex, Button, useToast } from '@chakra-ui/react'
+import { Flex, Button, Text, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { push, set, ref } from 'firebase/database'
 import { MdSend } from 'react-icons/md'
@@ -64,26 +64,35 @@ function AddComment({ imageID }: Props) {
 
   return (
     <>
-      <Flex
-        as='form'
-        h='min-content'
-        gridGap={2}
-        align='flex-end'
-        justify='space-between'
-        onSubmit={handleSubmit(onCommentSubmit)}
-      >
-        <Input
-          label='Comentar'
-          w='100%'
-          minH='40px'
-          error={errors.comment?.message}
-          {...register('comment', { required: true })}
-        />
+      {userInfo.isLoggedIn ? (
+        <Flex
+          as='form'
+          h='min-content'
+          gridGap={2}
+          align='flex-end'
+          justify='space-between'
+          onSubmit={handleSubmit(onCommentSubmit)}
+        >
+          <Input
+            label='Comentar'
+            w='100%'
+            minH='40px'
+            error={errors.comment?.message}
+            {...register('comment', {
+              required: true,
+              disabled: userInfo.isLoggedIn ? false : true,
+            })}
+          />
 
-        <Button type='submit' isLoading={isSubmitting} w='70px'>
-          <MdSend size={30} cursor='pointer' />
-        </Button>
-      </Flex>
+          <Button w='70px' type='submit' isLoading={isSubmitting}>
+            <MdSend size={30} cursor='pointer' />
+          </Button>
+        </Flex>
+      ) : (
+        <Text as='strong' textAlign='center'>
+          Faça login para comentar
+        </Text>
+      )}
     </>
   )
 }
