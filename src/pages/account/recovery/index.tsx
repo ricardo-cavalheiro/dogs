@@ -7,7 +7,6 @@ import {
   useToast,
   useBreakpointValue,
 } from '@chakra-ui/react'
-import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { sendPasswordResetEmail } from 'firebase/auth'
@@ -26,7 +25,7 @@ import { auth } from '../../../services/firebase/auth'
 import { emailValidation } from '../../../components/form/validations/recovery'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { SubmitHandler } from 'react-hook-form'
 
 type FormInputProps = {
@@ -60,18 +59,9 @@ function Recovery() {
 
       reset()
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     }
   }
 

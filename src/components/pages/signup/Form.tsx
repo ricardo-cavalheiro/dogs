@@ -1,6 +1,5 @@
 import { Heading, Box, Button, Text, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
-import { captureException } from '@sentry/nextjs'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
   createUserWithEmailAndPassword,
@@ -24,8 +23,8 @@ import { auth } from '../../../services/firebase/auth'
 import { signupValidation } from '../../form/validations/signup'
 
 // types
+import type { FirebaseError } from 'firebase/app'
 import type { SubmitHandler } from 'react-hook-form'
-import type { AuthError } from 'firebase/auth'
 
 type FormInputs = {
   username: string
@@ -82,22 +81,9 @@ function SignUpForm() {
         duration: 5000,
       })
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          handleError(error.code)
-
-          break
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     }
   }
 

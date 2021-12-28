@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Button, IconButton, Text } from '@chakra-ui/react'
-import { captureException } from '@sentry/nextjs'
+import { IconButton, Text } from '@chakra-ui/react'
 import {
   query,
   ref,
@@ -18,7 +17,7 @@ import { useHandleError } from '../../../../hooks/useHandleError'
 import { db } from '../../../../services/firebase/database'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { Dispatch, SetStateAction } from 'react'
 import type { Comment } from '../../../../typings/userInfo'
 
@@ -61,18 +60,9 @@ function LoadMoreComments({ imageID, imageComments, setImageComments }: Props) {
         }
       },
       (err) => {
-        const error = err as AuthError
+        const error = err as FirebaseError
 
-        switch (error.code) {
-          default:
-            handleError('default')
-
-            process.env.NODE_ENV === 'production'
-              ? captureException(error)
-              : console.log({ error })
-
-            break
-        }
+        handleError({ error })
       }
     )
   }

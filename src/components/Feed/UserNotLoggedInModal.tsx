@@ -9,7 +9,6 @@ import {
   Divider,
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
-import { captureException } from '@sentry/nextjs'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
@@ -29,7 +28,7 @@ import { auth } from '../../services/firebase/auth'
 import { loginValidation } from '../form/validations/login'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { SubmitHandler } from 'react-hook-form'
 
 type FormInputs = {
@@ -57,23 +56,9 @@ function UserNotLoggedInModal({ isOpen, onClose }: Props) {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password)
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        case 'auth/wrong-password':
-        case 'auth/user-not-found':
-          handleError(error.code)
-
-          break
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     }
   }
 

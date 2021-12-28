@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Box, Flex, Link, Text } from '@chakra-ui/react'
 import { ref, onValue, off } from 'firebase/database'
-import { captureException } from '@sentry/nextjs'
 import NextLink from 'next/link'
 
 // components
@@ -15,7 +14,7 @@ import { useHandleError } from '../../../../hooks/useHandleError'
 import { db } from '../../../../services/firebase/database'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { Comment as CommentType } from '../../../../typings/userInfo'
 
 type CommentProps = {
@@ -43,18 +42,9 @@ function Comment({ comment, imageId }: CommentProps) {
       likedCommentRef,
       (snapshot) => snapshot.exists() && setIsLiked(true),
       (err) => {
-        const error = err as AuthError
+        const error = err as FirebaseError
 
-        switch (error.code) {
-          default:
-            handleError('default')
-
-            process.env.NODE_ENV === 'production'
-              ? captureException(error)
-              : console.log({ error })
-
-            break
-        }
+        handleError({ error, silent: true })
       }
     )
 
@@ -72,18 +62,9 @@ function Comment({ comment, imageId }: CommentProps) {
       authorCommentRef,
       (snapshot) => snapshot.exists() && setCommentTotalLikes(snapshot.val()),
       (err) => {
-        const error = err as AuthError
+        const error = err as FirebaseError
 
-        switch (error.code) {
-          default:
-            handleError('default')
-
-            process.env.NODE_ENV === 'production'
-              ? captureException(error)
-              : console.log({ error })
-
-            break
-        }
+        handleError({ error, silent: true })
       }
     )
 
@@ -101,7 +82,7 @@ function Comment({ comment, imageId }: CommentProps) {
 
         <Flex>
           <Text as='span' fontWeight='bold' opacity={0.8} fontSize={13}>
-            {commentTotalLikes} likes
+            {commentTotalLikes || 0} likes
           </Text>
         </Flex>
       </Box>

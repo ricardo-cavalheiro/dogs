@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Box, Text, useToast } from '@chakra-ui/react'
 import { applyActionCode } from 'firebase/auth'
-import { captureException } from '@sentry/nextjs'
 import Head from 'next/head'
 
 // firebase services
@@ -13,7 +12,7 @@ import { useHandleError } from '../../hooks/useHandleError'
 
 // types
 import type { GetServerSideProps } from 'next'
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 
 const getServerSideProps: GetServerSideProps = async (context) => {
   const oobCode = context.query['oobCode']
@@ -56,20 +55,11 @@ function VerifyEmail({ oobCode }: Props) {
         })
       })
       .catch((err) => {
-        const error = err as AuthError
+        const error = err as FirebaseError
+
+        handleError({ error })
 
         setIsEmailVerified(false)
-
-        switch (error.code) {
-          default:
-            handleError('default')
-
-            process.env.NODE_ENV === 'production'
-              ? captureException(error)
-              : console.log({ error })
-
-            break
-        }
       })
   }, [])
 

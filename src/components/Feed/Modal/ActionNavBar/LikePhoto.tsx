@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useToast, useColorMode } from '@chakra-ui/react'
+import { useColorMode } from '@chakra-ui/react'
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md'
 import { ref, update, increment, onValue, off } from 'firebase/database'
-import { captureException } from '@sentry/nextjs'
 
 // hooks
 import { useUser } from '../../../../hooks/contexts/useUser'
@@ -12,7 +11,7 @@ import { useHandleError } from '../../../../hooks/useHandleError'
 import { db } from '../../../../services/firebase/database'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { ImageInfo } from '../../../../typings/userInfo'
 
 type Props = {
@@ -24,7 +23,6 @@ function LikePhoto({ imageInfo }: Props) {
   const [isLiked, setIsLiked] = useState<boolean | null>(null)
 
   // hooks
-  const toast = useToast()
   const { userInfo } = useUser()
   const { colorMode } = useColorMode()
   const { handleError } = useHandleError()
@@ -40,18 +38,9 @@ function LikePhoto({ imageInfo }: Props) {
       likedImageRef,
       (snapshot) => snapshot.exists() && setIsLiked(true),
       (err) => {
-        const error = err as AuthError
+        const error = err as FirebaseError
 
-        switch (error.code) {
-          default:
-            handleError('default')
-
-            process.env.NODE_ENV === 'production'
-              ? captureException(error)
-              : console.log({ error })
-
-            break
-        }
+        handleError({ error, silent: true })
       }
     )
 
@@ -80,18 +69,9 @@ function LikePhoto({ imageInfo }: Props) {
         setIsLiked(false)
       }
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     }
   }
 

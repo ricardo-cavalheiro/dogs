@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { captureException } from '@sentry/nextjs'
 import { useForm } from 'react-hook-form'
 import { Box, Heading, Button, useToast } from '@chakra-ui/react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
@@ -21,8 +20,8 @@ import { auth } from '../../../services/firebase/auth'
 import { loginValidation } from '../../form/validations/login'
 
 // types
+import type { FirebaseError } from 'firebase/app'
 import type { SubmitHandler } from 'react-hook-form'
-import type { AuthError } from 'firebase/auth'
 
 type FormInputs = {
   email: string
@@ -49,23 +48,9 @@ function LoginForm() {
 
       router.push(`/account/${user.displayName}`)
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        case 'auth/wrong-password':
-        case 'auth/user-not-found':
-          handleError(error.code)
-          
-          break
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     }
   }
 

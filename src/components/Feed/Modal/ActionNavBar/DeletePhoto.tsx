@@ -13,7 +13,6 @@ import {
   useDisclosure,
   useColorMode,
 } from '@chakra-ui/react'
-import { captureException } from '@sentry/nextjs'
 import { MdDeleteOutline, MdDelete } from 'react-icons/md'
 import { ref as databaseRef, update } from 'firebase/database'
 import { ref as storageRef, deleteObject } from 'firebase/storage'
@@ -28,7 +27,7 @@ import { db } from '../../../../services/firebase/database'
 import { storage } from '../../../../services/firebase/storage'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { ImageInfo } from '../../../../typings/userInfo'
 
 type ConfirmationAlertProps = {
@@ -87,18 +86,9 @@ function ConfirmationAlert({
         onCloseComplete: () => router.push('/'),
       })
     } catch (err) {
-      const error = err as AuthError
+      const error = err as FirebaseError
 
-      switch (error.code) {
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
-      }
+      handleError({ error })
     } finally {
       setIsDeleting(false)
     }

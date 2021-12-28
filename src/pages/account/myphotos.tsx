@@ -28,9 +28,8 @@ import { UserHeader } from '../../components/layout/UserHeader'
 import { Feed } from '../../components/Feed'
 
 // types
-import type { AuthError } from 'firebase/auth'
 import type { GetServerSideProps } from 'next'
-import type { Query } from 'firebase/database'
+import type { FirebaseError } from 'firebase/app'
 import type { ImageInfo } from '../../typings/userInfo'
 
 const getServerSideProps: GetServerSideProps = async (context) => {
@@ -86,24 +85,24 @@ function Account({ firebaseImages }: Props) {
   const { handleError } = useHandleError()
   const { shouldLoadMoreItems } = useInfiniteScroll('footer')
 
+  // fetches the 4 latest user posts
   useEffect(() => {
     if (images.length === 0) return
 
     if (!shouldLoadMoreItems || isLastPage) return
 
-    let moreImagesRef: Query
+    const lastImageID = images.at(-1)?.id as string
 
-    try {
-      const lastImageID = images.at(-1)?.id as string
+    const moreImagesRef = query(
+      ref(db, `images/${userInfo.uid}`),
+      orderByKey(),
+      endBefore(lastImageID),
+      limitToLast(4)
+    )
 
-      moreImagesRef = query(
-        ref(db, `images/${userInfo.uid}`),
-        orderByKey(),
-        endBefore(lastImageID),
-        limitToLast(4)
-      )
-
-      onValue(moreImagesRef, (snapshot) => {
+    onValue(
+      moreImagesRef,
+      (snapshot) => {
         if (snapshot.exists()) {
           const images = Object.values<ImageInfo>(snapshot.val()).reverse()
 
@@ -111,21 +110,13 @@ function Account({ firebaseImages }: Props) {
 
           setImages((prevImages) => [...prevImages, ...images])
         }
-      })
-    } catch (err) {
-      const error = err as AuthError
+      },
+      (err) => {
+        const error = err as FirebaseError
 
-      switch (error.code) {
-        default:
-          handleError('default')
-
-          process.env.NODE_ENV === 'production'
-            ? captureException(error)
-            : console.log({ error })
-
-          break
+        handleError({ error })
       }
-    }
+    )
 
     return () => off(moreImagesRef)
   }, [shouldLoadMoreItems])

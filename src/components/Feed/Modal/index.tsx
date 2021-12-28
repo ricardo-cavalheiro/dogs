@@ -11,13 +11,11 @@ import {
   Heading,
   Divider,
 } from '@chakra-ui/react'
-import { captureException } from '@sentry/nextjs'
 import { MdOutlineVisibility } from 'react-icons/md'
 import {
   set,
   ref,
   onValue,
-  onChildAdded,
   off,
   increment,
   query,
@@ -41,7 +39,7 @@ import { useHandleError } from '../../../hooks/useHandleError'
 import { db } from '../../../services/firebase/database'
 
 // types
-import type { AuthError } from 'firebase/auth'
+import type { FirebaseError } from 'firebase/app'
 import type { DatabaseReference } from 'firebase/database'
 import type { ImageInfo, Comment } from '../../../typings/userInfo'
 
@@ -90,18 +88,9 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
         snapshot.exists() &&
         setImageComments(Object.values<Comment>(snapshot.val()).reverse()),
       (err) => {
-        const error = err as AuthError
+        const error = err as FirebaseError
 
-        switch (error.code) {
-          default:
-            handleError('default')
-
-            process.env.NODE_ENV === 'production'
-              ? captureException(error)
-              : console.log({ error })
-
-            break
-        }
+        handleError({ error })
       }
     )
 
@@ -124,18 +113,9 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
           )
         }
       } catch (err) {
-        const error = err as AuthError
+        const error = err as FirebaseError
 
-        switch (error.code) {
-          default:
-            handleError('default')
-
-            process.env.NODE_ENV === 'production'
-              ? captureException(err)
-              : console.log({ err })
-
-            break
-        }
+        handleError({ error })
       }
     })()
 
