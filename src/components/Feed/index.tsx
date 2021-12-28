@@ -81,7 +81,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
           '&:hover > .post-info': {
             d: 'flex',
           },
-          '&:nth-child(3n + 2)': {
+          '&:nth-of-type(3n + 2)': {
             gridColumn: isWideScreen && '2 / 4',
             gridRow: isWideScreen && 'span 2',
           },

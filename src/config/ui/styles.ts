@@ -40,11 +40,9 @@ const global = {
     },
     '::-webkit-scrollbar-track': {
       background: props.theme.colors.light['150'],
-      borderRadius: '10px',
     },
     '::-webkit-scrollbar-thumb': {
       background: props.theme.colors.light['300'],
-      borderRadius: '10px',
     },
     '::-webkit-scrollbar-thumb:hover': {
       background: props.theme.colors.light['800'],
