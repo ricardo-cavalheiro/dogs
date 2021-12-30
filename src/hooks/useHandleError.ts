@@ -81,10 +81,6 @@ function useHandleError() {
             duration: 5000,
             isClosable: true,
           })
-
-      process.env.NODE_ENV === 'production'
-        ? captureException(error)
-        : console.log({ error })
     }
   }
 

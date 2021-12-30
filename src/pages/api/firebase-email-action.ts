@@ -5,7 +5,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 type Modes = 'verifyEmail' | 'recoverEmail' | 'resetPassword'
 
-function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = (req: NextApiRequest, res: NextApiResponse) => {
   const mode = req.query['mode'] as Modes
   const oobCode = req.query['oobCode'] as string
 
@@ -17,7 +17,7 @@ function handler(req: NextApiRequest, res: NextApiResponse) {
         .status(307)
         .redirect(`/account/recovery/password?oobCode=${oobCode}`)
     default:
-      return res.status(500)
+      return res.status(500).redirect('/')
   }
 }
 

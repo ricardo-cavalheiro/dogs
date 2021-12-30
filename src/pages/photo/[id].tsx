@@ -65,7 +65,7 @@ type Props = {
 function Photo({ imageInfo }: Props) {
   // states
   const [imageComments, setImageComments] = useState<Comment[]>([])
-  const [imageViews, setImageViews] = useState(imageInfo.views)
+  const [imageViews, setImageViews] = useState(0)
 
   // hooks
   const { userInfo } = useUser()
@@ -86,8 +86,6 @@ function Photo({ imageInfo }: Props) {
         setImageComments(Object.values<Comment>(snapshot.val()).reverse()),
       (err) => {
         const error = err as FirebaseError
-
-        console.log({error})
 
         handleError({ error, silent: true })
       }
@@ -140,12 +138,12 @@ function Photo({ imageInfo }: Props) {
         columnGap={5}
         maxW='768px'
         width='100%'
-        direction={['column', 'row']}
+        direction={['column', 'column', 'row']}
       >
         <Box
           position='relative'
-          flexBasis={[null, '70%']}
-          h={['300px', '100%']}
+          flexBasis={[null, null, '70%']}
+          h={['300px', '400px', '100%']}
           borderRadius='base'
           overflow='hidden'
         >
@@ -161,7 +159,7 @@ function Photo({ imageInfo }: Props) {
         </Box>
 
         <Grid
-          flexBasis='30%'
+          flexBasis={[null, null, '30%']}
           h='calc(100vh - 40px)'
           templateRows='auto 1fr auto'
         >
@@ -185,7 +183,7 @@ function Photo({ imageInfo }: Props) {
               <Flex align='center' gridGap={1}>
                 <MdOutlineVisibility size={20} />
 
-                <Text as='span'>{imageViews || 0}</Text>
+                <Text as='span'>{imageViews}</Text>
               </Flex>
             </Flex>
 
