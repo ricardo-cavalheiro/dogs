@@ -84,7 +84,7 @@ function Header() {
         p={[5, null, '20px 0px']}
       >
         <NextLink href='/' passHref>
-          <Link>
+          <Link aria-label='Ir para home'>
             <DogsIcon color={colorMode === 'dark' ? '#fff' : ''} />
           </Link>
         </NextLink>

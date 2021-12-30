@@ -68,7 +68,7 @@ type Props = {
 
 function Home({ firebaseImages }: Props) {
   // states
-  const [images, setImages] = useState(firebaseImages || [])
+  const [images, setImages] = useState(firebaseImages)
   const [isLastPage, setIsLastPage] = useState(false)
 
   // hooks
@@ -79,9 +79,9 @@ function Home({ firebaseImages }: Props) {
   useEffect(() => {
     if (images.length === 0) return
 
-    if (!shouldLoadMoreItems || isLastPage) return
+    if (shouldLoadMoreItems === false || isLastPage) return
 
-    const lastImageID = images.at(-1)?.id as string
+    const lastImageID = images.at(-1)!.id
 
     const moreImagesRef = query(
       ref(db, 'latest_images'),

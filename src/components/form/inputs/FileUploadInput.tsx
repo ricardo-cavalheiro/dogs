@@ -119,8 +119,8 @@ const FileUploadInputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
             }}
             sx={{
               '&:hover > svg': {
-                fill: '#333'
-              }
+                fill: '#333',
+              },
             }}
           >
             <MdOutlineFileUpload
