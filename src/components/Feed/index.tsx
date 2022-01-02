@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import {
   Grid,
   Box,
@@ -21,7 +21,7 @@ import { useUser } from '../../hooks/contexts/useUser'
 import { useHandleError } from '../../hooks/useHandleError'
 
 // firebase services
-import { db } from '../../services/firebase/database'
+import { db } from '../../services/firebase/client/database'
 
 // types
 import type { FirebaseError } from 'firebase/app'
@@ -35,8 +35,8 @@ type CardProps = {
 function Card({ imageInfo, isAboveTheFold }: CardProps) {
   // states
   const [imageMetrics, setImageMetrics] = useState({
-    likes: imageInfo.likes,
-    views: imageInfo.views,
+    likes: 0,
+    views: 0,
   })
 
   // hooks
@@ -126,7 +126,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
             <MdOutlineVisibility size={30} color='white' />
 
             <Text as='span' fontWeight='bold' color='light.100'>
-              {imageMetrics.views || 0}
+              {imageMetrics.views}
             </Text>
           </Flex>
 
@@ -134,7 +134,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
             <MdFavorite size={30} color='#fb1' />
 
             <Text as='span' fontWeight='bold' color='light.100'>
-              {imageMetrics.likes || 0}
+              {imageMetrics.likes}
             </Text>
           </Flex>
         </Flex>
@@ -143,11 +143,7 @@ function Card({ imageInfo, isAboveTheFold }: CardProps) {
       {userInfo.isLoggedIn ? (
         <Modal isOpen={isOpen} onClose={onClose} imageInfo={imageInfo} />
       ) : (
-        <UserNotLoggedInModal
-          isOpen={isOpen}
-          onClose={onClose}
-          imageID={imageInfo.id}
-        />
+        <UserNotLoggedInModal isOpen={isOpen} onClose={onClose} />
       )}
     </>
   )
@@ -157,7 +153,7 @@ type Props = {
   images: ImageInfo[]
 }
 
-function Feed({ images }: Props) {
+function FeedBase({ images }: Props) {
   return (
     <Grid
       mx='auto'
@@ -172,5 +168,9 @@ function Feed({ images }: Props) {
     </Grid>
   )
 }
+
+const Feed = memo(FeedBase, (prevProps, nextProps) =>
+  Object.is(prevProps.images, nextProps.images)
+)
 
 export { Feed }

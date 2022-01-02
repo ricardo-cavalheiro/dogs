@@ -17,21 +17,21 @@ import Head from 'next/head'
 import { Feed } from '../components/Feed'
 
 // firebase services
-import { db } from '../services/firebase/database'
-import { adminApp } from '../services/firebase/admin'
+import { db } from '../services/firebase/client/database'
+import { app } from '../services/firebase/server/app'
 
 // hooks
 import { useHandleError } from '../hooks/useHandleError'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 
 // type
-import type { GetServerSideProps } from 'next'
+import type { GetStaticProps } from 'next'
 import type { FirebaseError } from 'firebase/app'
 import type { ImageInfo } from '../typings/userInfo'
 
-const getServerSideProps: GetServerSideProps = async () => {
+const getStaticProps: GetStaticProps = async () => {
   try {
-    const db = getDatabase(adminApp)
+    const db = getDatabase(app)
     const ref = db.ref('latest_images').orderByKey().limitToLast(4)
     const snapshot = await ref.once('value')
 
@@ -40,6 +40,7 @@ const getServerSideProps: GetServerSideProps = async () => {
         props: {
           firebaseImages: Object.values<ImageInfo>(snapshot.val()).reverse(),
         },
+        revalidate: 3600,
       }
     else
       return {
@@ -122,6 +123,6 @@ function Home({ firebaseImages }: Props) {
   )
 }
 
-export { getServerSideProps }
+export { getStaticProps }
 
 export default Home

@@ -4,7 +4,7 @@ import { applyActionCode } from 'firebase/auth'
 import Head from 'next/head'
 
 // firebase services
-import { auth } from '../../services/firebase/auth'
+import { auth } from '../../services/firebase/client/auth'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'

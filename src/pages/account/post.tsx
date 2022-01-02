@@ -22,8 +22,8 @@ import { Input } from '../../components/form/inputs/RegularInput'
 import { FileUploadInput } from '../../components/form/inputs/FileUploadInput'
 
 // firebase services
-import { db } from '../../services/firebase/database'
-import { storage } from '../../services/firebase/storage'
+import { db } from '../../services/firebase/client/database'
+import { storage } from '../../services/firebase/client/storage'
 
 // hooks
 import { useUser } from '../../hooks/contexts/useUser'

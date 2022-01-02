@@ -23,8 +23,8 @@ import { useUser } from '../../../../hooks/contexts/useUser'
 import { useHandleError } from '../../../../hooks/useHandleError'
 
 // firebase services
-import { db } from '../../../../services/firebase/database'
-import { storage } from '../../../../services/firebase/storage'
+import { db } from '../../../../services/firebase/client/database'
+import { storage } from '../../../../services/firebase/client/storage'
 
 // types
 import type { FirebaseError } from 'firebase/app'

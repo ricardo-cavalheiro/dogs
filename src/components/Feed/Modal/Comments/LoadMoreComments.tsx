@@ -14,7 +14,7 @@ import { MdAddCircleOutline } from 'react-icons/md'
 import { useHandleError } from '../../../../hooks/useHandleError'
 
 // firebase services
-import { db } from '../../../../services/firebase/database'
+import { db } from '../../../../services/firebase/client/database'
 
 // types
 import type { FirebaseError } from 'firebase/app'

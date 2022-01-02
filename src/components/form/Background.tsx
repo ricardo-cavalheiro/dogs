@@ -8,6 +8,7 @@ function Background() {
       layout='fill'
       objectFit='cover'
       priority
+      quality={100}
     />
   )
 }

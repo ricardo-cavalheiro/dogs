@@ -20,8 +20,8 @@ import { useHandleError } from '../../hooks/useHandleError'
 import { useInfiniteScroll } from '../../hooks/useInfiniteScroll'
 
 // firebase services
-import { db } from '../../services/firebase/database'
-import { adminApp } from '../../services/firebase/admin'
+import { db } from '../../services/firebase/client/database'
+import { app } from '../../services/firebase/server/app'
 
 // layout
 import { UserHeader } from '../../components/layout/UserHeader'
@@ -38,10 +38,10 @@ const getServerSideProps: GetServerSideProps = async (context) => {
   if (!userToken) return { redirect: { destination: '/', permanent: false } }
 
   try {
-    const auth = getAuth(adminApp)
+    const auth = getAuth(app)
     const user = await auth.verifyIdToken(userToken)
 
-    const db = getDatabase(adminApp)
+    const db = getDatabase(app)
     const ref = db.ref(`images/${user.uid}`).orderByKey().limitToLast(4)
     const snapshot = await ref.once('value')
 

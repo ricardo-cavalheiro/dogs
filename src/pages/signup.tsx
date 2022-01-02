@@ -9,7 +9,7 @@ import { Background } from '../components/form/Background'
 import { SignUpForm } from '../components/pages/signup/Form'
 
 // firebase services
-import { adminApp } from '../services/firebase/admin'
+import { app } from '../services/firebase/server/app'
 
 // types
 import type { GetServerSideProps } from 'next'
@@ -23,7 +23,7 @@ const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
   try {
-    const auth = getAuth(adminApp)
+    const auth = getAuth(app)
 
     await auth.verifyIdToken(userIDToken)
 

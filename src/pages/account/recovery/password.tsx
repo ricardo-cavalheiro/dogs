@@ -16,7 +16,7 @@ import { useHandleError } from '../../../hooks/useHandleError'
 import { recoveryPasswordValidation } from '../../../components/form/validations/recoveryPassword'
 
 // firebase services
-import { auth } from '../../../services/firebase/auth'
+import { auth } from '../../../services/firebase/client/auth'
 
 // types
 import type { GetServerSideProps } from 'next'
