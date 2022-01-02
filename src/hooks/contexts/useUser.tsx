@@ -7,7 +7,7 @@ import { setCookie, destroyCookie } from 'nookies'
 import { useHandleError } from '../useHandleError'
 
 // firebase services
-import { auth } from '../../services/firebase/auth'
+import { auth } from '../../services/firebase/client/auth'
 
 // types
 import type { FirebaseError } from 'firebase/app'

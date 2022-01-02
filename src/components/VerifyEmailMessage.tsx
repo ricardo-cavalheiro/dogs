@@ -5,7 +5,7 @@ import { sendEmailVerification } from 'firebase/auth'
 import { useHandleError } from '../hooks/useHandleError'
 
 // firebase services
-import { auth } from '../services/firebase/auth'
+import { auth } from '../services/firebase/client/auth'
 
 // types
 import type { FirebaseError } from 'firebase/app'

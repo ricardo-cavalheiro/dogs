@@ -22,7 +22,7 @@ import { SignUpCallToAction } from '../pages/login/SignUpCallToAction'
 import { useHandleError } from '../../hooks/useHandleError'
 
 // firebase
-import { auth } from '../../services/firebase/auth'
+import { auth } from '../../services/firebase/client/auth'
 
 // yup validation
 import { loginValidation } from '../form/validations/login'
@@ -39,7 +39,6 @@ type FormInputs = {
 type Props = {
   isOpen: boolean
   onClose: () => void
-  imageID: string
 }
 
 function UserNotLoggedInModal({ isOpen, onClose }: Props) {

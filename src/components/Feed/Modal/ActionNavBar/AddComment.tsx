@@ -7,7 +7,7 @@ import { MdSend } from 'react-icons/md'
 import { Input } from '../../../form/inputs/RegularInput'
 
 // firebase services
-import { db } from '../../../../services/firebase/database'
+import { db } from '../../../../services/firebase/client/database'
 
 // hooks
 import { useHandleError } from '../../../../hooks/useHandleError'

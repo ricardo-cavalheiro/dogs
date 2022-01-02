@@ -19,7 +19,7 @@ import { Input } from '../../../components/form/inputs/RegularInput'
 import { useHandleError } from '../../../hooks/useHandleError'
 
 // firebase services
-import { auth } from '../../../services/firebase/auth'
+import { auth } from '../../../services/firebase/client/auth'
 
 // form validation
 import { emailValidation } from '../../../components/form/validations/recovery'

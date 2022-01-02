@@ -10,7 +10,7 @@ import { LoginForm } from '../components/pages/login/Form'
 import { SignUpCallToAction } from '../components/pages/login/SignUpCallToAction'
 
 // firebase services
-import { adminApp } from '../services/firebase/admin'
+import { app } from '../services/firebase/server/app'
 
 // types
 import type { GetServerSideProps } from 'next'
@@ -21,7 +21,7 @@ const getServerSideProps: GetServerSideProps = async (context) => {
   if (!userIDToken) return { props: {} }
 
   try {
-    const auth = getAuth(adminApp)
+    const auth = getAuth(app)
 
     await auth.verifyIdToken(userIDToken)
 

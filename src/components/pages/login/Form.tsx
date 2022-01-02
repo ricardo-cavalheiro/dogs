@@ -14,7 +14,7 @@ import { PasswordRecovery } from './PasswordRecovery'
 import { useHandleError } from '../../../hooks/useHandleError'
 
 // firebase services
-import { auth } from '../../../services/firebase/auth'
+import { auth } from '../../../services/firebase/client/auth'
 
 // yup validation
 import { loginValidation } from '../../form/validations/login'

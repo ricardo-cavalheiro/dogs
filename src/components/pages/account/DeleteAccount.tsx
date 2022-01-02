@@ -21,9 +21,9 @@ import { useUser } from '../../../hooks/contexts/useUser'
 import { useHandleError } from '../../../hooks/useHandleError'
 
 // firebase services
-import { auth } from '../../../services/firebase/auth'
-import { db } from '../../../services/firebase/database'
-import { storage } from '../../../services/firebase/storage'
+import { auth } from '../../../services/firebase/client/auth'
+import { db } from '../../../services/firebase/client/database'
+import { storage } from '../../../services/firebase/client/storage'
 
 // types
 import type { MutableRefObject } from 'react'
@@ -54,6 +54,7 @@ function DeleteAccountAlertDialog({
       const fileList = await listAll(ref)
 
       const updatesList = fileList.items.map((image) => ({
+        [`comment_metrics/${image.name}`]: null,
         [`image_metrics/${image.name}`]: null,
         [`image_comments/${image.name}`]: null,
         [`images/${userInfo.uid}`]: null,

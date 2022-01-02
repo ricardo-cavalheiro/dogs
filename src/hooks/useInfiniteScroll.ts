@@ -19,9 +19,7 @@ function useInfiniteScroll(targetElement: string) {
 
     observer = new IntersectionObserver(callback, options)
 
-    if (target) {
-      observer.observe(target)
-    }
+    if (target) observer.observe(target)
 
     return () => observer.disconnect()
   }, [])

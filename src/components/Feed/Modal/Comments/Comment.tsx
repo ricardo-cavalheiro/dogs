@@ -11,7 +11,7 @@ import { useUser } from '../../../../hooks/contexts/useUser'
 import { useHandleError } from '../../../../hooks/useHandleError'
 
 // firebase
-import { db } from '../../../../services/firebase/database'
+import { db } from '../../../../services/firebase/client/database'
 
 // types
 import type { FirebaseError } from 'firebase/app'

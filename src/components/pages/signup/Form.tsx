@@ -17,7 +17,7 @@ import { useUser } from '../../../hooks/contexts/useUser'
 import { useHandleError } from '../../../hooks/useHandleError'
 
 // firebase services
-import { auth } from '../../../services/firebase/auth'
+import { auth } from '../../../services/firebase/client/auth'
 
 // yup validation
 import { signupValidation } from '../../form/validations/signup'

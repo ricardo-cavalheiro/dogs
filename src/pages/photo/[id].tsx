@@ -27,8 +27,8 @@ import { useUser } from '../../hooks/contexts/useUser'
 import { useHandleError } from '../../hooks/useHandleError'
 
 // firebase services
-import { adminApp } from '../../services/firebase/admin'
-import { db } from '../../services/firebase/database'
+import { app } from '../../services/firebase/server/app'
+import { db } from '../../services/firebase/client/database'
 
 // types
 import type { FirebaseError } from 'firebase/app'
@@ -40,7 +40,7 @@ const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.query as { id: string }
 
   try {
-    const db = getDatabase(adminApp)
+    const db = getDatabase(app)
     const imageRef = db.ref(`latest_images/${id}`)
     const snapshot = await imageRef.once('value')
 

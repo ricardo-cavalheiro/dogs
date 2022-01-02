@@ -36,7 +36,7 @@ import { AddComment } from './ActionNavBar/AddComment'
 import { useHandleError } from '../../../hooks/useHandleError'
 
 // firebase services
-import { db } from '../../../services/firebase/database'
+import { db } from '../../../services/firebase/client/database'
 
 // types
 import type { FirebaseError } from 'firebase/app'
@@ -52,7 +52,7 @@ type Props = {
 function Modal({ isOpen, onClose, imageInfo }: Props) {
   // states
   const [imageComments, setImageComments] = useState<Comment[]>([])
-  const [imageViews, setImageViews] = useState(imageInfo.views)
+  const [imageViews, setImageViews] = useState(0)
 
   // hooks
   const router = useRouter()
@@ -165,7 +165,7 @@ function Modal({ isOpen, onClose, imageInfo }: Props) {
                 <Flex align='center' gridGap={1}>
                   <MdOutlineVisibility size={20} />
 
-                  <Text as='span'>{imageViews || 0}</Text>
+                  <Text as='span'>{imageViews}</Text>
                 </Flex>
               </Flex>
 
