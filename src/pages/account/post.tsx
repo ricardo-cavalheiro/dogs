@@ -90,6 +90,8 @@ function Post() {
       const updates = {
         [`images/${userInfo.uid}/${imageID}`]: imageInfo,
         [`latest_images/${imageID}`]: imageInfo,
+        [`image_metrics/${imageID}/views`]: 0,
+        [`image_metrics/${imageID}/likes`]: 0,
       }
       await update(databaseRef(db), updates)
 
