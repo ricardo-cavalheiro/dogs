@@ -1,6 +1,7 @@
 // components
 import { Header } from '../components/layout/Header'
 import { Footer } from '../components/layout/Footer'
+import { Loading } from '../components/Loading'
 
 // hooks
 import { UserContextProvider } from '../hooks/contexts/useUser'
@@ -22,6 +23,8 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
   return (
     <ChakraProvider cookies={pageProps.cookies}>
       <UserContextProvider>
+        <Loading />
+
         <Header />
 
         {Component.UserHeader ? (
