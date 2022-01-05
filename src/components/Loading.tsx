@@ -1,8 +1,30 @@
 import { useState, useEffect } from 'react'
-import { Box } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 
 function Loading() {
+  // states
   const [step, setStep] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+
+  // hooks
+  const router = useRouter()
+
+  useEffect(() => {
+    const handleStart = (url: string) =>
+      url !== router.asPath && setIsLoading(true)
+    const handleComplete = () => setIsLoading(false)
+
+    router.events.on('routeChangeStart', handleStart)
+    router.events.on('routeChangeComplete', handleComplete)
+    router.events.on('routeChangeError', handleComplete)
+
+    return () => {
+      router.events.off('routeChangeStart', handleStart)
+      router.events.off('routeChangeComplete', handleComplete)
+      router.events.off('routeChangeError', handleComplete)
+    }
+  }, [])
 
   useEffect(() => {
     function updateStep() {
@@ -23,7 +45,7 @@ function Loading() {
     }
   }
 
-  return (
+  return isLoading ? (
     <Box
       position='absolute'
       w='100%'
@@ -31,9 +53,11 @@ function Loading() {
       d='flex'
       top='0px'
       left='0px'
-      zIndex={9999999}
+      zIndex={99999999} // needs to be higher than the modal's zIndex
+      bg='rgba(255, 255, 255, 0.1)'
+      transition='all 2s ease'
     >
-      <Box
+      <Flex
         m='auto'
         w='80px'
         h='80px'
@@ -41,7 +65,6 @@ function Loading() {
         pl='5px'
         bg='rgba(255, 255, 255, 0.5)'
         justifyContent='center'
-        alignCenter='center'
         borderRadius='50%'
       >
         <svg
@@ -50,6 +73,7 @@ function Loading() {
           viewBox='0 0 46 31'
           fill='none'
           xmlns='http://www.w3.org/2000/svg'
+          style={{ alignSelf: 'center' }}
         >
           <g style={displayStep(0)}>
             <path
@@ -120,9 +144,9 @@ function Loading() {
             />
           </g>
         </svg>
-      </Box>
+      </Flex>
     </Box>
-  )
+  ) : null
 }
 
 export { Loading }
