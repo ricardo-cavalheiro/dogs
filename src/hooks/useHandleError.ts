@@ -56,6 +56,10 @@ function useHandleError() {
     silent?: boolean
   }
 
+  // TODO
+  // Silent should be evaluted by process.env.NODE_ENV
+  // If it is prod, then doesn't display on console.log() but on screen to ther user and send it to sentry
+  // If it is dev, then display it on console.log() and do not send it to sentry
   const handleError = ({ error, silent = false }: HandleError) => {
     const errorCode = error.code as ErrorCodes
 
