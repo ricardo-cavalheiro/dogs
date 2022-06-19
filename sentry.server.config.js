@@ -1,6 +1,6 @@
-import * as Sentry from '@sentry/nextjs'
+import { init } from '@sentry/nextjs'
 
-Sentry.init({
+init({
   dsn:
     process.env.NODE_ENV === 'production'
       ? process.env.NEXT_PUBLIC_SENTRY_DSN
