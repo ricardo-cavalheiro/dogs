@@ -15,10 +15,6 @@ Upcoming features:
 - Chats
 - Video calls (maybe)
 
-Known issues:
-
-- You can't see the photos that other person has published
-
 ## Technical Details
 
 Built on top of Next.js (v12) and Firebase (v9). Deployed on Vercel.
