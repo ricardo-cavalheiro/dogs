@@ -8,7 +8,7 @@ import {
   endBefore,
   orderByKey,
   onValue,
-  off,
+  off
 } from 'firebase/database'
 import { getDatabase } from 'firebase-admin/database'
 import Head from 'next/head'
@@ -33,21 +33,22 @@ const getStaticProps: GetStaticProps = async () => {
   try {
     const db = getDatabase(app)
     const ref = db.ref('latest_images').orderByKey().limitToLast(4)
-    const snapshot = await ref.once('value')
+    const snapshot = await ref.get()
 
-    if (snapshot.exists())
+    if (snapshot.exists()) {
       return {
         props: {
-          firebaseImages: Object.values<ImageInfo>(snapshot.val()).reverse(),
+          firebaseImages: Object.values<ImageInfo>(snapshot.val()).reverse()
         },
-        revalidate: 3600,
+        revalidate: 3600
       }
-    else
+    } else {
       return {
         props: {
-          firebaseImages: [],
-        },
+          firebaseImages: []
+        }
       }
+    }
   } catch (err) {
     const error = err as FirebaseError
 
@@ -57,8 +58,8 @@ const getStaticProps: GetStaticProps = async () => {
 
     return {
       props: {
-        firebaseImages: [],
-      },
+        firebaseImages: []
+      }
     }
   }
 }

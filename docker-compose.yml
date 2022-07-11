@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  firebase:
+    container_name: dogs-backend
+    working_dir: /home/app
+    build:
+      context: ./
+      dockerfile: ./docker/images/Dockerfile.firebase
+    ports:
+      - '4000:4000'
+      - '4400:4400'
+      - '9000:9000'
+      - '9099:9099'
+      - '9199:9199'
+    expose:
+      - 9000
+      - 9099
+      - 9199
+    volumes:
+      - ./firebase-emulator-data:/home/app/firebase-emulator-data
+  frontend:
+    container_name: dogs-frontend
+    working_dir: /home/app
+    depends_on:
+      - firebase
+    build:
+      context: ./
+      dockerfile: ./docker/images/Dockerfile.dogs
+    env_file:
+      - ./.env.local
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/home/app
