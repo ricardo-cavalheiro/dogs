@@ -13,10 +13,6 @@ services:
       - '9000:9000'
       - '9099:9099'
       - '9199:9199'
-    expose:
-      - 9000
-      - 9099
-      - 9199
     volumes:
       - ./firebase-emulator-data:/home/app/firebase-emulator-data
   frontend:
